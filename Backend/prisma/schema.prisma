@@ -113,6 +113,7 @@ model Fatura {
   cartaoCredito   CartaoCredito @relation(fields: [cartaoCreditoId], references: [id])
   cartaoCreditoId Int
   parcelas        Parcela[]
+  @@unique([cartaoCreditoId, mes, ano])
 }
 
 model Parcela {
