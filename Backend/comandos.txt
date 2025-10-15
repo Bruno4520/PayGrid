@@ -16,7 +16,7 @@ npm run dev
 1ª Vez:
 docker compose up -d
 npm install
-npx prisma migrate dev
+npx prisma migrate dev --name init
 npm run dev
 
 Depois:

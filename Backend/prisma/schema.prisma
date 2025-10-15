@@ -61,6 +61,8 @@ model Orcamento {
   usuarioId      Int
   categoria      Categoria @relation(fields: [categoriaId], references: [id])
   categoriaId    Int
+
+  @@unique([usuarioId, categoriaId, mes, ano])
 }
 
 model Transacao {
@@ -113,6 +115,7 @@ model Fatura {
   cartaoCredito   CartaoCredito @relation(fields: [cartaoCreditoId], references: [id])
   cartaoCreditoId Int
   parcelas        Parcela[]
+
   @@unique([cartaoCreditoId, mes, ano])
 }
 
