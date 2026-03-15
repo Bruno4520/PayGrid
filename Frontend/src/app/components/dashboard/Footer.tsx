@@ -1,7 +1,7 @@
 export function Footer() {
   return (
-    <footer className="bg-[#0f1419] text-gray-300 py-12 mt-12">
-      <div className="max-w-7xl mx-auto px-8">
+    <footer className="bg-[#0f1419] text-gray-300 py-8 border-t border-gray-800">
+      <div className="px-8">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {/* Brand */}
           <div>
@@ -32,7 +32,8 @@ export function Footer() {
               <h3 className="text-xl font-semibold text-white">PayGrid</h3>
             </div>
             <p className="text-sm text-gray-400 leading-relaxed">
-              Simulador educacional de investimentos para planejamento financeiro inteligente.
+              Simulador educacional de investimentos para planejamento
+              financeiro inteligente.
             </p>
           </div>
 
@@ -41,17 +42,26 @@ export function Footer() {
             <h4 className="font-semibold text-white mb-4">Links Úteis</h4>
             <ul className="space-y-2 text-sm">
               <li>
-                <a href="#" className="text-gray-400 hover:text-white transition-colors">
+                <a
+                  href="#"
+                  className="text-gray-400 hover:text-white transition-colors"
+                >
                   Central de Ajuda
                 </a>
               </li>
               <li>
-                <a href="#" className="text-gray-400 hover:text-white transition-colors">
+                <a
+                  href="#"
+                  className="text-gray-400 hover:text-white transition-colors"
+                >
                   Termos de Uso
                 </a>
               </li>
               <li>
-                <a href="#" className="text-gray-400 hover:text-white transition-colors">
+                <a
+                  href="#"
+                  className="text-gray-400 hover:text-white transition-colors"
+                >
                   Política de Privacidade
                 </a>
               </li>
@@ -62,15 +72,15 @@ export function Footer() {
           <div>
             <h4 className="font-semibold text-white mb-4">Contato</h4>
             <ul className="space-y-2 text-sm">
-              <li className="text-gray-400">contato@wesim.com.br</li>
+              <li className="text-gray-400">contato@email.com.br</li>
               <li className="text-gray-400">(11) 0000-0000</li>
             </ul>
           </div>
         </div>
 
         {/* Copyright */}
-        <div className="border-t border-gray-800 mt-8 pt-8 text-center text-sm text-gray-500">
-          © 2024 InvestPro. Todos os direitos reservados.
+        <div className="border-t border-gray-800 mt-6 pt-6 text-center text-sm text-gray-500">
+          © 2026 PayGrid. Todos os direitos reservados.
         </div>
       </div>
     </footer>

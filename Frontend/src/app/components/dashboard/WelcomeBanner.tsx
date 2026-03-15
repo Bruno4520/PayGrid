@@ -1,4 +1,4 @@
-import { Plus } from 'lucide-react';
+import { Plus } from "lucide-react";
 
 interface WelcomeBannerProps {
   onAddTransaction: () => void;
@@ -11,7 +11,8 @@ export function WelcomeBanner({ onAddTransaction }: WelcomeBannerProps) {
         Bem-vindo ao PayGrid!
       </h2>
       <p className="text-white/90 mb-6 max-w-2xl mx-auto">
-        Comece a organizar suas finanças adicionando sua primeira transação. Nossa plataforma irá ajudará a ter controle total sobre seu dinheiro.
+        Comece a organizar suas finanças adicionando sua primeira transação.
+        Nossa plataforma irá ajudará a ter controle total sobre seu dinheiro.
       </p>
       <button
         onClick={onAddTransaction}

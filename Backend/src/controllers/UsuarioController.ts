@@ -24,7 +24,7 @@ export class UsuarioController {
       if (error.code === 'P2002') {
         return res.status(409).json({ mensagem: 'Este email já está em uso.' });
       }
-      return res.status(500).json({ mensagem: 'Erro interno do servidor.' });
+      return res.status(500).json({ mensagem: 'Erro usuario 1' });
     }
   }
 
@@ -55,7 +55,7 @@ export class UsuarioController {
 
     } catch (error) {
       console.error("ERRO NO LOGIN:", error);
-      return res.status(500).json({ mensagem: 'Erro interno do servidor.' });
+      return res.status(500).json({ mensagem: 'Erro usuario 2' });
     }
   }
 
@@ -77,7 +77,7 @@ export class UsuarioController {
 
     } catch (error) {
       console.error("ERRO AO BUSCAR PERFIL:", error);
-      return res.status(500).json({ mensagem: 'Erro interno do servidor.' });
+      return res.status(500).json({ mensagem: 'Erro usuario 3' });
     }
   }
 }

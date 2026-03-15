@@ -1,5 +1,5 @@
-import { useState, useEffect } from 'react';
-import { TrendingUp, Settings, PieChart, Wallet } from 'lucide-react';
+import { useState, useEffect } from "react";
+import { TrendingUp, Settings, PieChart, Wallet } from "lucide-react";
 
 interface OnboardingSlide {
   id: number;
@@ -10,18 +10,21 @@ interface OnboardingSlide {
 const slides: OnboardingSlide[] = [
   {
     id: 1,
-    title: 'Gerencie suas finanças com facilidade',
-    description: 'Tenha controle total sobre seu dinheiro com nossa plataforma intuitiva e segura.',
+    title: "Gerencie suas finanças com facilidade",
+    description:
+      "Tenha controle total sobre seu dinheiro com nossa plataforma intuitiva e segura.",
   },
   {
     id: 2,
-    title: 'Organize seus gastos de forma inteligente',
-    description: 'Crie categorias personalizadas e acompanhe seus gastos em tempo real.',
+    title: "Organize seus gastos de forma inteligente",
+    description:
+      "Crie categorias personalizadas e acompanhe seus gastos em tempo real.",
   },
   {
     id: 3,
-    title: 'Alcance seus objetivos financeiros',
-    description: 'Defina suas metas e veja como você está indo, tudo em um só lugar.',
+    title: "Alcance seus objetivos financeiros",
+    description:
+      "Defina suas metas e veja como você está indo, tudo em um só lugar.",
   },
 ];
 
@@ -86,8 +89,8 @@ export function OnboardingPanel() {
               onClick={() => setCurrentSlide(index)}
               className={`h-2 rounded-full transition-all duration-300 ${
                 index === currentSlide
-                  ? 'w-8 bg-white'
-                  : 'w-2 bg-white/40 hover:bg-white/60'
+                  ? "w-8 bg-white"
+                  : "w-2 bg-white/40 hover:bg-white/60"
               }`}
               aria-label={`Ir para slide ${index + 1}`}
             />

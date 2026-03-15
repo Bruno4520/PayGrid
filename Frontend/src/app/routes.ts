@@ -3,6 +3,13 @@ import { LoginPage } from './pages/LoginPage';
 import { SignupPage } from './pages/SignupPage';
 import { ForgotPasswordPage } from './pages/ForgotPasswordPage';
 import { DashboardPage } from './pages/DashboardPage';
+import { TransactionsPage } from './pages/TransactionsPage';
+import { AccountsPage } from './pages/AccountsPage';
+import { CardsPage } from './pages/CardsPage';
+import { InvoicesPage } from './pages/InvoicesPage';
+import { BudgetsPage } from './pages/BudgetsPage';
+import { ReportsPage } from './pages/ReportsPage';
+import { SimulatorPage } from './pages/SimulatorPage';
 
 export const router = createBrowserRouter([
   {
@@ -27,31 +34,31 @@ export const router = createBrowserRouter([
   },
   {
     path: '/transacoes',
-    Component: DashboardPage, // Placeholder
+    Component: TransactionsPage,
   },
   {
     path: '/contas',
-    Component: DashboardPage, // Placeholder
+    Component: AccountsPage,
   },
   {
     path: '/cartoes',
-    Component: DashboardPage, // Placeholder
+    Component: CardsPage,
   },
   {
     path: '/faturas',
-    Component: DashboardPage, // Placeholder
+    Component: InvoicesPage,
   },
   {
     path: '/orcamentos',
-    Component: DashboardPage, // Placeholder
+    Component: BudgetsPage,
   },
   {
     path: '/relatorios',
-    Component: DashboardPage, // Placeholder
+    Component: ReportsPage,
   },
   {
     path: '/simulador',
-    Component: DashboardPage, // Placeholder
+    Component: SimulatorPage,
   },
   {
     path: '/configuracoes',

@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { Mail, Lock, Eye, EyeOff } from 'lucide-react';
+import { useState } from "react";
+import { Mail, Lock, Eye, EyeOff } from "lucide-react";
 
 interface LoginFormData {
   email: string;
@@ -13,10 +13,14 @@ interface LoginCardProps {
   onCreateAccount: () => void;
 }
 
-export function LoginCard({ onLogin, onForgotPassword, onCreateAccount }: LoginCardProps) {
+export function LoginCard({
+  onLogin,
+  onForgotPassword,
+  onCreateAccount,
+}: LoginCardProps) {
   const [formData, setFormData] = useState<LoginFormData>({
-    email: '',
-    password: '',
+    email: "",
+    password: "",
     rememberMe: false,
   });
   const [showPassword, setShowPassword] = useState(false);
@@ -26,7 +30,10 @@ export function LoginCard({ onLogin, onForgotPassword, onCreateAccount }: LoginC
     onLogin(formData);
   };
 
-  const handleInputChange = (field: keyof LoginFormData, value: string | boolean) => {
+  const handleInputChange = (
+    field: keyof LoginFormData,
+    value: string | boolean,
+  ) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
   };
 
@@ -57,7 +64,9 @@ export function LoginCard({ onLogin, onForgotPassword, onCreateAccount }: LoginC
           </svg>
         </div>
         <h1 className="text-2xl font-semibold text-gray-900 mb-2">PayGrid</h1>
-        <p className="text-sm text-gray-600">Entre na sua conta para continuar</p>
+        <p className="text-sm text-gray-600">
+          Entre na sua conta para continuar
+        </p>
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-5">
@@ -73,7 +82,7 @@ export function LoginCard({ onLogin, onForgotPassword, onCreateAccount }: LoginC
               id="email"
               type="email"
               value={formData.email}
-              onChange={(e) => handleInputChange('email', e.target.value)}
+              onChange={(e) => handleInputChange("email", e.target.value)}
               placeholder="seu@email.com"
               className="w-full pl-12 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-[#2B5BBA] focus:border-transparent transition-all"
               required
@@ -82,7 +91,10 @@ export function LoginCard({ onLogin, onForgotPassword, onCreateAccount }: LoginC
         </div>
 
         <div>
-          <label htmlFor="password" className="block text-sm text-gray-700 mb-2">
+          <label
+            htmlFor="password"
+            className="block text-sm text-gray-700 mb-2"
+          >
             Senha
           </label>
           <div className="relative">
@@ -91,9 +103,9 @@ export function LoginCard({ onLogin, onForgotPassword, onCreateAccount }: LoginC
             </div>
             <input
               id="password"
-              type={showPassword ? 'text' : 'password'}
+              type={showPassword ? "text" : "password"}
               value={formData.password}
-              onChange={(e) => handleInputChange('password', e.target.value)}
+              onChange={(e) => handleInputChange("password", e.target.value)}
               placeholder="••••••••"
               className="w-full pl-12 pr-12 py-3 bg-gray-50 border border-gray-200 rounded-xl text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-[#2B5BBA] focus:border-transparent transition-all"
               required
@@ -102,7 +114,7 @@ export function LoginCard({ onLogin, onForgotPassword, onCreateAccount }: LoginC
               type="button"
               onClick={() => setShowPassword(!showPassword)}
               className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
-              aria-label={showPassword ? 'Ocultar senha' : 'Mostrar senha'}
+              aria-label={showPassword ? "Ocultar senha" : "Mostrar senha"}
             >
               {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
             </button>
@@ -110,12 +122,17 @@ export function LoginCard({ onLogin, onForgotPassword, onCreateAccount }: LoginC
         </div>
 
         <div className="flex items-center justify-between">
-          <label htmlFor="remember" className="flex items-center cursor-pointer">
+          <label
+            htmlFor="remember"
+            className="flex items-center cursor-pointer"
+          >
             <input
               id="remember"
               type="checkbox"
               checked={formData.rememberMe}
-              onChange={(e) => handleInputChange('rememberMe', e.target.checked)}
+              onChange={(e) =>
+                handleInputChange("rememberMe", e.target.checked)
+              }
               className="w-4 h-4 text-[#2B5BBA] border-gray-300 rounded focus:ring-2 focus:ring-[#2B5BBA] cursor-pointer"
             />
             <span className="ml-2 text-sm text-gray-700">Lembrar de mim</span>

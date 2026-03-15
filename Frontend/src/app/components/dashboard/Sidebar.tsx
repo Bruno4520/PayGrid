@@ -1,15 +1,15 @@
-import { 
-  LayoutDashboard, 
-  ArrowLeftRight, 
-  Building2, 
-  CreditCard, 
-  FileText, 
-  Target, 
-  BarChart3, 
+import {
+  LayoutDashboard,
+  ArrowLeftRight,
+  Building2,
+  CreditCard,
+  FileText,
+  Target,
+  BarChart3,
   Calculator,
-  Settings
-} from 'lucide-react';
-import { Link, useLocation } from 'react-router';
+  Settings,
+} from "lucide-react";
+import { Link, useLocation } from "react-router";
 
 interface SidebarItemProps {
   to: string;
@@ -24,8 +24,8 @@ function SidebarItem({ to, icon, label, isActive }: SidebarItemProps) {
       to={to}
       className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-all ${
         isActive
-          ? 'bg-[#2B5BBA] text-white'
-          : 'text-gray-300 hover:bg-gray-800 hover:text-white'
+          ? "bg-[#2B5BBA] text-white"
+          : "text-gray-300 hover:bg-gray-800 hover:text-white"
       }`}
     >
       {icon}
@@ -38,18 +38,26 @@ export function Sidebar() {
   const location = useLocation();
 
   const menuItems = [
-    { to: '/dashboard', icon: <LayoutDashboard size={18} />, label: 'Dashboard' },
-    { to: '/transacoes', icon: <ArrowLeftRight size={18} />, label: 'Transações' },
-    { to: '/contas', icon: <Building2 size={18} />, label: 'Contas' },
-    { to: '/cartoes', icon: <CreditCard size={18} />, label: 'Cartões' },
-    { to: '/faturas', icon: <FileText size={18} />, label: 'Faturas' },
-    { to: '/orcamentos', icon: <Target size={18} />, label: 'Orçamentos' },
-    { to: '/relatorios', icon: <BarChart3 size={18} />, label: 'Relatórios' },
-    { to: '/simulador', icon: <Calculator size={18} />, label: 'Simulador' },
+    {
+      to: "/dashboard",
+      icon: <LayoutDashboard size={18} />,
+      label: "Dashboard",
+    },
+    {
+      to: "/transacoes",
+      icon: <ArrowLeftRight size={18} />,
+      label: "Transações",
+    },
+    { to: "/contas", icon: <Building2 size={18} />, label: "Contas" },
+    { to: "/cartoes", icon: <CreditCard size={18} />, label: "Cartões" },
+    { to: "/faturas", icon: <FileText size={18} />, label: "Faturas" },
+    { to: "/orcamentos", icon: <Target size={18} />, label: "Orçamentos" },
+    { to: "/relatorios", icon: <BarChart3 size={18} />, label: "Relatórios" },
+    { to: "/simulador", icon: <Calculator size={18} />, label: "Simulador" },
   ];
 
   return (
-    <aside className="w-64 bg-[#1a1a2e] min-h-screen flex flex-col">
+    <aside className="w-48 bg-[#1a1a2e] min-h-screen flex flex-col shrink-0">
       {/* Logo */}
       <div className="p-6 flex items-center gap-3">
         <div className="w-10 h-10 bg-[#2B5BBA] rounded-lg flex items-center justify-center">
@@ -90,16 +98,6 @@ export function Sidebar() {
           />
         ))}
       </nav>
-
-      {/* Settings at bottom */}
-      <div className="p-4">
-        <SidebarItem
-          to="/configuracoes"
-          icon={<Settings size={18} />}
-          label="Configurações"
-          isActive={location.pathname === '/configuracoes'}
-        />
-      </div>
     </aside>
   );
 }

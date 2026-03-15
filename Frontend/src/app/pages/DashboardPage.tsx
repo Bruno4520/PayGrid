@@ -1,51 +1,55 @@
-import { Wallet, TrendingUp, TrendingDown, CreditCard } from 'lucide-react';
-import { Sidebar } from '../components/dashboard/Sidebar';
-import { Header } from '../components/dashboard/Header';
-import { SummaryCard } from '../components/dashboard/SummaryCard';
-import { WelcomeBanner } from '../components/dashboard/WelcomeBanner';
-import { RecentTransactions } from '../components/dashboard/RecentTransactions';
-import { QuickActions } from '../components/dashboard/QuickActions';
-import { MonthlyOverview } from '../components/dashboard/MonthlyOverview';
-import { ExpensesByCategory } from '../components/dashboard/ExpensesByCategory';
-import { Footer } from '../components/dashboard/Footer';
+import { Wallet, TrendingUp, TrendingDown, CreditCard } from "lucide-react";
+import { Sidebar } from "../components/dashboard/Sidebar";
+import { Header } from "../components/dashboard/Header";
+import { SummaryCard } from "../components/dashboard/SummaryCard";
+import { WelcomeBanner } from "../components/dashboard/WelcomeBanner";
+import { RecentTransactions } from "../components/dashboard/RecentTransactions";
+import { QuickActions } from "../components/dashboard/QuickActions";
+import { MonthlyOverview } from "../components/dashboard/MonthlyOverview";
+import { ExpensesByCategory } from "../components/dashboard/ExpensesByCategory";
+import { Footer } from "../components/dashboard/Footer";
 
 export function DashboardPage() {
   const handleAddTransaction = () => {
-    console.log('Adicionar transação');
+    console.log("Adicionar transação");
   };
 
   const handleViewAllTransactions = () => {
-    console.log('Ver todas as transações');
+    console.log("Ver todas as transações");
   };
 
   const handleNewIncome = () => {
-    console.log('Nova receita');
+    console.log("Nova receita");
   };
 
   const handleNewExpense = () => {
-    console.log('Nova despesa');
+    console.log("Nova despesa");
   };
 
   const handleTransfer = () => {
-    console.log('Transferência');
+    console.log("Transferência");
   };
 
   const handleCreateBudget = () => {
-    console.log('Criar orçamento');
+    console.log("Criar orçamento");
   };
 
   return (
     <div className="flex min-h-screen bg-gray-50">
       <Sidebar />
-      
+
       <div className="flex-1 flex flex-col">
-        <Header />
-        
+        <Header userName="João Silva" userRole="Administrador" />
+
         <main className="flex-1 p-8">
           {/* Page Title */}
           <div className="mb-8">
-            <h1 className="text-3xl font-semibold text-gray-900 mb-2">Dashboard Financeiro</h1>
-            <p className="text-gray-600">Visão geral das suas finanças em tempo real</p>
+            <h1 className="text-3xl font-semibold text-gray-900 mb-2">
+              Dashboard Financeiro
+            </h1>
+            <p className="text-gray-600">
+              Visão geral das suas finanças em tempo real
+            </p>
           </div>
 
           {/* Summary Cards */}
@@ -56,7 +60,7 @@ export function DashboardPage() {
               icon={Wallet}
               iconBgColor="bg-blue-50"
               iconColor="text-blue-600"
-              trend={{ value: '3.2%', isPositive: true }}
+              trend={{ value: "3.2%", isPositive: true }}
             />
             <SummaryCard
               title="Receitas do Mês"
@@ -64,7 +68,7 @@ export function DashboardPage() {
               icon={TrendingUp}
               iconBgColor="bg-green-50"
               iconColor="text-green-600"
-              trend={{ value: '6%', isPositive: true }}
+              trend={{ value: "6%", isPositive: true }}
             />
             <SummaryCard
               title="Despesas do Mês"
@@ -72,7 +76,7 @@ export function DashboardPage() {
               icon={TrendingDown}
               iconBgColor="bg-red-50"
               iconColor="text-red-600"
-              trend={{ value: '5%', isPositive: false }}
+              trend={{ value: "5%", isPositive: false }}
             />
             <SummaryCard
               title="Crédito Disponível"
@@ -80,7 +84,7 @@ export function DashboardPage() {
               icon={CreditCard}
               iconBgColor="bg-purple-50"
               iconColor="text-purple-600"
-              progressBar={{ percentage: 70, color: 'bg-purple-500' }}
+              progressBar={{ percentage: 70, color: "bg-purple-500" }}
             />
           </div>
 

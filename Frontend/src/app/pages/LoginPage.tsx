@@ -1,6 +1,6 @@
-import { useNavigate } from 'react-router';
-import { LoginCard } from '../components/login/LoginCard';
-import { OnboardingPanel } from '../components/login/OnboardingPanel';
+import { useNavigate } from "react-router";
+import { LoginCard } from "../components/login/LoginCard";
+import { OnboardingPanel } from "../components/login/OnboardingPanel";
 
 interface LoginFormData {
   email: string;
@@ -12,17 +12,17 @@ export function LoginPage() {
   const navigate = useNavigate();
 
   const handleLogin = (data: LoginFormData) => {
-    console.log('Login:', data);
+    console.log("Login:", data);
     // Aqui você implementaria a lógica de autenticação
-    navigate('/dashboard'); // Após login bem-sucedido
+    navigate("/dashboard"); // Após login bem-sucedido
   };
 
   const handleForgotPassword = () => {
-    navigate('/recuperar-senha');
+    navigate("/recuperar-senha");
   };
 
   const handleCreateAccount = () => {
-    navigate('/cadastro');
+    navigate("/cadastro");
   };
 
   return (

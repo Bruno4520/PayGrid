@@ -1,4 +1,13 @@
-import { TrendingUp, CreditCard, PieChart, Wallet, DollarSign, Target, BarChart3, Receipt } from 'lucide-react';
+import {
+  TrendingUp,
+  CreditCard,
+  PieChart,
+  Wallet,
+  DollarSign,
+  Target,
+  BarChart3,
+  Receipt,
+} from "lucide-react";
 
 export function SignupPanel() {
   return (
@@ -49,7 +58,8 @@ export function SignupPanel() {
           Gerencie suas finanças com inteligência
         </h2>
         <p className="text-lg text-white/90 leading-relaxed">
-          Organize, monitore e planeje seu futuro financeiro de forma simples e segura.
+          Organize, monitore e planeje seu futuro financeiro de forma simples e
+          segura.
         </p>
       </div>
     </div>

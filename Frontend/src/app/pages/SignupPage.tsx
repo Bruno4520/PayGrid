@@ -1,6 +1,6 @@
-import { useNavigate } from 'react-router';
-import { SignupCard } from '../components/signup/SignupCard';
-import { SignupPanel } from '../components/signup/SignupPanel';
+import { useNavigate } from "react-router";
+import { SignupCard } from "../components/signup/SignupCard";
+import { SignupPanel } from "../components/signup/SignupPanel";
 
 interface SignupFormData {
   fullName: string;
@@ -14,22 +14,22 @@ export function SignupPage() {
   const navigate = useNavigate();
 
   const handleSignup = (data: SignupFormData) => {
-    console.log('Cadastro:', data);
+    console.log("Cadastro:", data);
     // Aqui você implementaria a lógica de criação de conta
     // navigate('/login'); // Após cadastro bem-sucedido
   };
 
   const handleLogin = () => {
-    navigate('/login');
+    navigate("/login");
   };
 
   const handleTermsClick = () => {
-    console.log('Abrir Termos de Uso');
+    console.log("Abrir Termos de Uso");
     // Aqui você implementaria a abertura dos termos
   };
 
   const handlePrivacyClick = () => {
-    console.log('Abrir Política de Privacidade');
+    console.log("Abrir Política de Privacidade");
     // Aqui você implementaria a abertura da política
   };
 
