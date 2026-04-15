@@ -7,12 +7,16 @@ interface DadosCriarConta {
     saldo: number;
     tipo: TipoConta;
     usuarioId: number;
+    numeroConta?: string;
+    agencia?: string;
 }
 
 interface DadosAtualizarConta {
     nome?: string;
     saldo?: number;
     tipo?: TipoConta;
+    numeroConta?: string;
+    agencia?: string;
 }
 
 export class ContaRepository {
@@ -23,6 +27,8 @@ export class ContaRepository {
                 saldo: dados.saldo,
                 tipo: dados.tipo,
                 usuarioId: dados.usuarioId,
+                numeroConta: dados.numeroConta || null,
+                agencia: dados.agencia || null,
             },
         });
     }

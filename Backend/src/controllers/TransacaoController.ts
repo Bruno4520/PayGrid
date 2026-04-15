@@ -18,7 +18,7 @@ export class TransacaoController {
             const { id: usuarioId } = (req as any).user as JwtPayload;
 
             if (formaPagamento === 'CREDITO') {
-                const { descricao, valor, categoriaId, cartaoCreditoId } = req.body;
+                const { descricao, valor, categoriaId, cartaoCreditoId, observacoes } = req.body;
                 const numeroParcelas = req.body.numeroParcelas || 1;
                 if (!descricao || !valor || !cartaoCreditoId) {
                     return res.status(400).json({ mensagem: 'Todos os campos são obrigatórios.' });
@@ -32,13 +32,13 @@ export class TransacaoController {
                 }
 
                 const novaTransacao = await transacaoRepository.criarCompraCredito({
-                    descricao, valor, categoriaId, cartaoCreditoId, numeroParcelas
+                    descricao, valor, categoriaId, cartaoCreditoId, numeroParcelas, observacoes
                 }, cartao);
 
                 return res.status(201).json(novaTransacao);
 
             } else {
-                const { descricao, valor, tipo, contaId, categoriaId } = req.body;
+                const { descricao, valor, tipo, contaId, categoriaId, observacoes } = req.body;
                 if (!descricao || !valor || !tipo || !contaId) {
                     return res.status(400).json({ mensagem: 'Todos os campos são obrigatórios.' });
                 }
@@ -51,7 +51,7 @@ export class TransacaoController {
                 }
 
                 const novaTransacao = await transacaoRepository.criar({
-                    descricao, valor, tipo, formaPagamento, contaId, categoriaId
+                    descricao, valor, tipo, formaPagamento, contaId, categoriaId, observacoes
                 });
 
                 return res.status(201).json(novaTransacao);

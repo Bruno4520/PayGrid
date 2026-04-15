@@ -8,14 +8,14 @@ export class CategoriaController {
 
     async criar(req: Request, res: Response) {
         try {
-            const { nome, descricao } = req.body;
+            const { nome, descricao, observacoes } = req.body;
             const { id: usuarioId } = (req as any).user as JwtPayload;
 
             if (!nome) {
                 return res.status(400).json({ mensagem: 'O nome da categoria é obrigatório.' });
             }
 
-            const novaCategoria = await categoriaRepository.criar({ nome, descricao, usuarioId });
+            const novaCategoria = await categoriaRepository.criar({ nome, descricao, observacoes, usuarioId });
             return res.status(201).json(novaCategoria);
         } catch (error: any) {
             if (error.code === 'P2002') {
@@ -40,7 +40,7 @@ export class CategoriaController {
     async atualizar(req: Request, res: Response) {
         try {
             const { id } = req.params;
-            const { nome, descricao } = req.body;
+            const { nome, descricao, observacoes } = req.body;
             const { id: usuarioId } = (req as any).user as JwtPayload;
 
             const categoriaExistente = await categoriaRepository.buscarPorIdEUsuarioId(Number(id), usuarioId);
@@ -52,7 +52,7 @@ export class CategoriaController {
                 return res.status(403).json({ mensagem: 'Não é permitido editar essa categoria' });
             }
 
-            const categoriaAtualizada = await categoriaRepository.atualizar(Number(id), { nome, descricao });
+            const categoriaAtualizada = await categoriaRepository.atualizar(Number(id), { nome, descricao, observacoes });
             return res.status(200).json(categoriaAtualizada);
         } catch (error: any) {
             console.error("ERRO AO ATUALIZAR CATEGORIA:", error);

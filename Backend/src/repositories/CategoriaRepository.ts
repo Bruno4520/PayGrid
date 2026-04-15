@@ -6,11 +6,13 @@ interface DadosCriarCategoria {
     nome: string;
     descricao?: string;
     usuarioId: number;
+    observacoes?: string;
 }
 
 interface DadosAtualizarCategoria {
     nome?: string;
     descricao?: string;
+    observacoes?: string;
 }
 
 export class CategoriaRepository {
@@ -21,6 +23,7 @@ export class CategoriaRepository {
                 nome: dados.nome,
                 descricao: dados.descricao || null,
                 usuarioId: dados.usuarioId,
+                observacoes: dados.observacoes || null,
             },
         });
     }

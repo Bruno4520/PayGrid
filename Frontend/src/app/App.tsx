@@ -1,6 +1,13 @@
 import { RouterProvider } from "react-router";
 import { router } from "./routes";
+import { ThemeProvider } from "./components/providers/theme-provider";
+import { ThemeToggle } from "./components/ui/theme-toggle";
 
 export default function App() {
-  return <RouterProvider router={router} />;
+  return (
+    <ThemeProvider>
+      <RouterProvider router={router} />
+      <ThemeToggle />
+    </ThemeProvider>
+  );
 }

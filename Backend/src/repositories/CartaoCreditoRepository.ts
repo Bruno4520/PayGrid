@@ -8,6 +8,7 @@ interface DadosCriarCartao {
     diaFechamentoFatura: number;
     diaVencimentoFatura: number;
     usuarioId: number;
+    ultimosDigitos?: string;
 }
 
 interface DadosAtualizarCartao {
@@ -15,6 +16,7 @@ interface DadosAtualizarCartao {
     limite?: number;
     diaFechamentoFatura?: number;
     diaVencimentoFatura?: number;
+    ultimosDigitos?: string;
 }
 
 export class CartaoCreditoRepository {
@@ -27,6 +29,7 @@ export class CartaoCreditoRepository {
                 diaFechamentoFatura: dados.diaFechamentoFatura,
                 diaVencimentoFatura: dados.diaVencimentoFatura,
                 usuarioId: dados.usuarioId,
+                ultimosDigitos: dados.ultimosDigitos || null,
             },
         });
     }

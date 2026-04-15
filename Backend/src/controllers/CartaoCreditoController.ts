@@ -8,7 +8,7 @@ export class CartaoCreditoController {
 
     async criar(req: Request, res: Response) {
         try {
-            const { nome, limite, diaFechamentoFatura, diaVencimentoFatura } = req.body;
+            const { nome, limite, diaFechamentoFatura, diaVencimentoFatura, ultimosDigitos } = req.body;
             const { id: usuarioId } = (req as any).user as JwtPayload;
 
             if (!nome || !limite || !diaFechamentoFatura || !diaVencimentoFatura) {
@@ -21,6 +21,7 @@ export class CartaoCreditoController {
                 diaFechamentoFatura,
                 diaVencimentoFatura,
                 usuarioId,
+                ultimosDigitos,
             });
 
             return res.status(201).json(novoCartao);

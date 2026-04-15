@@ -1,10 +1,4 @@
-import {
-  Lightbulb,
-  TrendingUp,
-  PiggyBank,
-  Calendar,
-  DollarSign,
-} from "lucide-react";
+import { Lightbulb, TrendingUp, PiggyBank, Calendar } from "lucide-react";
 
 export function QuickTipsCard() {
   const tips = [

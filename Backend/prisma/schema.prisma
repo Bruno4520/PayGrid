@@ -31,6 +31,8 @@ model Conta {
   nome       String
   saldo      Float
   tipo       TipoConta
+  numeroConta String
+  agencia     String
   usuario    Usuario     @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
   usuarioId  Int
   transacoes Transacao[]
@@ -43,14 +45,14 @@ enum TipoConta {
 }
 
 model Categoria {
-  id         Int         @id @default(autoincrement())
-  nome       String
-  descricao  String?
-  sistema    Boolean     @default(false)
-  usuario    Usuario     @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
-  usuarioId  Int
-  orcamentos Orcamento[]
-  transacoes Transacao[]
+  id          Int         @id @default(autoincrement())
+  nome        String
+  descricao   String?
+  sistema     Boolean     @default(false)
+  usuario     Usuario     @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
+  usuarioId   Int
+  orcamentos  Orcamento[]
+  transacoes  Transacao[]
 
   @@unique([nome, usuarioId])
 }
@@ -75,6 +77,7 @@ model Transacao {
   data            DateTime       @default(now())
   tipo            TipoTransacao
   formaPagamento  FormaPagamento 
+  observacoes     String?
   conta           Conta?         @relation(fields: [contaId], references: [id], onDelete: Cascade)
   contaId         Int?
   categoria       Categoria?     @relation(fields: [categoriaId], references: [id], onDelete: SetNull)
@@ -102,6 +105,7 @@ model CartaoCredito {
   limite              Float
   diaFechamentoFatura Int
   diaVencimentoFatura Int
+  ultimosDigitos      String
   usuario             Usuario     @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
   usuarioId           Int
   faturas             Fatura[]

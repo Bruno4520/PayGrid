@@ -9,6 +9,7 @@ interface DadosCriarTransacao {
     formaPagamento: FormaPagamento;
     contaId: number;
     categoriaId?: number;
+    observacoes?: string;
 }
 
 interface DadosCompraCredito
@@ -52,6 +53,7 @@ export class TransacaoRepository {
                     formaPagamento: "CREDITO",
                     categoriaId: dados.categoriaId || null,
                     cartaoCreditoId: dados.cartaoCreditoId,
+                    observacoes: dados.observacoes || null,
                 },
             });
 
@@ -199,6 +201,7 @@ export class TransacaoRepository {
                     tipo: novosDados.tipo,
                     contaId: novosDados.contaId || null,
                     categoriaId: novosDados.categoriaId || null,
+                    observacoes: novosDados.observacoes || null,
                 },
             });
         });
@@ -264,6 +267,7 @@ export class TransacaoRepository {
                     valor: novosDados.valor,
                     categoriaId: novosDados.categoriaId || null,
                     cartaoCreditoId: novosDados.cartaoCreditoId,
+                    observacoes: novosDados.observacoes || null,
                 }
             });
         });

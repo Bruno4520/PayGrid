@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Wallet, TrendingUp, TrendingDown, CreditCard } from "lucide-react";
 import { Sidebar } from "../components/dashboard/Sidebar";
 import { Header } from "../components/dashboard/Header";
@@ -8,10 +9,13 @@ import { QuickActions } from "../components/dashboard/QuickActions";
 import { MonthlyOverview } from "../components/dashboard/MonthlyOverview";
 import { ExpensesByCategory } from "../components/dashboard/ExpensesByCategory";
 import { Footer } from "../components/dashboard/Footer";
+import { NewTransactionModal } from "../components/transactions/NewTransactionModal";
 
 export function DashboardPage() {
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
   const handleAddTransaction = () => {
-    console.log("Adicionar transação");
+    setIsModalOpen(true);
   };
 
   const handleViewAllTransactions = () => {
@@ -45,10 +49,10 @@ export function DashboardPage() {
           {/* Page Title */}
           <div className="mb-8">
             <h1 className="text-3xl font-semibold text-gray-900 mb-2">
-              Dashboard Financeiro
+              Visão Geral
             </h1>
             <p className="text-gray-600">
-              Visão geral das suas finanças em tempo real
+              Acompanhe o seu saldo e as últimas movimentações
             </p>
           </div>
 
@@ -120,6 +124,13 @@ export function DashboardPage() {
 
         <Footer />
       </div>
+
+      {/* Modal */}
+      <NewTransactionModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        onSave={() => setIsModalOpen(false)}
+      />
     </div>
   );
 }

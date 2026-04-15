@@ -8,7 +8,7 @@ export class ContaController {
 
     async criar(req: Request, res: Response) {
         try {
-            const { nome, saldo, tipo } = req.body;
+            const { nome, saldo, tipo, numeroConta, agencia } = req.body;
             const { id: usuarioId } = (req as any).user as JwtPayload;
 
             if (!nome || saldo === undefined || !tipo) {
@@ -19,7 +19,7 @@ export class ContaController {
                 return res.status(400).json({ mensagem: 'Tipo de conta inválido.' });
             }
 
-            const novaConta = await contaRepository.criar({ nome, saldo, tipo, usuarioId });
+            const novaConta = await contaRepository.criar({ nome, saldo, tipo, usuarioId, numeroConta, agencia });
             return res.status(201).json(novaConta);
 
         } catch (error) {
@@ -42,7 +42,7 @@ export class ContaController {
     async atualizar(req: Request, res: Response) {
         try {
             const { id } = req.params;
-            const { nome, saldo, tipo } = req.body;
+            const { nome, saldo, tipo, numeroConta, agencia } = req.body;
             const { id: usuarioId } = (req as any).user as JwtPayload;
 
             const contaExistente = await contaRepository.buscarPorIdEUsuarioId(Number(id), usuarioId);
@@ -50,7 +50,7 @@ export class ContaController {
                 return res.status(404).json({ mensagem: 'Conta não encontrada.' });
             }
 
-            const contaAtualizada = await contaRepository.atualizar(Number(id), { nome, saldo, tipo });
+            const contaAtualizada = await contaRepository.atualizar(Number(id), { nome, saldo, tipo, numeroConta, agencia });
             return res.status(200).json(contaAtualizada);
         } catch (error) {
             console.error("ERRO AO ATUALIZAR CONTA:", error);
