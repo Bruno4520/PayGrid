@@ -10,7 +10,6 @@ import { ResultsCard } from "../components/simulator/ResultsCard";
 import { TaxTableCard } from "../components/simulator/TaxTableCard";
 import { TermsCard } from "../components/simulator/TermsCard";
 
-// CDI anual de referência: 13.65% a.a. = 1.0738% a.m.
 const CDI_MONTHLY_RATE = 1.0738;
 
 export function SimulatorPage() {
@@ -31,15 +30,13 @@ export function SimulatorPage() {
     netReturn: 0,
   });
 
-  const parseNumber = (value: string): number => {
-    return parseFloat(value) || 0;
-  };
+  const parseNumber = (value: string): number => parseFloat(value) || 0;
 
   const getTaxRate = (months: number): number => {
-    if (months <= 6) return 0.225; // até 180 dias
-    if (months <= 12) return 0.2; // 181 a 360 dias
-    if (months <= 24) return 0.175; // 361 a 720 dias
-    return 0.15; // acima de 720 dias
+    if (months <= 6) return 0.225;
+    if (months <= 12) return 0.2;
+    if (months <= 24) return 0.175;
+    return 0.15;
   };
 
   const calculateInvestment = () => {
@@ -47,12 +44,9 @@ export function SimulatorPage() {
     const monthly = parseNumber(monthlyContribution);
     const months = parseInt(period) || 0;
 
-    // Taxa mensal baseada no percentual do CDI
     const monthlyRate = (CDI_MONTHLY_RATE * cdiPercentage) / 100 / 100;
-
     let balance = initial;
 
-    // Cálculo com juros compostos
     for (let i = 0; i < months; i++) {
       balance = balance * (1 + monthlyRate) + monthly;
     }
@@ -61,7 +55,6 @@ export function SimulatorPage() {
     const finalValue = balance;
     const grossReturn = finalValue - totalInvested;
 
-    // Cálculo do IR
     let taxPaid = 0;
     let netReturn = grossReturn;
     let netValue = finalValue;
@@ -85,36 +78,29 @@ export function SimulatorPage() {
       taxPaid,
       netReturn,
     });
-
     setShowResults(true);
   };
 
   return (
-    <div className="flex min-h-screen bg-gray-50">
+    <div className="flex min-h-screen bg-background transition-colors duration-300">
       <Sidebar />
-
-      <div className="flex-1 flex flex-col">
+      <div className="flex-1 flex flex-col overflow-hidden">
         <Header userName="João Silva" userRole="Administrador" />
-
-        <main className="flex-1 p-8">
-          {/* Page Header */}
+        <main className="flex-1 overflow-y-auto p-6 md:p-8">
           <div className="mb-6">
-            <h1 className="text-3xl font-semibold text-gray-900 mb-2">
+            <h1 className="text-3xl font-bold tracking-tight text-foreground mb-1">
               Simulador de Investimentos
             </h1>
-            <p className="text-gray-600">
+            <p className="text-muted-foreground font-medium">
               Projete seus investimentos e visualize resultados estimados
             </p>
           </div>
 
-          {/* Alert */}
           <div className="mb-6">
             <SimulationAlert />
           </div>
 
-          {/* Main Grid */}
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
-            {/* Left Column - Parameters */}
             <div className="lg:col-span-2 h-full">
               <ParametersCard
                 initialValue={initialValue}
@@ -132,29 +118,16 @@ export function SimulatorPage() {
                 onCalculate={calculateInvestment}
               />
             </div>
-
-            {/* Right Column - Tips and Rates */}
             <div className="space-y-6 h-full flex flex-col justify-between">
               <QuickTipsCard />
               <ReferenceRatesCard />
             </div>
           </div>
 
-          {/* Results */}
           <div className="mb-6">
-            <ResultsCard
-              totalInvested={results.totalInvested}
-              finalValue={results.finalValue}
-              netValue={results.netValue}
-              grossReturn={results.grossReturn}
-              returnPercentage={results.returnPercentage}
-              taxPaid={results.taxPaid}
-              netReturn={results.netReturn}
-              showResults={showResults}
-            />
+            <ResultsCard {...results} showResults={showResults} />
           </div>
 
-          {/* Additional Info */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-stretch">
             <div className="h-full">
               <TaxTableCard />
@@ -164,7 +137,6 @@ export function SimulatorPage() {
             </div>
           </div>
         </main>
-
         <Footer />
       </div>
     </div>

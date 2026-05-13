@@ -1,71 +1,76 @@
-import { createBrowserRouter } from 'react-router';
-import { LoginPage } from './pages/LoginPage';
-import { SignupPage } from './pages/SignupPage';
-import { ForgotPasswordPage } from './pages/ForgotPasswordPage';
-import { DashboardPage } from './pages/DashboardPage';
-import { TransactionsPage } from './pages/TransactionsPage';
-import { AccountsPage } from './pages/AccountsPage';
-import { CardsPage } from './pages/CardsPage';
-import { InvoicesPage } from './pages/InvoicesPage';
-import { BudgetsPage } from './pages/BudgetsPage';
-import { ReportsPage } from './pages/ReportsPage';
-import { SimulatorPage } from './pages/SimulatorPage';
+import { createBrowserRouter } from "react-router";
+import { LoginPage } from "./pages/LoginPage";
+import { SignupPage } from "./pages/SignupPage";
+import { ForgotPasswordPage } from "./pages/ForgotPasswordPage";
+import { DashboardPage } from "./pages/DashboardPage";
+import { TransactionsPage } from "./pages/TransactionsPage";
+import { AccountsPage } from "./pages/AccountsPage";
+import { CardsPage } from "./pages/CardsPage";
+import { InvoicesPage } from "./pages/InvoicesPage";
+import { BudgetsPage } from "./pages/BudgetsPage";
+import { ReportsPage } from "./pages/ReportsPage";
+import { SimulatorPage } from "./pages/SimulatorPage";
+import { SettingsPage } from "./pages/SettingsPage";
 
 export const router = createBrowserRouter([
   {
-    path: '/',
+    path: "/",
     Component: LoginPage,
   },
   {
-    path: '/login',
+    path: "/login",
     Component: LoginPage,
   },
   {
-    path: '/cadastro',
+    path: "/cadastro",
     Component: SignupPage,
   },
   {
-    path: '/recuperar-senha',
+    path: "/recuperar-senha",
     Component: ForgotPasswordPage,
   },
   {
-    path: '/dashboard',
+    path: "/dashboard",
     Component: DashboardPage,
   },
   {
-    path: '/transacoes',
+    path: "/transacoes",
     Component: TransactionsPage,
   },
   {
-    path: '/contas',
+    path: "/contas",
     Component: AccountsPage,
   },
   {
-    path: '/cartoes',
+    path: "/cartoes",
     Component: CardsPage,
   },
   {
-    path: '/faturas',
+    path: "/faturas",
     Component: InvoicesPage,
   },
   {
-    path: '/orcamentos',
+    path: "/orcamentos",
     Component: BudgetsPage,
   },
   {
-    path: '/relatorios',
+    path: "/relatorios",
     Component: ReportsPage,
   },
   {
-    path: '/simulador',
+    path: "/simulador",
     Component: SimulatorPage,
   },
   {
-    path: '/configuracoes',
-    Component: DashboardPage, // Placeholder
+    path: "/categorias",
+    Component: DashboardPage,
   },
   {
-    path: '*',
-    Component: LoginPage, // Redireciona para login se rota não encontrada
+    path: "/configuracoes",
+    Component: SettingsPage,
+  },
+  {
+    path: "*",
+    Component: LoginPage,
   },
 ]);

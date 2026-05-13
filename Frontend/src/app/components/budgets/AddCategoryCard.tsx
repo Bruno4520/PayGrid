@@ -8,19 +8,17 @@ export function AddCategoryCard({ onClick }: AddCategoryCardProps) {
   return (
     <button
       onClick={onClick}
-      className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 hover:border-gray-300 transition-all flex flex-col items-center justify-center min-h-[200px] group"
+      className="bg-card/50 rounded-3xl p-6 shadow-sm border-2 border-dashed border-border hover:border-[#2B5BBA] hover:bg-muted/30 transition-all duration-300 flex flex-col items-center justify-center min-h-[220px] group"
     >
-      <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mb-4 group-hover:bg-gray-200 transition-colors">
+      <div className="w-16 h-16 bg-muted rounded-full flex items-center justify-center mb-4 group-hover:bg-[#2B5BBA] transition-colors">
         <Plus
           size={32}
-          className="text-gray-400 group-hover:text-gray-600 transition-colors"
+          className="text-muted-foreground group-hover:text-white transition-colors"
         />
       </div>
-      <h3 className="text-base font-semibold text-gray-900 mb-1">
-        Adicionar Categoria
-      </h3>
-      <p className="text-sm text-gray-500 text-center">
-        Crie um novo orçamento para uma categoria
+      <h3 className="text-lg font-bold text-foreground mb-1">Novo Orçamento</h3>
+      <p className="text-sm font-medium text-muted-foreground text-center">
+        Defina um novo limite para uma categoria
       </p>
     </button>
   );

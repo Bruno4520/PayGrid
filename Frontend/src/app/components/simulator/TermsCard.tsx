@@ -20,31 +20,31 @@ export function TermsCard() {
     {
       title: "Juros Compostos",
       description:
-        "É um tipo de juros onde o valor acrescentado se soma ao principal, percentuais aplicados no longo prazo.",
+        "É um tipo de juros onde o valor acrescentado se soma ao principal, potencializando ganhos no longo prazo.",
     },
   ];
 
   return (
-    <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
-      <div className="flex items-center gap-3 mb-5">
-        <div className="w-10 h-10 bg-blue-50 rounded-lg flex items-center justify-center">
-          <BookOpen size={20} className="text-blue-600" />
+    <div className="bg-card rounded-3xl p-6 shadow-sm border border-border/50 transition-colors duration-300">
+      <div className="flex items-center gap-3 mb-6">
+        <div className="w-12 h-12 bg-[#2B5BBA]/10 rounded-xl flex items-center justify-center">
+          <BookOpen size={24} className="text-[#2B5BBA] dark:text-[#5588ff]" />
         </div>
-        <h3 className="text-lg font-semibold text-gray-900">
-          Entenda os Termos
-        </h3>
+        <h3 className="text-xl font-bold text-foreground">Entenda os Termos</h3>
       </div>
 
       <div className="space-y-4">
         {terms.map((term, index) => (
           <div
             key={index}
-            className="pb-4 border-b border-gray-100 last:border-0 last:pb-0"
+            className="pb-4 border-b border-border/50 last:border-0 last:pb-0"
           >
-            <h4 className="text-sm font-semibold text-gray-900 mb-1">
+            <h4 className="text-sm font-bold text-foreground mb-1">
               {term.title}
             </h4>
-            <p className="text-sm text-gray-600">{term.description}</p>
+            <p className="text-sm font-medium text-muted-foreground">
+              {term.description}
+            </p>
           </div>
         ))}
       </div>

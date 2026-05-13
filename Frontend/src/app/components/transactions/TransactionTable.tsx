@@ -42,61 +42,61 @@ export function TransactionTable({
 
   return (
     <>
-      <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+      <div className="bg-card rounded-2xl shadow-sm border border-border/50 overflow-hidden transition-colors duration-300">
         <div className="overflow-x-auto">
-          <table className="w-full">
-            <thead className="bg-gray-50 border-b border-gray-200">
+          <table className="w-full text-left border-collapse">
+            <thead className="bg-muted/50 border-b border-border">
               <tr>
-                <th className="px-6 py-4 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">
+                <th className="px-6 py-4 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
                   Data
                 </th>
-                <th className="px-6 py-4 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">
+                <th className="px-6 py-4 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
                   Descrição
                 </th>
-                <th className="px-6 py-4 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">
+                <th className="px-6 py-4 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
                   Categoria
                 </th>
-                <th className="px-6 py-4 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">
+                <th className="px-6 py-4 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
                   Conta
                 </th>
-                <th className="px-6 py-4 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">
-                  Forma Pagamento
+                <th className="px-6 py-4 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+                  Forma Pgto
                 </th>
-                <th className="px-6 py-4 text-right text-xs font-medium text-gray-600 uppercase tracking-wider">
+                <th className="px-6 py-4 text-right text-xs font-semibold text-muted-foreground uppercase tracking-wider">
                   Valor
                 </th>
-                <th className="px-6 py-4 text-center text-xs font-medium text-gray-600 uppercase tracking-wider">
+                <th className="px-6 py-4 text-center text-xs font-semibold text-muted-foreground uppercase tracking-wider">
                   Ações
                 </th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-100">
+            <tbody className="divide-y divide-border/50">
               {transactions.map((transaction) => (
                 <tr
                   key={transaction.id}
-                  className="hover:bg-gray-50 transition-colors"
+                  className="hover:bg-muted/30 transition-colors group"
                 >
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-foreground">
                     {formatDate(transaction.date)}
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-foreground">
                     {transaction.description}
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-muted-foreground">
                     {transaction.category}
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-muted-foreground">
                     {transaction.account}
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-muted-foreground">
                     {transaction.paymentMethod}
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-right font-medium">
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-right font-bold tracking-tight">
                     <span
                       className={
                         transaction.type === "income"
-                          ? "text-green-600"
-                          : "text-red-600"
+                          ? "text-emerald-600 dark:text-emerald-400"
+                          : "text-red-600 dark:text-red-400"
                       }
                     >
                       {transaction.type === "income" ? "+" : "-"}{" "}
@@ -104,8 +104,7 @@ export function TransactionTable({
                     </span>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-center">
-                    <div className="flex items-center justify-center gap-2">
-                      {/* Botão de Observação - Agora sempre visível */}
+                    <div className="flex items-center justify-center gap-1 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity">
                       <button
                         onClick={() =>
                           setSelectedObservation(
@@ -113,28 +112,21 @@ export function TransactionTable({
                               "Nenhuma observação registrada.",
                           )
                         }
-                        className={`p-1.5 text-gray-400 hover:text-green-600 hover:bg-green-50 rounded transition-colors`}
-                        aria-label="Ver observação"
+                        className={`p-2 text-muted-foreground hover:text-emerald-600 hover:bg-emerald-500/10 rounded-lg transition-colors ${transaction.observation ? "text-[#2B5BBA]" : ""}`}
                         title="Ver observação"
                       >
                         <FileText size={16} />
                       </button>
-
-                      {/* Botão de Editar */}
                       <button
                         onClick={() => onEdit(transaction.id)}
-                        className="p-1.5 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded transition-colors"
-                        aria-label="Editar transação"
+                        className="p-2 text-muted-foreground hover:text-[#2B5BBA] hover:bg-blue-500/10 rounded-lg transition-colors"
                         title="Editar transação"
                       >
                         <Edit2 size={16} />
                       </button>
-
-                      {/* Botão de Excluir */}
                       <button
                         onClick={() => onDelete(transaction.id)}
-                        className="p-1.5 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded transition-colors"
-                        aria-label="Excluir transação"
+                        className="p-2 text-muted-foreground hover:text-red-600 hover:bg-red-500/10 rounded-lg transition-colors"
                         title="Excluir transação"
                       >
                         <Trash2 size={16} />
@@ -146,45 +138,49 @@ export function TransactionTable({
             </tbody>
           </table>
         </div>
+
         {/* Container de Paginação */}
-        <div className="px-6 py-4 border-t border-gray-200 flex items-center justify-between">
-          <p className="text-sm text-gray-600">
-            Mostrando 1-6 de 156 transações
+        <div className="px-6 py-4 border-t border-border bg-card flex flex-col sm:flex-row items-center justify-between gap-4">
+          <p className="text-sm font-medium text-muted-foreground">
+            Mostrando <span className="text-foreground">1-6</span> de{" "}
+            <span className="text-foreground">156</span> transações
           </p>
-          <div className="flex items-center gap-2">
-            <button className="px-3 py-1.5 text-sm text-gray-600 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
+          <div className="flex items-center gap-1.5">
+            <button className="px-3 py-1.5 text-sm font-medium text-foreground border border-border/50 rounded-lg hover:bg-muted transition-colors">
               Anterior
             </button>
-            <button className="px-3 py-1.5 text-sm text-white bg-[#2B5BBA] rounded-lg">
+            <button className="px-3 py-1.5 text-sm font-medium text-white bg-[#2B5BBA] rounded-lg shadow-sm">
               1
             </button>
-            <button className="px-3 py-1.5 text-sm text-gray-600 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
+            <button className="px-3 py-1.5 text-sm font-medium text-foreground border border-border/50 rounded-lg hover:bg-muted transition-colors">
               2
             </button>
-            <button className="px-3 py-1.5 text-sm text-gray-600 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
+            <button className="px-3 py-1.5 text-sm font-medium text-foreground border border-border/50 rounded-lg hover:bg-muted transition-colors">
               3
             </button>
-            <button className="px-3 py-1.5 text-sm text-gray-600 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
+            <button className="px-3 py-1.5 text-sm font-medium text-foreground border border-border/50 rounded-lg hover:bg-muted transition-colors">
               Próximo
             </button>
           </div>
         </div>
       </div>
 
-      {/* Modal de Observação */}
+      {/* Modal de Observação Refatorado */}
       {selectedObservation && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
-          <div className="bg-white rounded-xl shadow-lg w-full max-w-md overflow-hidden animate-in fade-in zoom-in-95 duration-200">
-            <div className="flex justify-between items-center p-4 border-b border-gray-100">
-              <h3 className="font-semibold text-gray-900">Observações</h3>
+        <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
+          <div className="bg-card text-card-foreground rounded-2xl shadow-2xl w-full max-w-md overflow-hidden animate-in fade-in zoom-in-95 duration-200 border border-border/50">
+            <div className="flex justify-between items-center p-5 border-b border-border/50">
+              <h3 className="font-semibold text-lg tracking-tight">
+                Observações
+              </h3>
               <button
                 onClick={() => setSelectedObservation(null)}
-                className="text-gray-400 hover:text-gray-600 transition-colors"
+                className="text-muted-foreground hover:text-foreground hover:bg-muted p-1.5 rounded-lg transition-colors"
               >
                 <X size={20} />
               </button>
             </div>
-            <div className="p-4 text-gray-700 whitespace-pre-wrap min-h-[100px]">
+            <div className="p-6 text-foreground/90 whitespace-pre-wrap min-h-[120px] leading-relaxed">
               {selectedObservation}
             </div>
           </div>

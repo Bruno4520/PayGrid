@@ -9,13 +9,13 @@ export function TaxTableCard() {
   ];
 
   return (
-    <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
-      <div className="flex items-center gap-3 mb-5">
-        <div className="w-10 h-10 bg-blue-50 rounded-lg flex items-center justify-center">
-          <FileText size={20} className="text-blue-600" />
+    <div className="bg-card rounded-3xl p-6 shadow-sm border border-border/50 transition-colors duration-300">
+      <div className="flex items-center gap-3 mb-6">
+        <div className="w-12 h-12 bg-[#2B5BBA]/10 rounded-xl flex items-center justify-center">
+          <FileText size={24} className="text-[#2B5BBA] dark:text-[#5588ff]" />
         </div>
-        <h3 className="text-lg font-semibold text-gray-900">
-          Como funciona a Tabela Regressiva do IR
+        <h3 className="text-xl font-bold text-foreground">
+          Como funciona a Tabela do IR
         </h3>
       </div>
 
@@ -23,31 +23,27 @@ export function TaxTableCard() {
         {taxBrackets.map((bracket, index) => (
           <div
             key={index}
-            className={`flex items-center justify-between py-3 px-4 border-b border-gray-100 last:border-0 rounded-lg transition-colors ${
+            className={`flex items-center justify-between py-3 px-4 rounded-xl transition-all ${
               bracket.isActive
-                ? "bg-blue-50 border-transparent ring-1 ring-blue-200"
-                : "hover:bg-gray-50"
+                ? "bg-[#2B5BBA]/10 border border-[#2B5BBA]/30"
+                : "border border-transparent hover:bg-muted/50"
             }`}
           >
             <div className="flex items-center gap-2">
               <span
-                className={`text-sm ${
-                  bracket.isActive
-                    ? "text-blue-700 font-medium"
-                    : "text-gray-600"
-                }`}
+                className={`text-sm font-medium ${bracket.isActive ? "text-[#2B5BBA] dark:text-[#5588ff] font-bold" : "text-muted-foreground"}`}
               >
                 {bracket.period}
               </span>
               {bracket.isActive && (
-                <CheckCircle2 size={16} className="text-blue-600" />
+                <CheckCircle2
+                  size={16}
+                  className="text-[#2B5BBA] dark:text-[#5588ff]"
+                />
               )}
             </div>
-
             <span
-              className={`text-xl font-bold ${
-                bracket.isActive ? "text-blue-700" : "text-gray-900"
-              }`}
+              className={`text-xl font-bold ${bracket.isActive ? "text-[#2B5BBA] dark:text-[#5588ff]" : "text-foreground"}`}
             >
               {bracket.rate}
             </span>

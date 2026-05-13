@@ -18,23 +18,23 @@ const typeConfig: Record<
   planned: {
     label: "Total Planejado",
     icon: Target,
-    iconBg: "bg-blue-50",
-    iconColor: "text-blue-600",
-    textColor: "text-gray-900",
+    iconBg: "bg-blue-500/10",
+    iconColor: "text-blue-600 dark:text-blue-400",
+    textColor: "text-foreground",
   },
   spent: {
     label: "Total Gasto",
     icon: TrendingUp,
-    iconBg: "bg-orange-50",
-    iconColor: "text-orange-600",
-    textColor: "text-gray-900",
+    iconBg: "bg-orange-500/10",
+    iconColor: "text-orange-600 dark:text-orange-400",
+    textColor: "text-foreground",
   },
   available: {
     label: "Disponível",
     icon: PiggyBank,
-    iconBg: "bg-green-50",
-    iconColor: "text-green-600",
-    textColor: "text-green-600",
+    iconBg: "bg-emerald-500/10",
+    iconColor: "text-emerald-600 dark:text-emerald-400",
+    textColor: "text-emerald-600 dark:text-emerald-400",
   },
 };
 
@@ -50,14 +50,16 @@ export function BudgetSummaryCard({ type, value }: BudgetSummaryCardProps) {
   };
 
   return (
-    <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
+    <div className="bg-card rounded-3xl p-6 shadow-sm border border-border/50 transition-colors duration-300">
       <div
-        className={`w-12 h-12 ${config.iconBg} rounded-xl flex items-center justify-center mb-4`}
+        className={`w-12 h-12 ${config.iconBg} rounded-xl flex items-center justify-center mb-5`}
       >
         <Icon size={24} className={config.iconColor} />
       </div>
-      <p className="text-sm text-gray-600 mb-2">{config.label}</p>
-      <p className={`text-2xl font-semibold ${config.textColor}`}>
+      <p className="text-sm font-medium text-muted-foreground mb-1">
+        {config.label}
+      </p>
+      <p className={`text-3xl font-bold tracking-tight ${config.textColor}`}>
         {formatCurrency(value)}
       </p>
     </div>

@@ -11,13 +11,12 @@ generator client {
 
 datasource db {
   provider = "postgresql"
-  url      = env("DATABASE_URL")
 }
 
 model Usuario {
-  id                  Int                  @id @default(autoincrement())
+  id                  Int             @id @default(autoincrement())
   nome                String
-  email               String               @unique
+  email               String          @unique
   senha               String
   orcamentos          Orcamento[]
   contas              Conta[]
@@ -27,15 +26,15 @@ model Usuario {
 }
 
 model Conta {
-  id         Int         @id @default(autoincrement())
-  nome       String
-  saldo      Float
-  tipo       TipoConta
+  id          Int         @id @default(autoincrement())
+  nome        String
+  saldo       Float
+  tipo        TipoConta
   numeroConta String
   agencia     String
-  usuario    Usuario     @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
-  usuarioId  Int
-  transacoes Transacao[]
+  usuario     Usuario     @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
+  usuarioId   Int
+  transacoes  Transacao[]
 }
 
 enum TipoConta {
@@ -45,24 +44,26 @@ enum TipoConta {
 }
 
 model Categoria {
-  id          Int         @id @default(autoincrement())
-  nome        String
-  descricao   String?
-  sistema     Boolean     @default(false)
-  usuario     Usuario     @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
-  usuarioId   Int
-  orcamentos  Orcamento[]
-  transacoes  Transacao[]
+  id         Int         @id @default(autoincrement())
+  nome       String
+  descricao  String?
+  cor        String?
+  icone      String?
+  sistema    Boolean     @default(false)
+  usuario    Usuario     @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
+  usuarioId  Int
+  orcamentos Orcamento[]
+  transacoes Transacao[]
 
   @@unique([nome, usuarioId])
 }
 
 model Orcamento {
-  id             Int        @id @default(autoincrement())
+  id             Int       @id @default(autoincrement())
   valorPlanejado Float
   mes            Int
   ano            Int
-  usuario        Usuario    @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
+  usuario        Usuario   @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
   usuarioId      Int
   categoria      Categoria @relation(fields: [categoriaId], references: [id])
   categoriaId    Int
@@ -76,7 +77,7 @@ model Transacao {
   valor           Float
   data            DateTime       @default(now())
   tipo            TipoTransacao
-  formaPagamento  FormaPagamento 
+  formaPagamento  FormaPagamento
   observacoes     String?
   conta           Conta?         @relation(fields: [contaId], references: [id], onDelete: Cascade)
   contaId         Int?

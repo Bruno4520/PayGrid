@@ -8,17 +8,17 @@ import {
 } from "recharts";
 
 const data = [
-  { id: "alimentacao", name: "Alimentação", value: 33.1, color: "#3B82F6" },
-  { id: "transporte", name: "Transporte", value: 11.7, color: "#6EE7B7" },
-  { id: "lazer", name: "Lazer", value: 14.4, color: "#10B981" },
-  { id: "contas", name: "Contas", value: 14.3, color: "#EF4444" },
-  { id: "outros", name: "Outros", value: 9.2, color: "#6B7280" },
+  { id: "alimentacao", name: "Alimentação", value: 42.5, color: "#3B82F6" },
+  { id: "moradia", name: "Moradia", value: 30.0, color: "#8B5CF6" },
+  { id: "transporte", name: "Transporte", value: 12.5, color: "#10B981" },
+  { id: "lazer", name: "Lazer", value: 10.0, color: "#EF4444" },
+  { id: "outros", name: "Outros", value: 5.0, color: "#64748B" },
 ];
 
 export function ExpensesByCategory() {
   return (
-    <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
-      <h3 className="text-lg font-semibold text-gray-900 mb-6">
+    <div className="bg-card text-card-foreground rounded-2xl p-6 shadow-sm border border-border/50 transition-colors duration-300">
+      <h3 className="text-lg font-bold tracking-tight mb-6">
         Despesas por Categoria
       </h3>
 
@@ -28,13 +28,11 @@ export function ExpensesByCategory() {
             data={data}
             cx="50%"
             cy="50%"
-            innerRadius={60}
+            innerRadius={70}
             outerRadius={100}
-            paddingAngle={2}
+            paddingAngle={3}
             dataKey="value"
-            nameKey="name"
-            isAnimationActive={false}
-            id="pie-expenses"
+            stroke="none"
           >
             {data.map((entry) => (
               <Cell key={entry.id} fill={entry.color} />
@@ -43,19 +41,24 @@ export function ExpensesByCategory() {
           <Tooltip
             formatter={(value: number) => `${value}%`}
             contentStyle={{
-              backgroundColor: "#fff",
-              border: "1px solid #e5e7eb",
+              backgroundColor: "hsl(var(--card))",
+              borderColor: "hsl(var(--border))",
+              color: "hsl(var(--foreground))",
               borderRadius: "8px",
-              fontSize: "12px",
+              boxShadow: "0 4px 6px -1px rgb(0 0 0 / 0.1)",
             }}
+            itemStyle={{ color: "hsl(var(--foreground))" }}
           />
           <Legend
             verticalAlign="bottom"
             height={36}
-            wrapperStyle={{ fontSize: "12px" }}
-            formatter={(value, entry: any) =>
-              `${value} - ${entry.payload.value}%`
-            }
+            iconType="circle"
+            wrapperStyle={{ fontSize: "12px", paddingTop: "20px" }}
+            formatter={(value, entry: any) => (
+              <span className="text-foreground ml-1">
+                {value} - {entry.payload.value}%
+              </span>
+            )}
           />
         </PieChart>
       </ResponsiveContainer>

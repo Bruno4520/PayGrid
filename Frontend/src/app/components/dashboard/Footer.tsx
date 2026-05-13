@@ -1,12 +1,12 @@
 export function Footer() {
   return (
-    <footer className="bg-[#0f1419] text-gray-300 py-8 border-t border-gray-800">
+    <footer className="bg-card border-t border-border mt-auto transition-colors duration-300 py-8">
       <div className="px-8">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {/* Brand */}
           <div>
             <div className="flex items-center gap-3 mb-4">
-              <div className="w-10 h-10 bg-[#2B5BBA] rounded-lg flex items-center justify-center">
+              <div className="w-10 h-10 bg-[#2B5BBA] rounded-xl flex items-center justify-center shadow-md">
                 <svg
                   width="20"
                   height="20"
@@ -29,9 +29,11 @@ export function Footer() {
                   />
                 </svg>
               </div>
-              <h3 className="text-xl font-semibold text-white">PayGrid</h3>
+              <h3 className="text-xl font-bold tracking-tight text-foreground">
+                PayGrid
+              </h3>
             </div>
-            <p className="text-sm text-gray-400 leading-relaxed">
+            <p className="text-sm text-muted-foreground leading-relaxed">
               Simulador educacional de investimentos para planejamento
               financeiro inteligente.
             </p>
@@ -39,12 +41,12 @@ export function Footer() {
 
           {/* Links Úteis */}
           <div>
-            <h4 className="font-semibold text-white mb-4">Links Úteis</h4>
+            <h4 className="font-semibold text-foreground mb-4">Links Úteis</h4>
             <ul className="space-y-2 text-sm">
               <li>
                 <a
                   href="#"
-                  className="text-gray-400 hover:text-white transition-colors"
+                  className="text-muted-foreground hover:text-foreground transition-colors"
                 >
                   Central de Ajuda
                 </a>
@@ -52,7 +54,7 @@ export function Footer() {
               <li>
                 <a
                   href="#"
-                  className="text-gray-400 hover:text-white transition-colors"
+                  className="text-muted-foreground hover:text-foreground transition-colors"
                 >
                   Termos de Uso
                 </a>
@@ -60,7 +62,7 @@ export function Footer() {
               <li>
                 <a
                   href="#"
-                  className="text-gray-400 hover:text-white transition-colors"
+                  className="text-muted-foreground hover:text-foreground transition-colors"
                 >
                   Política de Privacidade
                 </a>
@@ -70,16 +72,16 @@ export function Footer() {
 
           {/* Contato */}
           <div>
-            <h4 className="font-semibold text-white mb-4">Contato</h4>
-            <ul className="space-y-2 text-sm">
-              <li className="text-gray-400">contato@email.com.br</li>
-              <li className="text-gray-400">(11) 0000-0000</li>
+            <h4 className="font-semibold text-foreground mb-4">Contato</h4>
+            <ul className="space-y-2 text-sm text-muted-foreground">
+              <li>contato@paygrid.com.br</li>
+              <li>(11) 0000-0000</li>
             </ul>
           </div>
         </div>
 
         {/* Copyright */}
-        <div className="border-t border-gray-800 mt-6 pt-6 text-center text-sm text-gray-500">
+        <div className="border-t border-border mt-8 pt-6 text-center text-sm text-muted-foreground">
           © 2026 PayGrid. Todos os direitos reservados.
         </div>
       </div>

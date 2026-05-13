@@ -1,97 +1,47 @@
-import { CreditCard, Edit2, Trash2 } from "lucide-react";
-
 interface CreditCardItemProps {
-  label: string;
-  bank: string;
-  availableLimit: number;
-  cardNumber: string;
-  color: "purple" | "orange" | "red";
-  isSelected?: boolean;
-  onClick?: () => void;
-  onEdit?: () => void;
-  onDelete?: () => void;
+  id: string;
+  name: string;
+  brand: string;
+  lastDigits: string;
+  color: string;
+  isActive: boolean;
+  onClick: () => void;
 }
 
-const colorMap = {
-  purple: "bg-gradient-to-br from-purple-500 to-purple-600",
-  orange: "bg-gradient-to-br from-orange-500 to-orange-600",
-  red: "bg-gradient-to-br from-red-500 to-red-600",
-};
-
-const ringColorMap = {
-  purple: "ring-purple-100",
-  orange: "ring-orange-300",
-  red: "ring-red-100",
-};
-
 export function CreditCardItem({
-  label,
-  bank,
-  availableLimit,
-  cardNumber,
+  name,
+  brand,
+  lastDigits,
   color,
-  isSelected,
+  isActive,
   onClick,
-  onEdit,
-  onDelete,
 }: CreditCardItemProps) {
-  const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat("pt-BR", {
-      style: "currency",
-      currency: "BRL",
-    }).format(amount);
-  };
-
   return (
-    <div
+    <button
       onClick={onClick}
-      role="button"
-      tabIndex={0}
-      className={`relative ${colorMap[color]} text-white rounded-2xl p-6 w-full text-left transition-all hover:scale-105 cursor-pointer ${
-        isSelected ? `ring-4 ${ringColorMap[color]} ring-offset-2` : ""
-      }`}
+      className={`w-full relative overflow-hidden rounded-2xl p-6 text-left transition-all duration-300 ${
+        isActive
+          ? `ring-2 ring-offset-2 ring-[#2B5BBA] dark:ring-offset-zinc-900 scale-[1.02] shadow-lg`
+          : "opacity-70 hover:opacity-100 hover:scale-[1.01]"
+      } bg-gradient-to-br ${color} text-white`}
     >
-      <div className="flex items-start justify-between mb-8">
+      <div className="flex justify-between items-start mb-8">
         <div>
-          <p className="text-xs text-blue-100 mb-1">{label}</p>
-          <h3 className="text-xl font-semibold">{bank}</h3>
+          <p className="text-xs font-medium text-white/70 uppercase tracking-wider">
+            {brand}
+          </p>
+          <h3 className="text-lg font-bold">{name}</h3>
         </div>
-        <CreditCard size={32} className="text-white opacity-80" />
+        <div className="w-10 h-8 bg-white/20 rounded-md backdrop-blur-sm border border-white/10" />
       </div>
 
-      <div>
-        <p className="text-xs text-blue-100 mb-1">Limite disponível</p>
-        <p className="text-2xl font-semibold mb-4">
-          {formatCurrency(availableLimit)}
-        </p>
-        <p className="text-sm text-blue-100 tracking-wider">{cardNumber}</p>
+      <div className="flex justify-between items-end">
+        <p className="text-xl font-mono tracking-[0.2em]">•••• {lastDigits}</p>
+        <div className="flex -space-x-2">
+          <div className="w-8 h-8 rounded-full bg-red-500/80" />
+          <div className="w-8 h-8 rounded-full bg-yellow-500/80" />
+        </div>
       </div>
-
-      {/* Botões de Ação */}
-      <div className="absolute bottom-4 right-4 flex gap-0">
-        <button
-          onClick={(e) => {
-            e.stopPropagation();
-            onEdit?.();
-          }}
-          className="p-1.5 text-white/70 hover:text-white hover:bg-white/20 rounded-full transition-colors"
-          aria-label="Editar cartão"
-          title="Editar cartão"
-        >
-          <Edit2 size={16} />
-        </button>
-        <button
-          onClick={(e) => {
-            e.stopPropagation();
-            onDelete?.();
-          }}
-          className="p-1.5 text-white/70 hover:text-white hover:bg-white/20 rounded-full transition-colors"
-          aria-label="Excluir cartão"
-          title="Excluir cartão"
-        >
-          <Trash2 size={16} />
-        </button>
-      </div>
-    </div>
+    </button>
   );
 }

@@ -1,6 +1,7 @@
 import { useNavigate } from "react-router";
 import { SignupCard } from "../components/signup/SignupCard";
 import { SignupPanel } from "../components/signup/SignupPanel";
+import { ThemeToggle } from "../components/ui/theme-toggle";
 
 interface SignupFormData {
   fullName: string;
@@ -15,8 +16,6 @@ export function SignupPage() {
 
   const handleSignup = (data: SignupFormData) => {
     console.log("Cadastro:", data);
-    // Aqui você implementaria a lógica de criação de conta
-    // navigate('/login'); // Após cadastro bem-sucedido
   };
 
   const handleLogin = () => {
@@ -25,16 +24,14 @@ export function SignupPage() {
 
   const handleTermsClick = () => {
     console.log("Abrir Termos de Uso");
-    // Aqui você implementaria a abertura dos termos
   };
 
   const handlePrivacyClick = () => {
     console.log("Abrir Política de Privacidade");
-    // Aqui você implementaria a abertura da política
   };
 
   return (
-    <main className="flex min-h-screen bg-gray-50">
+    <main className="flex min-h-screen bg-background transition-colors duration-300">
       {/* Signup Section */}
       <section className="flex items-center justify-center w-full lg:w-1/2 p-6 lg:p-12">
         <SignupCard
@@ -49,6 +46,10 @@ export function SignupPage() {
       <section className="hidden lg:block lg:w-1/2">
         <SignupPanel />
       </section>
+
+      <div className="fixed bottom-4 right-4 z-50">
+        <ThemeToggle />
+      </div>
     </main>
   );
 }

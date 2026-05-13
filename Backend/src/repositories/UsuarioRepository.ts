@@ -1,20 +1,42 @@
-import { PrismaClient } from '../../generated/prisma/index.js';
-import argon2 from 'argon2';
+import argon2 from "argon2";
+import { PrismaClient } from "../../generated/prisma/index.js";
+import { PrismaPg } from "@prisma/adapter-pg";
+import pg from "pg";
 
-const prisma = new PrismaClient();
+const pool = new pg.Pool({ connectionString: process.env.DATABASE_URL });
+const adapter = new PrismaPg(pool);
+const prisma = new PrismaClient({ adapter });
 
 const CATEGORIAS_BASICAS = [
-  { nome: 'Moradia', descricao: 'Despesas com aluguel, condomínio, etc.', sistema: false },
-  { nome: 'Alimentação', descricao: 'Compras de supermercado, restaurantes, delivery.', sistema: false },
-  { nome: 'Transporte', descricao: 'Combustível, transporte público, Uber.', sistema: false },
-  { nome: 'Salário', descricao: 'Recebimento de salário ou pagamento.', sistema: false },
-  { nome: 'PAGAMENTO DE FATURA', descricao: 'Pagamento de fatura do cartão.', sistema: true }
+  {
+    nome: "Moradia",
+    descricao: "Despesas com aluguel, condomínio, etc.",
+    sistema: false,
+  },
+  {
+    nome: "Alimentação",
+    descricao: "Compras de supermercado, restaurantes, delivery.",
+    sistema: false,
+  },
+  {
+    nome: "Transporte",
+    descricao: "Combustível, transporte público, Uber.",
+    sistema: false,
+  },
+  {
+    nome: "Salário",
+    descricao: "Recebimento de salário ou pagamento.",
+    sistema: false,
+  },
+  {
+    nome: "PAGAMENTO DE FATURA",
+    descricao: "Pagamento de fatura do cartão.",
+    sistema: true,
+  },
 ];
 
 export class UsuarioRepository {
-
   async criar(dadosUsuario: any) {
-
     const senhaHash = await argon2.hash(dadosUsuario.senha);
     return prisma.$transaction(async (tx) => {
       const novoUsuario = await prisma.usuario.create({
@@ -27,10 +49,10 @@ export class UsuarioRepository {
           id: true,
           nome: true,
           email: true,
-        }
+        },
       });
 
-      const categoriasBasicas = CATEGORIAS_BASICAS.map(categoria => ({
+      const categoriasBasicas = CATEGORIAS_BASICAS.map((categoria) => ({
         ...categoria,
         usuarioId: novoUsuario.id,
       }));

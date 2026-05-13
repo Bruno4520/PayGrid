@@ -23,58 +23,75 @@ export function InvoiceTable({ month, year, items }: InvoiceTableProps) {
   };
 
   return (
-    <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
-      <div className="p-6 border-b border-gray-200">
-        <h3 className="text-lg font-semibold text-gray-900">
-          Detalhes da Fatura - {month} {year}
+    <div className="bg-card text-card-foreground rounded-2xl shadow-sm border border-border/50 overflow-hidden transition-colors duration-300">
+      <div className="p-6 border-b border-border/50 bg-muted/30">
+        <h3 className="text-lg font-bold tracking-tight text-foreground">
+          Detalhes da Fatura -{" "}
+          <span className="text-[#2B5BBA]">
+            {month} {year}
+          </span>
         </h3>
       </div>
 
       <div className="overflow-x-auto">
-        <table className="w-full">
-          <thead className="bg-gray-50 border-b border-gray-200">
+        <table className="w-full text-left border-collapse">
+          <thead className="bg-muted/50 border-b border-border">
             <tr>
-              <th className="px-6 py-4 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">
+              <th className="px-6 py-4 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
                 Data
               </th>
-              <th className="px-6 py-4 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">
+              <th className="px-6 py-4 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
                 Descrição
               </th>
-              <th className="px-6 py-4 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">
+              <th className="px-6 py-4 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
                 Categoria
               </th>
-              <th className="px-6 py-4 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">
+              <th className="px-6 py-4 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
                 Parcela
               </th>
-              <th className="px-6 py-4 text-right text-xs font-medium text-gray-600 uppercase tracking-wider">
+              <th className="px-6 py-4 text-right text-xs font-semibold text-muted-foreground uppercase tracking-wider">
                 Valor
               </th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-gray-100">
+          <tbody className="divide-y divide-border/50">
             {items.map((item) => (
-              <tr key={item.id} className="hover:bg-gray-50 transition-colors">
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+              <tr key={item.id} className="hover:bg-muted/30 transition-colors">
+                <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-muted-foreground">
                   {item.date}
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                <td className="px-6 py-4 whitespace-nowrap text-sm font-semibold text-foreground">
                   {item.description}
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap">
                   <span
-                    className={`inline-block px-3 py-1 rounded-full text-xs font-medium ${item.categoryColor}`}
+                    className={`inline-block px-3 py-1 rounded-full text-xs font-bold tracking-wide ${item.categoryColor}`}
                   >
                     {item.category}
                   </span>
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
+                <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-muted-foreground">
                   {item.installment}
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm font-semibold text-gray-900 text-right">
-                  {formatCurrency(item.amount)}
+                <td className="px-6 py-4 whitespace-nowrap text-right">
+                  <span className="text-sm font-bold tracking-tight text-foreground">
+                    {formatCurrency(item.amount)}
+                  </span>
                 </td>
               </tr>
             ))}
+
+            {/* Linha Opcional para mostrar que não há mais itens (Empty state em caso de fatura zerada) */}
+            {items.length === 0 && (
+              <tr>
+                <td
+                  colSpan={5}
+                  className="px-6 py-8 text-center text-sm font-medium text-muted-foreground"
+                >
+                  Nenhuma transação encontrada nesta fatura.
+                </td>
+              </tr>
+            )}
           </tbody>
         </table>
       </div>

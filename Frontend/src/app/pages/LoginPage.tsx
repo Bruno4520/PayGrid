@@ -1,6 +1,7 @@
 import { useNavigate } from "react-router";
 import { LoginCard } from "../components/login/LoginCard";
 import { OnboardingPanel } from "../components/login/OnboardingPanel";
+import { ThemeToggle } from "../components/ui/theme-toggle";
 
 interface LoginFormData {
   email: string;
@@ -13,8 +14,7 @@ export function LoginPage() {
 
   const handleLogin = (data: LoginFormData) => {
     console.log("Login:", data);
-    // Aqui você implementaria a lógica de autenticação
-    navigate("/dashboard"); // Após login bem-sucedido
+    navigate("/dashboard");
   };
 
   const handleForgotPassword = () => {
@@ -26,20 +26,22 @@ export function LoginPage() {
   };
 
   return (
-    <main className="flex min-h-screen bg-gray-50">
-      {/* Login Section */}
-      <section className="flex items-center justify-center w-full lg:w-1/2 p-6 lg:p-12">
+    <main className="flex min-h-screen bg-background transition-colors duration-300">
+      {/* Seção do Formulário de Login */}
+      <section className="flex items-center justify-center w-full lg:w-1/2 p-6 sm:p-12">
         <LoginCard
           onLogin={handleLogin}
           onForgotPassword={handleForgotPassword}
           onCreateAccount={handleCreateAccount}
         />
       </section>
-
-      {/* Onboarding Panel - Hidden on mobile */}
-      <section className="hidden lg:block lg:w-1/2">
+      <section className="hidden lg:block lg:w-1/2 relative">
         <OnboardingPanel />
       </section>
+
+      <div className="fixed bottom-4 right-4 z-50">
+        <ThemeToggle />
+      </div>
     </main>
   );
 }

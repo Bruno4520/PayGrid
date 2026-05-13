@@ -16,11 +16,9 @@ export function SignupPanel() {
       <div className="absolute top-16 left-1/2 -translate-x-1/2 w-12 h-12 bg-white/10 backdrop-blur-sm rounded-xl flex items-center justify-center animate-float">
         <Receipt className="text-white/80" size={20} />
       </div>
-
       <div className="absolute top-32 left-[35%] w-16 h-16 bg-white/15 backdrop-blur-sm rounded-2xl flex items-center justify-center animate-float-delayed">
         <CreditCard className="text-white/80" size={24} />
       </div>
-
       <div className="absolute top-28 right-[30%] w-14 h-14 bg-white/10 backdrop-blur-sm rounded-xl flex items-center justify-center animate-float-slow">
         <PieChart className="text-white/80" size={22} />
       </div>
@@ -29,7 +27,6 @@ export function SignupPanel() {
       <div className="absolute top-1/2 -translate-y-1/2 left-[25%] w-12 h-12 bg-white/10 backdrop-blur-sm rounded-xl flex items-center justify-center animate-float">
         <DollarSign className="text-white/80" size={20} />
       </div>
-
       <div className="absolute top-1/2 -translate-y-1/2 right-[28%] w-14 h-14 bg-white/15 backdrop-blur-sm rounded-2xl flex items-center justify-center animate-float-delayed">
         <TrendingUp className="text-white/80" size={22} />
       </div>
@@ -38,11 +35,9 @@ export function SignupPanel() {
       <div className="absolute bottom-32 left-[32%] w-16 h-16 bg-white/10 backdrop-blur-sm rounded-2xl flex items-center justify-center animate-float-slow">
         <Wallet className="text-white/80" size={24} />
       </div>
-
       <div className="absolute bottom-28 right-[35%] w-12 h-12 bg-white/15 backdrop-blur-sm rounded-xl flex items-center justify-center animate-float">
         <BarChart3 className="text-white/80" size={20} />
       </div>
-
       <div className="absolute bottom-40 left-1/2 -translate-x-1/2 w-14 h-14 bg-white/10 backdrop-blur-sm rounded-2xl flex items-center justify-center animate-float-delayed">
         <Target className="text-white/80" size={22} />
       </div>

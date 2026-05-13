@@ -11,22 +11,35 @@ interface AccountCardProps {
 
 const typeConfig: Record<
   string,
-  { icon: LucideIcon; bgColor: string; iconBg: string }
+  {
+    icon: LucideIcon;
+    bgColor: string;
+    iconBg: string;
+    textColor: string;
+    subText: string;
+  }
 > = {
   checking: {
     icon: Building2,
-    bgColor: "bg-gradient-to-br from-blue-500 to-blue-600",
-    iconBg: "bg-blue-400/30",
+    bgColor:
+      "bg-gradient-to-br from-[#2B5BBA] to-[#4C7FEE] text-white border-transparent",
+    iconBg: "bg-white/20 text-white",
+    textColor: "text-white",
+    subText: "text-white/80",
   },
   savings: {
     icon: Sprout,
-    bgColor: "bg-white",
-    iconBg: "bg-green-50",
+    bgColor: "bg-card text-card-foreground border-border/50",
+    iconBg: "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400",
+    textColor: "text-foreground",
+    subText: "text-muted-foreground",
   },
   wallet: {
     icon: Wallet,
-    bgColor: "bg-white",
-    iconBg: "bg-purple-50",
+    bgColor: "bg-card text-card-foreground border-border/50",
+    iconBg: "bg-purple-500/10 text-purple-600 dark:text-purple-400",
+    textColor: "text-foreground",
+    subText: "text-muted-foreground",
   },
 };
 
@@ -40,7 +53,6 @@ export function AccountCard({
 }: AccountCardProps) {
   const config = typeConfig[type];
   const Icon = config.icon;
-  const isWhiteBg = type !== "checking";
 
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat("pt-BR", {
@@ -51,32 +63,21 @@ export function AccountCard({
 
   return (
     <div
-      className={`${config.bgColor} rounded-2xl p-6 shadow-sm border ${
-        isWhiteBg ? "border-gray-100" : "border-blue-600"
-      } transition-transform hover:scale-105`}
+      className={`${config.bgColor} rounded-3xl p-6 shadow-sm border transition-all duration-300 hover:scale-[1.02] hover:shadow-md`}
     >
       <div className="flex items-start justify-between mb-6">
         <div
-          className={`w-12 h-12 ${config.iconBg} rounded-xl flex items-center justify-center`}
+          className={`w-12 h-12 ${config.iconBg} rounded-xl flex items-center justify-center backdrop-blur-sm`}
         >
-          <Icon
-            size={24}
-            className={
-              type === "checking"
-                ? "text-white"
-                : type === "savings"
-                  ? "text-green-600"
-                  : "text-purple-600"
-            }
-          />
+          <Icon size={24} />
         </div>
         <span
-          className={`px-3 py-1 rounded-full text-xs font-medium ${
-            isPrimary
-              ? "bg-blue-400/30 text-white"
-              : isWhiteBg
-                ? "bg-gray-100 text-gray-700"
-                : "bg-blue-400/30 text-white"
+          className={`px-3 py-1 rounded-full text-xs font-bold tracking-wide ${
+            type === "checking"
+              ? "bg-white/20 text-white backdrop-blur-sm"
+              : isPrimary
+                ? "bg-blue-500/10 text-[#2B5BBA] dark:text-[#5588ff]"
+                : "bg-muted text-muted-foreground"
           }`}
         >
           {badge}
@@ -84,25 +85,13 @@ export function AccountCard({
       </div>
 
       <div>
+        <p className={`text-sm font-medium mb-1 ${config.subText}`}>{name}</p>
         <p
-          className={`text-sm mb-2 ${
-            isWhiteBg ? "text-gray-600" : "text-blue-100"
-          }`}
-        >
-          {name}
-        </p>
-        <p
-          className={`text-3xl font-semibold mb-2 ${
-            isWhiteBg ? "text-gray-900" : "text-white"
-          }`}
+          className={`text-3xl font-bold tracking-tight mb-2 ${config.textColor}`}
         >
           {formatCurrency(balance)}
         </p>
-        <p
-          className={`text-xs ${isWhiteBg ? "text-gray-500" : "text-blue-200"}`}
-        >
-          {details}
-        </p>
+        <p className={`text-xs font-medium ${config.subText}`}>{details}</p>
       </div>
     </div>
   );

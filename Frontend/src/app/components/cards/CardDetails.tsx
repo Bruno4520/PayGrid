@@ -1,90 +1,85 @@
-import { Plus } from "lucide-react";
+import { Calendar, CreditCard, Info } from "lucide-react";
 
 interface CardDetailsProps {
-  totalLimit: number;
-  available: number;
-  closingDay: number;
-  dueDay: number;
-  onNewPurchase: () => void;
+  card: {
+    name: string;
+    limit: number;
+    usedLimit: number;
+    closingDay: number;
+    dueDay: number;
+  };
 }
 
-export function CardDetails({
-  totalLimit,
-  available,
-  closingDay,
-  dueDay,
-  onNewPurchase,
-}: CardDetailsProps) {
-  const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat("pt-BR", {
+export function CardDetails({ card }: CardDetailsProps) {
+  const availableLimit = card.limit - card.usedLimit;
+  const usagePercentage = (card.usedLimit / card.limit) * 100;
+
+  const formatCurrency = (val: number) =>
+    new Intl.NumberFormat("pt-BR", {
       style: "currency",
       currency: "BRL",
-    }).format(amount);
-  };
-
-  const used = totalLimit - available;
-  const usagePercentage = (used / totalLimit) * 100;
+    }).format(val);
 
   return (
-    <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
-      <div className="flex items-center justify-between mb-6">
-        <h3 className="text-xl font-semibold text-gray-900">
-          Cartão Principal
-        </h3>
-        <button
-          onClick={onNewPurchase}
-          className="inline-flex items-center gap-2 bg-[#2B5BBA] text-white px-4 py-2 rounded-lg hover:bg-[#1e4594] transition-colors text-sm"
-        >
-          <Plus size={16} />
-          Nova Compra
-        </button>
+    <div className="bg-card text-card-foreground rounded-3xl p-6 border border-border/50 shadow-sm">
+      <div className="flex items-center gap-2 mb-6">
+        <CreditCard className="text-[#2B5BBA]" size={20} />
+        <h3 className="font-bold text-lg">Resumo do Limite</h3>
       </div>
 
-      {/* Card Info Grid */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+      <div className="space-y-6">
+        {/* Barra de Progresso */}
         <div>
-          <p className="text-sm text-gray-600 mb-1">Limite Total</p>
-          <p className="text-lg font-semibold text-gray-900">
-            {formatCurrency(totalLimit)}
-          </p>
+          <div className="flex justify-between text-sm mb-2 font-medium">
+            <span className="text-muted-foreground">Limite Utilizado</span>
+            <span
+              className={
+                usagePercentage > 80 ? "text-red-500" : "text-foreground"
+              }
+            >
+              {usagePercentage.toFixed(1)}%
+            </span>
+          </div>
+          <div className="w-full h-3 bg-muted rounded-full overflow-hidden">
+            <div
+              className={`h-full transition-all duration-500 ${
+                usagePercentage > 80 ? "bg-red-500" : "bg-[#2B5BBA]"
+              }`}
+              style={{ width: `${usagePercentage}%` }}
+            />
+          </div>
         </div>
-        <div>
-          <p className="text-sm text-gray-600 mb-1">Disponível</p>
-          <p className="text-lg font-semibold text-green-600">
-            {formatCurrency(available)}
-          </p>
-        </div>
-        <div>
-          <p className="text-sm text-gray-600 mb-1">Fechamento</p>
-          <p className="text-lg font-semibold text-gray-900">
-            Dia {closingDay}
-          </p>
-        </div>
-        <div>
-          <p className="text-sm text-gray-600 mb-1">Vencimento</p>
-          <p className="text-lg font-semibold text-gray-900">Dia {dueDay}</p>
-        </div>
-      </div>
 
-      {/* Usage Bar */}
-      <div className="mb-2">
-        <div className="flex items-center justify-between mb-2">
-          <p className="text-sm text-gray-700">Uso do limite</p>
-          <p className="text-sm font-medium text-gray-900">
-            {usagePercentage.toFixed(0)}% utilizado
-          </p>
+        {/* Valores */}
+        <div className="grid grid-cols-2 gap-4">
+          <div className="p-4 bg-muted/30 rounded-2xl border border-border/30">
+            <p className="text-xs text-muted-foreground font-bold uppercase mb-1">
+              Disponível
+            </p>
+            <p className="text-xl font-bold text-emerald-600 dark:text-emerald-400">
+              {formatCurrency(availableLimit)}
+            </p>
+          </div>
+          <div className="p-4 bg-muted/30 rounded-2xl border border-border/30">
+            <p className="text-xs text-muted-foreground font-bold uppercase mb-1">
+              Total
+            </p>
+            <p className="text-xl font-bold">{formatCurrency(card.limit)}</p>
+          </div>
         </div>
-        <div className="w-full bg-gray-200 rounded-full h-2.5 overflow-hidden">
-          <div
-            className="bg-blue-600 h-2.5 rounded-full transition-all"
-            style={{ width: `${usagePercentage}%` }}
-          />
-        </div>
-        <div className="flex items-center justify-between mt-2">
-          <p className="text-xs text-gray-500">{formatCurrency(used)} usado</p>
-          <p className="text-xs text-gray-500">
-            {formatCurrency(available)} disponível
-          </p>
+
+        {/* Datas importantes do Prisma */}
+        <div className="flex flex-wrap gap-4 pt-4 border-t border-border/50">
+          <div className="flex items-center gap-2 text-sm">
+            <Calendar className="text-muted-foreground" size={16} />
+            <span className="text-muted-foreground">Fechamento:</span>
+            <span className="font-bold">Dia {card.closingDay}</span>
+          </div>
+          <div className="flex items-center gap-2 text-sm">
+            <Info className="text-muted-foreground" size={16} />
+            <span className="text-muted-foreground">Vencimento:</span>
+            <span className="font-bold">Dia {card.dueDay}</span>
+          </div>
         </div>
       </div>
     </div>

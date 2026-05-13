@@ -10,20 +10,20 @@ const typeConfig = {
   income: {
     label: "Total de Receitas",
     icon: TrendingUp,
-    iconBg: "bg-green-50",
-    iconColor: "text-green-600",
+    iconBg: "bg-emerald-500/10",
+    iconColor: "text-emerald-600 dark:text-emerald-400",
   },
   expense: {
     label: "Total de Despesas",
     icon: TrendingDown,
-    iconBg: "bg-red-50",
-    iconColor: "text-red-600",
+    iconBg: "bg-red-500/10",
+    iconColor: "text-red-600 dark:text-red-400",
   },
   balance: {
     label: "Saldo",
     icon: BarChart3,
-    iconBg: "bg-blue-50",
-    iconColor: "text-blue-600",
+    iconBg: "bg-[#2B5BBA]/10",
+    iconColor: "text-[#2B5BBA] dark:text-[#5588ff]",
   },
 };
 
@@ -44,28 +44,36 @@ export function ReportSummaryCard({
   };
 
   return (
-    <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
-      <div className="flex items-start justify-between mb-4">
+    <div className="bg-card rounded-3xl p-6 shadow-sm border border-border/50 transition-colors duration-300">
+      <div className="flex items-start justify-between mb-5">
         <div
-          className={`w-10 h-10 ${config.iconBg} rounded-lg flex items-center justify-center`}
+          className={`w-12 h-12 ${config.iconBg} rounded-xl flex items-center justify-center`}
         >
-          <Icon size={20} className={config.iconColor} />
+          <Icon size={24} className={config.iconColor} />
         </div>
       </div>
 
-      <p className="text-sm text-gray-600 mb-2">{config.label}</p>
-      <p className="text-2xl font-semibold text-gray-900 mb-2">
+      <p className="text-sm font-medium text-muted-foreground mb-1">
+        {config.label}
+      </p>
+      <p className="text-3xl font-bold tracking-tight text-foreground mb-3">
         {formatCurrency(value)}
       </p>
 
-      <div className="flex items-center gap-1">
+      <div className="flex items-center gap-1.5 pt-3 border-t border-border/50">
         <span
-          className={`text-sm font-medium ${isPositive ? "text-green-600" : "text-red-600"}`}
+          className={`text-sm font-bold ${
+            isPositive
+              ? "text-emerald-600 dark:text-emerald-400"
+              : "text-red-600 dark:text-red-400"
+          }`}
         >
           {isPositive ? "+" : ""}
           {percentageChange}%
         </span>
-        <span className="text-sm text-gray-500">vs. mês anterior</span>
+        <span className="text-sm font-medium text-muted-foreground">
+          vs. mês anterior
+        </span>
       </div>
     </div>
   );

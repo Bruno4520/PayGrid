@@ -47,7 +47,6 @@ export function SignupCard({
     value: string | boolean,
   ) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
-    // Clear error when user starts typing
     if (errors[field]) {
       setErrors((prev) => ({ ...prev, [field]: undefined }));
     }
@@ -55,34 +54,22 @@ export function SignupCard({
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-
     const newErrors: Partial<Record<keyof SignupFormData, string>> = {};
 
-    if (!formData.fullName.trim()) {
+    if (!formData.fullName.trim())
       newErrors.fullName = "Nome completo é obrigatório";
-    }
-
-    if (!formData.email.trim()) {
-      newErrors.email = "E-mail é obrigatório";
-    }
-
-    if (!validatePassword(formData.password)) {
+    if (!formData.email.trim()) newErrors.email = "E-mail é obrigatório";
+    if (!validatePassword(formData.password))
       newErrors.password = "A senha não atende aos requisitos mínimos";
-    }
-
-    if (formData.password !== formData.confirmPassword) {
+    if (formData.password !== formData.confirmPassword)
       newErrors.confirmPassword = "As senhas não coincidem";
-    }
-
-    if (!formData.acceptedTerms) {
+    if (!formData.acceptedTerms)
       newErrors.acceptedTerms = "Você deve aceitar os termos";
-    }
 
     if (Object.keys(newErrors).length > 0) {
       setErrors(newErrors);
       return;
     }
-
     onSignup(formData);
   };
 
@@ -91,9 +78,9 @@ export function SignupCard({
     : null;
 
   return (
-    <div className="w-full max-w-md bg-white rounded-3xl shadow-2xl p-12">
+    <div className="w-full max-w-md bg-card text-card-foreground rounded-3xl shadow-xl p-8 sm:p-12 border border-border/50 transition-colors duration-300">
       <div className="flex items-center gap-3 mb-8">
-        <div className="w-12 h-12 bg-[#2B5BBA] rounded-xl flex items-center justify-center">
+        <div className="w-12 h-12 bg-[#2B5BBA] rounded-xl flex items-center justify-center shadow-md">
           <svg
             width="24"
             height="24"
@@ -116,24 +103,19 @@ export function SignupCard({
             />
           </svg>
         </div>
-        <h1 className="text-2xl font-semibold text-gray-900">PayGrid</h1>
+        <h1 className="text-2xl font-bold tracking-tight">PayGrid</h1>
       </div>
 
       <div className="mb-8">
-        <h2 className="text-2xl font-semibold text-gray-900 mb-2">
-          Crie sua conta
-        </h2>
-        <p className="text-sm text-gray-600">
+        <h2 className="text-2xl font-semibold mb-2">Crie sua conta</h2>
+        <p className="text-sm text-muted-foreground">
           Comece a organizar suas finanças de forma inteligente
         </p>
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-5">
         <div>
-          <label
-            htmlFor="fullName"
-            className="block text-sm text-gray-700 mb-2"
-          >
+          <label htmlFor="fullName" className="block text-sm font-medium mb-2">
             Nome completo
           </label>
           <input
@@ -142,9 +124,9 @@ export function SignupCard({
             value={formData.fullName}
             onChange={(e) => handleInputChange("fullName", e.target.value)}
             placeholder="Digite seu nome completo"
-            className={`w-full px-4 py-3 bg-gray-50 border ${
-              errors.fullName ? "border-red-500" : "border-gray-200"
-            } rounded-xl text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-[#2B5BBA] focus:border-transparent transition-all`}
+            className={`w-full px-4 py-3 bg-muted/50 border ${
+              errors.fullName ? "border-red-500" : "border-transparent"
+            } rounded-xl text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-[#2B5BBA] focus:bg-background transition-all`}
             required
           />
           {errors.fullName && (
@@ -153,7 +135,7 @@ export function SignupCard({
         </div>
 
         <div>
-          <label htmlFor="email" className="block text-sm text-gray-700 mb-2">
+          <label htmlFor="email" className="block text-sm font-medium mb-2">
             E-mail
           </label>
           <input
@@ -162,9 +144,9 @@ export function SignupCard({
             value={formData.email}
             onChange={(e) => handleInputChange("email", e.target.value)}
             placeholder="seu@email.com"
-            className={`w-full px-4 py-3 bg-gray-50 border ${
-              errors.email ? "border-red-500" : "border-gray-200"
-            } rounded-xl text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-[#2B5BBA] focus:border-transparent transition-all`}
+            className={`w-full px-4 py-3 bg-muted/50 border ${
+              errors.email ? "border-red-500" : "border-transparent"
+            } rounded-xl text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-[#2B5BBA] focus:bg-background transition-all`}
             required
           />
           {errors.email && (
@@ -173,10 +155,7 @@ export function SignupCard({
         </div>
 
         <div>
-          <label
-            htmlFor="password"
-            className="block text-sm text-gray-700 mb-2"
-          >
+          <label htmlFor="password" className="block text-sm font-medium mb-2">
             Senha
           </label>
           <div className="relative">
@@ -186,28 +165,21 @@ export function SignupCard({
               value={formData.password}
               onChange={(e) => handleInputChange("password", e.target.value)}
               placeholder="Digite sua senha"
-              className={`w-full px-4 pr-12 py-3 bg-gray-50 border ${
-                errors.password ? "border-red-500" : "border-gray-200"
-              } rounded-xl text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-[#2B5BBA] focus:border-transparent transition-all`}
+              className={`w-full px-4 pr-12 py-3 bg-muted/50 border ${
+                errors.password ? "border-red-500" : "border-transparent"
+              } rounded-xl text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-[#2B5BBA] focus:bg-background transition-all`}
               required
             />
             <button
               type="button"
               onClick={() => setShowPassword(!showPassword)}
-              className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
-              aria-label={showPassword ? "Ocultar senha" : "Mostrar senha"}
+              className="absolute right-4 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
             >
               {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
             </button>
           </div>
           <p
-            className={`text-xs mt-1 ${
-              isPasswordValid === null
-                ? "text-gray-500"
-                : isPasswordValid
-                  ? "text-green-600"
-                  : "text-red-500"
-            }`}
+            className={`text-xs mt-1 ${isPasswordValid === null ? "text-muted-foreground" : isPasswordValid ? "text-green-500" : "text-red-500"}`}
           >
             Mínimo 8 caracteres, 1 número e 1 caractere especial
           </p>
@@ -216,7 +188,7 @@ export function SignupCard({
         <div>
           <label
             htmlFor="confirmPassword"
-            className="block text-sm text-gray-700 mb-2"
+            className="block text-sm font-medium mb-2"
           >
             Confirmar senha
           </label>
@@ -229,18 +201,15 @@ export function SignupCard({
                 handleInputChange("confirmPassword", e.target.value)
               }
               placeholder="Digite novamente sua senha"
-              className={`w-full px-4 pr-12 py-3 bg-gray-50 border ${
-                errors.confirmPassword ? "border-red-500" : "border-gray-200"
-              } rounded-xl text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-[#2B5BBA] focus:border-transparent transition-all`}
+              className={`w-full px-4 pr-12 py-3 bg-muted/50 border ${
+                errors.confirmPassword ? "border-red-500" : "border-transparent"
+              } rounded-xl text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-[#2B5BBA] focus:bg-background transition-all`}
               required
             />
             <button
               type="button"
               onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-              className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
-              aria-label={
-                showConfirmPassword ? "Ocultar senha" : "Mostrar senha"
-              }
+              className="absolute right-4 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
             >
               {showConfirmPassword ? <EyeOff size={18} /> : <Eye size={18} />}
             </button>
@@ -253,7 +222,10 @@ export function SignupCard({
         </div>
 
         <div>
-          <label htmlFor="terms" className="flex items-start cursor-pointer">
+          <label
+            htmlFor="terms"
+            className="flex items-start cursor-pointer group"
+          >
             <input
               id="terms"
               type="checkbox"
@@ -261,14 +233,14 @@ export function SignupCard({
               onChange={(e) =>
                 handleInputChange("acceptedTerms", e.target.checked)
               }
-              className="w-4 h-4 text-[#2B5BBA] border-gray-300 rounded focus:ring-2 focus:ring-[#2B5BBA] cursor-pointer mt-0.5"
+              className="w-4 h-4 text-[#2B5BBA] bg-muted border-muted-foreground/30 rounded focus:ring-[#2B5BBA] cursor-pointer mt-0.5"
             />
-            <span className="ml-2 text-sm text-gray-700">
+            <span className="ml-2 text-sm text-muted-foreground group-hover:text-foreground transition-colors">
               Li e aceito os{" "}
               <button
                 type="button"
                 onClick={onTermsClick}
-                className="text-[#2B5BBA] hover:text-[#1e4594] underline transition-colors"
+                className="text-[#2B5BBA] hover:text-[#1e4594] dark:hover:text-[#5588ff] underline transition-colors"
               >
                 Termos de Uso
               </button>{" "}
@@ -276,7 +248,7 @@ export function SignupCard({
               <button
                 type="button"
                 onClick={onPrivacyClick}
-                className="text-[#2B5BBA] hover:text-[#1e4594] underline transition-colors"
+                className="text-[#2B5BBA] hover:text-[#1e4594] dark:hover:text-[#5588ff] underline transition-colors"
               >
                 Política de Privacidade
               </button>
@@ -289,17 +261,19 @@ export function SignupCard({
 
         <button
           type="submit"
-          className="w-full bg-[#2B5BBA] text-white py-3.5 rounded-xl hover:bg-[#1e4594] transition-colors focus:outline-none focus:ring-2 focus:ring-[#2B5BBA] focus:ring-offset-2"
+          className="w-full bg-[#2B5BBA] text-white font-medium py-3.5 rounded-xl hover:opacity-90 transition-opacity focus:outline-none focus:ring-2 focus:ring-[#2B5BBA] focus:ring-offset-2 dark:focus:ring-offset-zinc-900"
         >
           Criar conta
         </button>
 
-        <div className="text-center pt-4">
-          <span className="text-sm text-gray-600">Já tem uma conta? </span>
+        <div className="text-center pt-4 border-t border-border/50">
+          <span className="text-sm text-muted-foreground">
+            Já tem uma conta?{" "}
+          </span>
           <button
             type="button"
             onClick={onLogin}
-            className="text-sm text-[#2B5BBA] hover:text-[#1e4594] transition-colors"
+            className="text-sm font-medium text-[#2B5BBA] hover:text-[#1e4594] dark:hover:text-[#5588ff] transition-colors"
           >
             Entrar
           </button>
