@@ -26,6 +26,13 @@ app.use(
 
 app.use(express.json());
 
+app.get("/health", (_req, res) => {
+  res.status(200).json({
+    status: "ok",
+    service: "paygrid-api",
+  });
+});
+
 app.use("/api/dashboard", dashboardRoutes);
 app.use("/api/usuarios", usuarioRoutes);
 app.use("/api/notificacoes", notificacaoRoutes);
@@ -39,6 +46,7 @@ app.use("/api/relatorios", relatorioRoutes);
 app.use("/api/simulacoes", simulacaoRoutes);
 
 const PORT = process.env.PORT || 3000;
+
 app.listen(PORT, () => {
   console.log(`Servidor rodando na porta ${PORT}`);
 });
