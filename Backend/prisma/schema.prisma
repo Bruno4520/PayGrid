@@ -1,9 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
   output   = "../generated/prisma"
@@ -44,16 +38,17 @@ enum TipoConta {
 }
 
 model Categoria {
-  id         Int         @id @default(autoincrement())
-  nome       String
-  descricao  String?
-  cor        String?
-  icone      String?
-  sistema    Boolean     @default(false)
-  usuario    Usuario     @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
-  usuarioId  Int
-  orcamentos Orcamento[]
-  transacoes Transacao[]
+  id          Int         @id @default(autoincrement())
+  nome        String
+  descricao   String?
+  observacoes String?
+  icone       String?
+  cor         String?
+  sistema     Boolean     @default(false)
+  usuario     Usuario     @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
+  usuarioId   Int
+  orcamentos  Orcamento[]
+  transacoes  Transacao[]
 
   @@unique([nome, usuarioId])
 }
@@ -65,7 +60,7 @@ model Orcamento {
   ano            Int
   usuario        Usuario   @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
   usuarioId      Int
-  categoria      Categoria @relation(fields: [categoriaId], references: [id])
+  categoria      Categoria @relation(fields: [categoriaId], references: [id], onDelete: Cascade)
   categoriaId    Int
 
   @@unique([usuarioId, categoriaId, mes, ano])
@@ -86,6 +81,7 @@ model Transacao {
   cartaoCredito   CartaoCredito? @relation(fields: [cartaoCreditoId], references: [id], onDelete: Cascade)
   cartaoCreditoId Int?
   parcelas        Parcela[]
+  faturaPaga      Fatura?        @relation("PagamentoFatura")
 }
 
 enum TipoTransacao {
@@ -114,15 +110,17 @@ model CartaoCredito {
 }
 
 model Fatura {
-  id              Int           @id @default(autoincrement())
-  mes             Int
-  ano             Int
-  valorTotal      Float
-  dataVencimento  DateTime
-  estaPaga        Boolean       @default(false)
-  cartaoCredito   CartaoCredito @relation(fields: [cartaoCreditoId], references: [id], onDelete: Cascade)
-  cartaoCreditoId Int
-  parcelas        Parcela[]
+  id                   Int           @id @default(autoincrement())
+  mes                  Int
+  ano                  Int
+  valorTotal           Float
+  dataVencimento       DateTime
+  estaPaga             Boolean       @default(false)
+  cartaoCredito        CartaoCredito @relation(fields: [cartaoCreditoId], references: [id], onDelete: Cascade)
+  cartaoCreditoId      Int
+  parcelas             Parcela[]
+  transacaoPagamento   Transacao?    @relation("PagamentoFatura", fields: [transacaoPagamentoId], references: [id], onDelete: SetNull)
+  transacaoPagamentoId Int?          @unique
 
   @@unique([cartaoCreditoId, mes, ano])
 }

@@ -21,7 +21,7 @@ export function CardDetails({ card }: CardDetailsProps) {
     }).format(val);
 
   return (
-    <div className="bg-card text-card-foreground rounded-3xl p-6 border border-border/50 shadow-sm">
+    <div className="bg-card text-card-foreground rounded-3xl p-6 border border-border/50 shadow-sm transition-colors duration-300">
       <div className="flex items-center gap-2 mb-6">
         <CreditCard className="text-[#2B5BBA]" size={20} />
         <h3 className="font-bold text-lg">Resumo do Limite</h3>
@@ -41,9 +41,7 @@ export function CardDetails({ card }: CardDetailsProps) {
           </div>
           <div className="w-full h-3 bg-muted rounded-full overflow-hidden">
             <div
-              className={`h-full transition-all duration-500 ${
-                usagePercentage > 80 ? "bg-red-500" : "bg-[#2B5BBA]"
-              }`}
+              className={`h-full transition-all duration-500 ${usagePercentage > 80 ? "bg-red-500" : "bg-[#2B5BBA]"}`}
               style={{ width: `${usagePercentage}%` }}
             />
           </div>

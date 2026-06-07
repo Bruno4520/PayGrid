@@ -9,6 +9,8 @@ const prisma = new PrismaClient({ adapter });
 interface DadosCriarCategoria {
   nome: string;
   descricao?: string;
+  cor?: string;
+  icone?: string;
   usuarioId: number;
   observacoes?: string;
 }
@@ -16,6 +18,8 @@ interface DadosCriarCategoria {
 interface DadosAtualizarCategoria {
   nome?: string;
   descricao?: string;
+  cor?: string;
+  icone?: string;
   observacoes?: string;
 }
 
@@ -25,6 +29,8 @@ export class CategoriaRepository {
       data: {
         nome: dados.nome,
         descricao: dados.descricao || null,
+        cor: dados.cor || null,
+        icone: dados.icone || null,
         usuarioId: dados.usuarioId,
         observacoes: dados.observacoes || null,
       },
@@ -33,21 +39,14 @@ export class CategoriaRepository {
 
   async buscarTodasPorUsuarioId(usuarioId: number) {
     return prisma.categoria.findMany({
-      where: {
-        usuarioId,
-      },
-      orderBy: {
-        nome: "asc",
-      },
+      where: { usuarioId },
+      orderBy: { nome: "asc" },
     });
   }
 
   async buscarPorIdEUsuarioId(id: number, usuarioId: number) {
     return prisma.categoria.findUnique({
-      where: {
-        id,
-        usuarioId,
-      },
+      where: { id, usuarioId },
     });
   }
 
@@ -59,26 +58,19 @@ export class CategoriaRepository {
 
   async atualizar(id: number, dados: DadosAtualizarCategoria) {
     return prisma.categoria.update({
-      where: {
-        id,
-      },
+      where: { id },
       data: dados,
     });
   }
 
   async deletar(id: number) {
-    return prisma.categoria.delete({
-      where: {
-        id,
-      },
+    return prisma.$transaction(async (tx) => {
+      await tx.orcamento.deleteMany({
+        where: { categoriaId: id },
+      });
+      return tx.categoria.delete({
+        where: { id },
+      });
     });
-  }
-
-  async temOrcamentos(categoriaId: number): Promise<boolean> {
-    const orcamento = await prisma.orcamento.findFirst({
-      where: { categoriaId: categoriaId },
-      select: { id: true },
-    });
-    return !!orcamento;
   }
 }

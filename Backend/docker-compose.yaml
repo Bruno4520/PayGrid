@@ -4,8 +4,8 @@ services:
     volumes:
       - ./volumes/postgres/data:/var/lib/postgresql/data
     environment:
-      POSTGRES_USER: tccsist
-      POSTGRES_PASSWORD: tccsist
-      POSTGRES_DB: tccsist
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: paygridtcc
+      POSTGRES_DB: paygrid
     ports:
       - "5432:5432"

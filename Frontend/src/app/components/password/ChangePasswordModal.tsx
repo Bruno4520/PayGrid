@@ -1,5 +1,8 @@
 import React, { useState, useEffect } from "react";
-import { X, Lock, Eye, EyeOff, ShieldCheck } from "lucide-react";
+import { X, Lock, Eye, EyeOff, ShieldCheck, Loader2 } from "lucide-react";
+import { toast } from "sonner";
+import { isAxiosError } from "axios";
+import { api } from "../../../services/api";
 
 interface ChangePasswordModalProps {
   isOpen: boolean;
@@ -13,10 +16,11 @@ export function ChangePasswordModal({
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-
   const [showCurrent, setShowCurrent] = useState(false);
   const [showNew, setShowNew] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [errorMsg, setErrorMsg] = useState("");
 
   useEffect(() => {
     if (isOpen) document.body.style.overflow = "hidden";
@@ -26,22 +30,38 @@ export function ChangePasswordModal({
     };
   }, [isOpen]);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setErrorMsg("");
 
     if (newPassword !== confirmPassword) {
-      alert("As novas senhas não coincidem!");
+      setErrorMsg("As novas senhas não coincidem.");
       return;
     }
 
     if (newPassword.length < 6) {
-      alert("A nova senha deve ter pelo menos 6 caracteres.");
+      setErrorMsg("A nova senha deve ter pelo menos 6 caracteres.");
       return;
     }
 
-    console.log("Salvar nova senha no backend...");
+    try {
+      setIsLoading(true);
+      await api.put("/usuarios/senha", {
+        senhaAtual: currentPassword,
+        novaSenha: newPassword,
+      });
 
-    handleClose();
+      toast.success("Senha alterada com sucesso.");
+      handleClose();
+    } catch (error) {
+      const message =
+        isAxiosError(error) && error.response?.data?.mensagem
+          ? error.response.data.mensagem
+          : "Erro ao alterar a senha.";
+      setErrorMsg(message);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleClose = () => {
@@ -51,6 +71,7 @@ export function ChangePasswordModal({
     setShowCurrent(false);
     setShowNew(false);
     setShowConfirm(false);
+    setErrorMsg("");
     onClose();
   };
 
@@ -90,6 +111,12 @@ export function ChangePasswordModal({
         </div>
 
         <form onSubmit={handleSubmit} className="p-8 space-y-5">
+          {errorMsg && (
+            <div className="bg-red-500/10 border border-red-500/20 text-red-600 dark:text-red-400 p-3 rounded-xl text-sm font-bold mb-4">
+              {errorMsg}
+            </div>
+          )}
+
           <div>
             <label className="block text-sm font-medium text-foreground mb-2">
               Senha Atual
@@ -163,13 +190,6 @@ export function ChangePasswordModal({
 
             {newPassword &&
               confirmPassword &&
-              newPassword !== confirmPassword && (
-                <p className="text-xs text-red-500 font-medium mt-2">
-                  As senhas não coincidem.
-                </p>
-              )}
-            {newPassword &&
-              confirmPassword &&
               newPassword === confirmPassword && (
                 <p className="text-xs text-emerald-500 font-medium mt-2 flex items-center gap-1">
                   <ShieldCheck size={14} /> Senhas coincidem
@@ -188,13 +208,15 @@ export function ChangePasswordModal({
             <button
               type="submit"
               disabled={
+                isLoading ||
                 !currentPassword ||
                 !newPassword ||
                 !confirmPassword ||
                 newPassword !== confirmPassword
               }
-              className="flex-1 py-3.5 rounded-xl font-bold text-white bg-[#2B5BBA] hover:bg-[#1e4594] disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-lg shadow-blue-500/20"
+              className="flex-1 flex items-center justify-center gap-2 py-3.5 rounded-xl font-bold text-white bg-[#2B5BBA] hover:bg-[#1e4594] disabled:opacity-50 transition-all shadow-lg shadow-blue-500/20"
             >
+              {isLoading && <Loader2 size={18} className="animate-spin" />}
               Salvar Senha
             </button>
           </div>

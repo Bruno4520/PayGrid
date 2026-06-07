@@ -1,12 +1,21 @@
-import { Building2, Sprout, Wallet, type LucideIcon } from "lucide-react";
+import {
+  Building2,
+  Sprout,
+  Wallet,
+  Edit2,
+  Trash2,
+  type LucideIcon,
+} from "lucide-react";
 
 interface AccountCardProps {
+  id: string;
   type: "checking" | "savings" | "wallet";
   name: string;
   balance: number;
   badge: string;
   details: string;
-  isPrimary?: boolean;
+  onEdit: (id: string) => void;
+  onDelete: (id: string) => void;
 }
 
 const typeConfig: Record<
@@ -29,27 +38,31 @@ const typeConfig: Record<
   },
   savings: {
     icon: Sprout,
-    bgColor: "bg-card text-card-foreground border-border/50",
-    iconBg: "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400",
-    textColor: "text-foreground",
-    subText: "text-muted-foreground",
+    bgColor:
+      "bg-gradient-to-br from-emerald-600 to-teal-500 text-white border-transparent",
+    iconBg: "bg-white/20 text-white",
+    textColor: "text-white",
+    subText: "text-white/80",
   },
   wallet: {
     icon: Wallet,
-    bgColor: "bg-card text-card-foreground border-border/50",
-    iconBg: "bg-purple-500/10 text-purple-600 dark:text-purple-400",
-    textColor: "text-foreground",
-    subText: "text-muted-foreground",
+    bgColor:
+      "bg-gradient-to-br from-purple-600 to-indigo-500 text-white border-transparent",
+    iconBg: "bg-white/20 text-white",
+    textColor: "text-white",
+    subText: "text-white/80",
   },
 };
 
 export function AccountCard({
+  id,
   type,
   name,
   balance,
   badge,
   details,
-  isPrimary,
+  onEdit,
+  onDelete,
 }: AccountCardProps) {
   const config = typeConfig[type];
   const Icon = config.icon;
@@ -63,7 +76,7 @@ export function AccountCard({
 
   return (
     <div
-      className={`${config.bgColor} rounded-3xl p-6 shadow-sm border transition-all duration-300 hover:scale-[1.02] hover:shadow-md`}
+      className={`${config.bgColor} rounded-3xl p-6 shadow-sm border transition-all duration-300 hover:scale-[1.02] hover:shadow-md relative group`}
     >
       <div className="flex items-start justify-between mb-6">
         <div
@@ -71,17 +84,28 @@ export function AccountCard({
         >
           <Icon size={24} />
         </div>
-        <span
-          className={`px-3 py-1 rounded-full text-xs font-bold tracking-wide ${
-            type === "checking"
-              ? "bg-white/20 text-white backdrop-blur-sm"
-              : isPrimary
-                ? "bg-blue-500/10 text-[#2B5BBA] dark:text-[#5588ff]"
-                : "bg-muted text-muted-foreground"
-          }`}
-        >
-          {badge}
-        </span>
+
+        <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1 opacity-60 hover:opacity-100 transition-opacity">
+            <button
+              onClick={() => onEdit(id)}
+              className="p-1.5 hover:bg-white/20 rounded-lg transition-colors"
+              title="Editar"
+            >
+              <Edit2 size={16} />
+            </button>
+            <button
+              onClick={() => onDelete(id)}
+              className="p-1.5 hover:bg-white/20 hover:text-red-200 rounded-lg transition-colors"
+              title="Excluir"
+            >
+              <Trash2 size={16} />
+            </button>
+          </div>
+          <span className="px-3 py-1 rounded-full text-xs font-bold tracking-wide bg-white/20 text-white backdrop-blur-sm ml-2">
+            {badge}
+          </span>
+        </div>
       </div>
 
       <div>

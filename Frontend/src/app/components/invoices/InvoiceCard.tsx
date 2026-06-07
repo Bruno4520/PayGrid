@@ -1,4 +1,5 @@
 interface InvoiceCardProps {
+  cardName: string;
   month: string;
   year: number;
   status: "paid" | "closed" | "open";
@@ -25,6 +26,7 @@ const statusConfig = {
 };
 
 export function InvoiceCard({
+  cardName,
   month,
   year,
   status,
@@ -53,9 +55,14 @@ export function InvoiceCard({
       }`}
     >
       <div className="flex items-start justify-between mb-5">
-        <h3 className="text-xl font-bold tracking-tight text-foreground">
-          {month} {year}
-        </h3>
+        <div>
+          <h3 className="text-xl font-bold tracking-tight text-foreground">
+            {month} {year}
+          </h3>
+          <p className="text-sm font-medium text-muted-foreground">
+            {cardName}
+          </p>
+        </div>
         <span
           className={`px-3 py-1 rounded-full text-xs font-bold tracking-wide ${statusInfo.color}`}
         >
@@ -85,7 +92,7 @@ export function InvoiceCard({
             Compras
           </span>
           <span className="text-sm font-medium text-foreground">
-            {purchasesCount} transações
+            {purchasesCount} {purchasesCount === 1 ? "item" : "itens"}
           </span>
         </div>
       </div>

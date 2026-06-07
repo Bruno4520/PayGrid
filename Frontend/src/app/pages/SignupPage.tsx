@@ -1,53 +1,54 @@
+import { useState } from "react";
 import { useNavigate } from "react-router";
-import { SignupCard } from "../components/signup/SignupCard";
+import { toast } from "sonner";
+import { isAxiosError } from "axios";
+import {
+  SignupCard,
+  type SignupFormData,
+} from "../components/signup/SignupCard";
 import { SignupPanel } from "../components/signup/SignupPanel";
-import { ThemeToggle } from "../components/ui/theme-toggle";
-
-interface SignupFormData {
-  fullName: string;
-  email: string;
-  password: string;
-  confirmPassword: string;
-  acceptedTerms: boolean;
-}
+import { api } from "../../services/api";
 
 export function SignupPage() {
   const navigate = useNavigate();
+  const [loading, setLoading] = useState(false);
 
-  const handleSignup = (data: SignupFormData) => {
-    console.log("Cadastro:", data);
-  };
+  const handleSignup = async (data: SignupFormData) => {
+    setLoading(true);
+    try {
+      await api.post("/usuarios", {
+        nome: data.fullName,
+        email: data.email,
+        senha: data.password,
+      });
 
-  const handleLogin = () => {
-    navigate("/login");
-  };
-
-  const handleTermsClick = () => {
-    console.log("Abrir Termos de Uso");
-  };
-
-  const handlePrivacyClick = () => {
-    console.log("Abrir Política de Privacidade");
+      toast.success("Conta criada com sucesso! Redirecionando...");
+      setTimeout(() => navigate("/login"), 1500);
+    } catch (error) {
+      const message =
+        isAxiosError(error) && error.response?.data?.mensagem
+          ? error.response.data.mensagem
+          : "Erro ao criar conta.";
+      toast.error(message);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
-    <main className="flex min-h-screen bg-background transition-colors duration-300">
+    <main className="flex min-h-screen bg-background">
       <section className="flex items-center justify-center w-full lg:w-1/2 p-6 lg:p-12">
         <SignupCard
           onSignup={handleSignup}
-          onLogin={handleLogin}
-          onTermsClick={handleTermsClick}
-          onPrivacyClick={handlePrivacyClick}
+          onLogin={() => navigate("/login")}
+          onTermsClick={() => toast.info("Página em desenvolvimento.")}
+          onPrivacyClick={() => toast.info("Seus dados estão protegidos.")}
+          isLoading={loading}
         />
       </section>
-
-      <section className="hidden lg:block lg:w-1/2">
+      <section className="hidden lg:flex w-1/2">
         <SignupPanel />
       </section>
-
-      <div className="fixed bottom-4 right-4 z-50">
-        <ThemeToggle />
-      </div>
     </main>
   );
 }

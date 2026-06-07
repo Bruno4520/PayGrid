@@ -35,8 +35,9 @@ CREATE TABLE "Categoria" (
     "id" SERIAL NOT NULL,
     "nome" TEXT NOT NULL,
     "descricao" TEXT,
-    "cor" TEXT,
+    "observacoes" TEXT,
     "icone" TEXT,
+    "cor" TEXT,
     "sistema" BOOLEAN NOT NULL DEFAULT false,
     "usuarioId" INTEGER NOT NULL,
 
@@ -93,6 +94,7 @@ CREATE TABLE "Fatura" (
     "dataVencimento" TIMESTAMP(3) NOT NULL,
     "estaPaga" BOOLEAN NOT NULL DEFAULT false,
     "cartaoCreditoId" INTEGER NOT NULL,
+    "transacaoPagamentoId" INTEGER,
 
     CONSTRAINT "Fatura_pkey" PRIMARY KEY ("id")
 );
@@ -137,6 +139,9 @@ CREATE UNIQUE INDEX "Categoria_nome_usuarioId_key" ON "Categoria"("nome", "usuar
 CREATE UNIQUE INDEX "Orcamento_usuarioId_categoriaId_mes_ano_key" ON "Orcamento"("usuarioId", "categoriaId", "mes", "ano");
 
 -- CreateIndex
+CREATE UNIQUE INDEX "Fatura_transacaoPagamentoId_key" ON "Fatura"("transacaoPagamentoId");
+
+-- CreateIndex
 CREATE UNIQUE INDEX "Fatura_cartaoCreditoId_mes_ano_key" ON "Fatura"("cartaoCreditoId", "mes", "ano");
 
 -- CreateIndex
@@ -152,7 +157,7 @@ ALTER TABLE "Categoria" ADD CONSTRAINT "Categoria_usuarioId_fkey" FOREIGN KEY ("
 ALTER TABLE "Orcamento" ADD CONSTRAINT "Orcamento_usuarioId_fkey" FOREIGN KEY ("usuarioId") REFERENCES "Usuario"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Orcamento" ADD CONSTRAINT "Orcamento_categoriaId_fkey" FOREIGN KEY ("categoriaId") REFERENCES "Categoria"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "Orcamento" ADD CONSTRAINT "Orcamento_categoriaId_fkey" FOREIGN KEY ("categoriaId") REFERENCES "Categoria"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "Transacao" ADD CONSTRAINT "Transacao_contaId_fkey" FOREIGN KEY ("contaId") REFERENCES "Conta"("id") ON DELETE CASCADE ON UPDATE CASCADE;
@@ -168,6 +173,9 @@ ALTER TABLE "CartaoCredito" ADD CONSTRAINT "CartaoCredito_usuarioId_fkey" FOREIG
 
 -- AddForeignKey
 ALTER TABLE "Fatura" ADD CONSTRAINT "Fatura_cartaoCreditoId_fkey" FOREIGN KEY ("cartaoCreditoId") REFERENCES "CartaoCredito"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "Fatura" ADD CONSTRAINT "Fatura_transacaoPagamentoId_fkey" FOREIGN KEY ("transacaoPagamentoId") REFERENCES "Transacao"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "Parcela" ADD CONSTRAINT "Parcela_transacaoId_fkey" FOREIGN KEY ("transacaoId") REFERENCES "Transacao"("id") ON DELETE CASCADE ON UPDATE CASCADE;

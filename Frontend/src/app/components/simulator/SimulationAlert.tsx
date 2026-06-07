@@ -2,7 +2,7 @@ import { AlertTriangle } from "lucide-react";
 
 export function SimulationAlert() {
   return (
-    <div className="bg-amber-500/10 border border-amber-500/20 rounded-2xl p-5 mb-6 transition-colors">
+    <div className="bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-900/50 rounded-2xl p-5 mb-6 transition-colors">
       <div className="flex items-start gap-3">
         <AlertTriangle
           size={20}
@@ -10,14 +10,15 @@ export function SimulationAlert() {
         />
         <div>
           <h4 className="text-sm font-bold text-amber-900 dark:text-amber-400 mb-1">
-            Importante: Esta é apenas uma simulação
+            Importante: Esta é uma projeção estimada
           </h4>
-          <p className="text-sm font-medium text-amber-800 dark:text-amber-200/90 leading-relaxed">
-            Esta simulação <span className="font-bold">NÃO leva em conta</span>{" "}
-            a variação que pode ocorrer nas taxas de juros ao longo do tempo,
-            aumentando ou diminuindo. Os valores representados{" "}
-            <span className="font-bold">não garantem</span> rentabilidade
-            futura. Consulte um especialista antes da decisão.
+          <p className="text-sm font-medium text-amber-800 dark:text-amber-300/90 leading-relaxed">
+            Esta simulação{" "}
+            <span className="font-bold">assume taxas constantes</span> ao longo
+            do tempo. Na realidade, indexadores como CDI, SELIC e IPCA sofrem
+            variações. O cálculo do Imposto de Renda é feito de forma
+            simplificada, aplicando a alíquota correspondente ao prazo total do
+            investimento sobre todo o rendimento.
           </p>
         </div>
       </div>

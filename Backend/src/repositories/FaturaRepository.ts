@@ -26,12 +26,7 @@ export class FaturaRepository {
 
   async pagar(dados: DadosPagarFatura) {
     return prisma.$transaction(async (tx) => {
-      const faturaPaga = await tx.fatura.update({
-        where: { id: dados.fatura.id },
-        data: { estaPaga: true },
-      });
-
-      await tx.transacao.create({
+      const transacao = await tx.transacao.create({
         data: {
           descricao: `Pagamento fatura do cartão - ${dados.fatura.mes}/${dados.fatura.ano}`,
           valor: dados.fatura.valorTotal,
@@ -42,12 +37,47 @@ export class FaturaRepository {
         },
       });
 
+      const faturaPaga = await tx.fatura.update({
+        where: { id: dados.fatura.id },
+        data: {
+          estaPaga: true,
+          transacaoPagamentoId: transacao.id,
+        },
+      });
+
       await tx.conta.update({
         where: { id: dados.contaId },
         data: { saldo: { decrement: dados.fatura.valorTotal } },
       });
 
       return faturaPaga;
+    });
+  }
+
+  async buscarTodasPorUsuario(usuarioId: number) {
+    return prisma.fatura.findMany({
+      where: {
+        cartaoCredito: {
+          usuarioId: usuarioId,
+        },
+      },
+      include: {
+        cartaoCredito: {
+          select: {
+            nome: true,
+          },
+        },
+        parcelas: {
+          include: {
+            transacao: {
+              include: {
+                categoria: true,
+              },
+            },
+          },
+        },
+      },
+      orderBy: [{ ano: "desc" }, { mes: "desc" }],
     });
   }
 }

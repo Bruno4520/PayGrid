@@ -1,22 +1,24 @@
 import { useState } from "react";
 import { Mail, Lock, Eye, EyeOff } from "lucide-react";
 
-interface LoginFormData {
+export interface LoginFormData {
   email: string;
   password: string;
   rememberMe: boolean;
 }
 
-interface LoginCardProps {
+export interface LoginCardProps {
   onLogin: (data: LoginFormData) => void;
   onForgotPassword: () => void;
   onCreateAccount: () => void;
+  isLoading?: boolean;
 }
 
 export function LoginCard({
   onLogin,
   onForgotPassword,
   onCreateAccount,
+  isLoading = false,
 }: LoginCardProps) {
   const [formData, setFormData] = useState<LoginFormData>({
     email: "",
@@ -147,9 +149,14 @@ export function LoginCard({
 
         <button
           type="submit"
-          className="w-full bg-[#2B5BBA] text-white font-medium py-3.5 rounded-xl hover:opacity-90 transition-opacity focus:outline-none focus:ring-2 focus:ring-[#2B5BBA] focus:ring-offset-2 dark:focus:ring-offset-zinc-900"
+          disabled={isLoading}
+          className="w-full bg-[#2B5BBA] text-white font-medium py-3.5 rounded-xl hover:opacity-90 transition-opacity focus:outline-none focus:ring-2 focus:ring-[#2B5BBA] focus:ring-offset-2 dark:focus:ring-offset-zinc-900 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
         >
-          Entrar
+          {isLoading ? (
+            <span className="animate-pulse">Conectando...</span>
+          ) : (
+            "Entrar"
+          )}
         </button>
 
         <div className="text-center pt-4 border-t border-border/50">

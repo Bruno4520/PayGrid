@@ -1,29 +1,24 @@
 import React, { useState, useEffect } from "react";
 import { X } from "lucide-react";
+import { toast } from "sonner";
+import { isAxiosError } from "axios";
+import { api } from "../../../services/api";
+import type { Transaction } from "./TransactionTable";
 
 interface NewTransactionModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onSave?: (transaction: TransactionData) => void;
+  onSave?: (transaction: any) => void;
   initialType?: "receita" | "despesa";
   initialAccount?: string;
   initialPaymentMethod?: string;
   initialCardId?: string;
+  transactionToEdit?: Transaction | null;
 }
 
-export interface TransactionData {
-  type: "receita" | "despesa";
-  valor: string;
-  descricao: string;
-  data: string;
-  conta: string;
-  categoria: string;
-  formaPagamento?: string;
-  tipoTransferencia?: "interna" | "externa";
-  contaDestino?: string;
-  tipoCartao?: "credito" | "debito";
-  parcelas?: number;
-  cartaoId?: string;
+interface ItemBase {
+  id: number;
+  nome: string;
 }
 
 export function NewTransactionModal({
@@ -34,51 +29,83 @@ export function NewTransactionModal({
   initialAccount = "",
   initialPaymentMethod = "",
   initialCardId = "",
+  transactionToEdit = null,
 }: NewTransactionModalProps) {
   const [type, setType] = useState<"receita" | "despesa">("receita");
   const [valor, setValor] = useState("");
   const [valorNumerico, setValorNumerico] = useState(0);
   const [descricao, setDescricao] = useState("");
   const [data, setData] = useState(new Date().toISOString().split("T")[0]);
-  const [conta, setConta] = useState("");
-  const [categoria, setCategoria] = useState("");
+  const [contaId, setContaId] = useState("");
+  const [categoriaId, setCategoriaId] = useState("");
   const [formaPagamento, setFormaPagamento] = useState("");
   const [tipoTransferencia, setTipoTransferencia] = useState<
     "interna" | "externa"
   >("externa");
-  const [contaDestino, setContaDestino] = useState("");
+  const [contaDestinoId, setContaDestinoId] = useState("");
   const [tipoCartao, setTipoCartao] = useState<"credito" | "debito">("debito");
   const [parcelas, setParcelas] = useState(1);
   const [cartaoId, setCartaoId] = useState("");
 
-  const contas = ["Conta Corrente", "Conta Poupança", "Carteira"];
-  const categorias = [
-    "Alimentação",
-    "Transporte",
-    "Saúde",
-    "Casa",
-    "Lazer",
-    "Salário",
-    "Renda Extra",
-    "Investimentos",
-  ];
+  const [contas, setContas] = useState<ItemBase[]>([]);
+  const [categorias, setCategorias] = useState<ItemBase[]>([]);
+  const [cartoes, setCartoes] = useState<ItemBase[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
+
   const formasPagamentoReceita = ["dinheiro", "pix"];
   const formasPagamentoDespesa = ["dinheiro", "pix", "cartao"];
-  const cartoesMock = [
-    { id: "1", name: "Itaú Click" },
-    { id: "2", name: "Nubank Ultravioleta" },
-  ];
 
   useEffect(() => {
     if (isOpen) {
       document.body.style.overflow = "hidden";
-      setType(initialType);
-      if (initialAccount) setConta(initialAccount);
-      if (initialPaymentMethod) setFormaPagamento(initialPaymentMethod);
-      if (initialPaymentMethod === "cartao") setTipoCartao("credito");
-      if (initialCardId) setCartaoId(initialCardId);
+      fetchDependencias();
+
+      if (transactionToEdit) {
+        setType(
+          (transactionToEdit.tipo?.toLowerCase() as "receita" | "despesa") ||
+            initialType,
+        );
+
+        const valFormatted = transactionToEdit.valor.toLocaleString("pt-BR", {
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2,
+        });
+        setValor(valFormatted);
+        setValorNumerico(transactionToEdit.valor);
+
+        setDescricao(transactionToEdit.descricao || "");
+        setData(
+          transactionToEdit.data
+            ? new Date(transactionToEdit.data).toISOString().split("T")[0]
+            : new Date().toISOString().split("T")[0],
+        );
+
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const tEdit = transactionToEdit as any;
+        setContaId(tEdit.contaId?.toString() || "");
+        setCategoriaId(tEdit.categoriaId?.toString() || "");
+
+        const formaPgtoBack = transactionToEdit.formaPagamento?.toLowerCase();
+        if (formaPgtoBack === "credito" || formaPgtoBack === "debito") {
+          setFormaPagamento("cartao");
+          setTipoCartao(formaPgtoBack as "credito" | "debito");
+        } else {
+          setFormaPagamento(formaPgtoBack || "");
+        }
+
+        setCartaoId(tEdit.cartaoCreditoId?.toString() || "");
+        const numParcelas = transactionToEdit.parcelas?.length || 1;
+        setParcelas(numParcelas);
+      } else {
+        setType(initialType);
+        if (initialAccount) setContaId(initialAccount);
+        if (initialPaymentMethod) setFormaPagamento(initialPaymentMethod);
+        if (initialPaymentMethod === "cartao") setTipoCartao("credito");
+        if (initialCardId) setCartaoId(initialCardId);
+      }
     } else {
       document.body.style.overflow = "unset";
+      handleReset();
     }
     return () => {
       document.body.style.overflow = "unset";
@@ -89,42 +116,103 @@ export function NewTransactionModal({
     initialAccount,
     initialPaymentMethod,
     initialCardId,
+    transactionToEdit,
   ]);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const fetchDependencias = async () => {
+    try {
+      const [contasRes, cartoesRes, categoriasRes] = await Promise.all([
+        api.get<ItemBase[]>("/contas"),
+        api.get<ItemBase[]>("/cartoes"),
+        api.get<ItemBase[]>("/categorias"),
+      ]);
+      setContas(contasRes.data);
+      setCartoes(cartoesRes.data);
+
+      const categoriasFiltradas = categoriasRes.data.filter(
+        (c) => c.nome !== "PAGAMENTO DE FATURA",
+      );
+      setCategorias(categoriasFiltradas);
+    } catch (error) {
+      toast.error("Erro ao carregar dados do formulário.");
+    }
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const transaction: TransactionData = {
-      type,
-      valor,
-      descricao,
-      data,
-      conta,
-      categoria,
-      formaPagamento,
-      ...(formaPagamento === "pix" && { tipoTransferencia }),
-      ...(formaPagamento === "pix" &&
-        tipoTransferencia === "interna" && { contaDestino }),
-      ...(formaPagamento === "cartao" && { tipoCartao, cartaoId }),
-      ...(formaPagamento === "cartao" &&
-        tipoCartao === "credito" && { parcelas }),
-    };
-    if (onSave) onSave(transaction);
-    handleClose();
+    setIsLoading(true);
+
+    try {
+      let payloadFormaPagamento = formaPagamento.toUpperCase();
+      if (formaPagamento === "cartao") {
+        payloadFormaPagamento = tipoCartao === "credito" ? "CREDITO" : "DEBITO";
+      }
+
+      const payload = {
+        descricao,
+        valor: valorNumerico,
+        data: new Date(data).toISOString(),
+        tipo: type.toUpperCase(),
+        formaPagamento: payloadFormaPagamento,
+        contaId:
+          payloadFormaPagamento !== "CREDITO" && contaId
+            ? Number(contaId)
+            : undefined,
+        cartaoCreditoId:
+          payloadFormaPagamento === "CREDITO" && cartaoId
+            ? Number(cartaoId)
+            : undefined,
+        categoriaId: categoriaId ? Number(categoriaId) : undefined,
+        numeroParcelas:
+          payloadFormaPagamento === "CREDITO" && parcelas > 1
+            ? parcelas
+            : undefined,
+        ...(formaPagamento === "pix" && { tipoTransferencia }),
+        ...(formaPagamento === "pix" &&
+          tipoTransferencia === "interna" && {
+            contaDestinoId: contaDestinoId ? Number(contaDestinoId) : undefined,
+          }),
+      };
+
+      if (transactionToEdit) {
+        await api.put(`/transacoes/${transactionToEdit.id}`, payload);
+        toast.success("Transação atualizada com sucesso.");
+      } else {
+        await api.post("/transacoes", payload);
+        toast.success("Transação criada com sucesso.");
+      }
+
+      if (onSave) onSave(payload);
+      handleClose();
+    } catch (error) {
+      const message =
+        isAxiosError(error) && error.response?.data?.mensagem
+          ? error.response.data.mensagem
+          : "Não foi possível salvar a transação. Verifique os dados.";
+      toast.error(message);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleClose = () => {
+    handleReset();
+    onClose();
+  };
+
+  const handleReset = () => {
     setValor("");
+    setValorNumerico(0);
     setDescricao("");
     setData(new Date().toISOString().split("T")[0]);
-    setConta("");
-    setCategoria("");
+    setContaId("");
+    setCategoriaId("");
     setFormaPagamento("");
     setTipoTransferencia("externa");
-    setContaDestino("");
+    setContaDestinoId("");
     setTipoCartao("debito");
     setParcelas(1);
     setCartaoId("");
-    onClose();
   };
 
   const formatCurrency = (value: string) => {
@@ -177,7 +265,9 @@ export function NewTransactionModal({
 
       <div className="relative bg-card text-card-foreground rounded-3xl shadow-2xl w-full max-w-3xl max-h-[90vh] overflow-y-auto border border-border/50 animate-in fade-in zoom-in-95 duration-200">
         <div className="sticky top-0 bg-card/80 backdrop-blur-md border-b border-border/50 px-8 py-5 flex items-center justify-between rounded-t-3xl z-10">
-          <h2 className="text-xl font-bold tracking-tight">Nova Transação</h2>
+          <h2 className="text-xl font-bold tracking-tight">
+            {transactionToEdit ? "Editar Transação" : "Nova Transação"}
+          </h2>
           <button
             onClick={handleClose}
             className="text-muted-foreground hover:text-foreground hover:bg-muted p-2 rounded-xl transition-colors"
@@ -235,11 +325,7 @@ export function NewTransactionModal({
                   onChange={handleValorChange}
                   onFocus={(e) => e.target.select()}
                   placeholder="0,00"
-                  className={`w-full pl-12 pr-4 py-3.5 bg-muted/50 border border-transparent rounded-xl focus:outline-none focus:ring-2 focus:bg-background transition-all font-semibold text-lg text-foreground placeholder:text-muted-foreground/70 ${
-                    type === "receita"
-                      ? "focus:ring-emerald-500"
-                      : "focus:ring-red-500"
-                  }`}
+                  className={`w-full pl-12 pr-4 py-3.5 bg-muted/50 border border-transparent rounded-xl focus:outline-none focus:ring-2 focus:bg-background transition-all font-semibold text-lg text-foreground placeholder:text-muted-foreground/70 ${type === "receita" ? "focus:ring-emerald-500" : "focus:ring-red-500"}`}
                   required
                 />
               </div>
@@ -276,18 +362,21 @@ export function NewTransactionModal({
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
               <label className="block text-sm font-medium text-foreground mb-2">
-                Conta Relacionada
+                Forma de Pagamento
               </label>
               <select
-                value={conta}
-                onChange={(e) => setConta(e.target.value)}
+                value={formaPagamento}
+                onChange={(e) => setFormaPagamento(e.target.value)}
                 className="w-full px-4 py-3.5 bg-muted/50 border border-transparent rounded-xl text-foreground focus:outline-none focus:ring-2 focus:ring-[#2B5BBA] focus:bg-background transition-all"
                 required
               >
-                <option value="">Selecione uma conta</option>
-                {contas.map((c) => (
-                  <option key={c} value={c}>
-                    {c}
+                <option value="">Selecione a forma de pagamento</option>
+                {(type === "receita"
+                  ? formasPagamentoReceita
+                  : formasPagamentoDespesa
+                ).map((forma) => (
+                  <option key={forma} value={forma}>
+                    {forma.charAt(0).toUpperCase() + forma.slice(1)}
                   </option>
                 ))}
               </select>
@@ -298,42 +387,40 @@ export function NewTransactionModal({
                 Categoria
               </label>
               <select
-                value={categoria}
-                onChange={(e) => setCategoria(e.target.value)}
+                value={categoriaId}
+                onChange={(e) => setCategoriaId(e.target.value)}
                 className="w-full px-4 py-3.5 bg-muted/50 border border-transparent rounded-xl text-foreground focus:outline-none focus:ring-2 focus:ring-[#2B5BBA] focus:bg-background transition-all"
-                required
               >
                 <option value="">Selecione uma categoria</option>
                 {categorias.map((cat) => (
-                  <option key={cat} value={cat}>
-                    {cat}
+                  <option key={cat.id} value={cat.id}>
+                    {cat.nome}
                   </option>
                 ))}
               </select>
             </div>
           </div>
 
-          <div>
-            <label className="block text-sm font-medium text-foreground mb-2">
-              Forma de Pagamento
-            </label>
-            <select
-              value={formaPagamento}
-              onChange={(e) => setFormaPagamento(e.target.value)}
-              className="w-full px-4 py-3.5 bg-muted/50 border border-transparent rounded-xl text-foreground focus:outline-none focus:ring-2 focus:ring-[#2B5BBA] focus:bg-background transition-all"
-              required
-            >
-              <option value="">Selecione a forma de pagamento</option>
-              {(type === "receita"
-                ? formasPagamentoReceita
-                : formasPagamentoDespesa
-              ).map((forma) => (
-                <option key={forma} value={forma}>
-                  {forma.charAt(0).toUpperCase() + forma.slice(1)}
-                </option>
-              ))}
-            </select>
-          </div>
+          {(formaPagamento === "dinheiro" || formaPagamento === "pix") && (
+            <div>
+              <label className="block text-sm font-medium text-foreground mb-2">
+                Conta Relacionada
+              </label>
+              <select
+                value={contaId}
+                onChange={(e) => setContaId(e.target.value)}
+                className="w-full px-4 py-3.5 bg-muted/50 border border-transparent rounded-xl text-foreground focus:outline-none focus:ring-2 focus:ring-[#2B5BBA] focus:bg-background transition-all"
+                required
+              >
+                <option value="">Selecione uma conta</option>
+                {contas.map((c) => (
+                  <option key={c.id} value={c.id}>
+                    {c.nome}
+                  </option>
+                ))}
+              </select>
+            </div>
+          )}
 
           {formaPagamento === "pix" && (
             <div className="p-5 bg-muted/30 rounded-2xl border border-border/50">
@@ -363,17 +450,17 @@ export function NewTransactionModal({
                     Conta de Destino
                   </label>
                   <select
-                    value={contaDestino}
-                    onChange={(e) => setContaDestino(e.target.value)}
+                    value={contaDestinoId}
+                    onChange={(e) => setContaDestinoId(e.target.value)}
                     className="w-full px-4 py-3 bg-background border border-border rounded-xl text-foreground focus:outline-none focus:ring-2 focus:ring-[#2B5BBA] transition-all"
                     required
                   >
                     <option value="">Selecione a conta de destino</option>
                     {contas
-                      .filter((c) => c !== conta)
+                      .filter((c) => c.id.toString() !== contaId)
                       .map((c) => (
-                        <option key={c} value={c}>
-                          {c}
+                        <option key={c.id} value={c.id}>
+                          {c.nome}
                         </option>
                       ))}
                   </select>
@@ -384,68 +471,89 @@ export function NewTransactionModal({
 
           {formaPagamento === "cartao" && (
             <div className="p-5 bg-muted/30 rounded-2xl border border-border/50">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-5">
+              <div className="mb-5">
+                <label className="block text-sm font-medium text-foreground mb-2">
+                  Tipo de Uso
+                </label>
+                <div className="flex gap-2">
+                  <button
+                    type="button"
+                    onClick={() => setTipoCartao("debito")}
+                    className={`flex-1 py-2 rounded-lg font-medium transition-all ${tipoCartao === "debito" ? "bg-[#2B5BBA] text-white shadow-md shadow-blue-500/20" : "bg-muted text-muted-foreground hover:bg-muted/80"}`}
+                  >
+                    Débito
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setTipoCartao("credito")}
+                    className={`flex-1 py-2 rounded-lg font-medium transition-all ${tipoCartao === "credito" ? "bg-[#2B5BBA] text-white shadow-md shadow-blue-500/20" : "bg-muted text-muted-foreground hover:bg-muted/80"}`}
+                  >
+                    Crédito
+                  </button>
+                </div>
+              </div>
+
+              {tipoCartao === "debito" && (
                 <div>
                   <label className="block text-sm font-medium text-foreground mb-2">
-                    Cartão
+                    Conta Relacionada
                   </label>
                   <select
-                    value={cartaoId}
-                    onChange={(e) => setCartaoId(e.target.value)}
+                    value={contaId}
+                    onChange={(e) => setContaId(e.target.value)}
                     className="w-full px-4 py-3 bg-background border border-border rounded-xl text-foreground focus:outline-none focus:ring-2 focus:ring-[#2B5BBA] transition-all"
                     required
                   >
-                    <option value="">Selecione um cartão</option>
-                    {cartoesMock.map((c) => (
+                    <option value="">Selecione uma conta</option>
+                    {contas.map((c) => (
                       <option key={c.id} value={c.id}>
-                        {c.name}
+                        {c.nome}
                       </option>
                     ))}
                   </select>
                 </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-foreground mb-2">
-                    Tipo de Uso
-                  </label>
-                  <div className="flex gap-2">
-                    <button
-                      type="button"
-                      onClick={() => setTipoCartao("debito")}
-                      className={`flex-1 py-2 rounded-lg font-medium transition-all ${tipoCartao === "debito" ? "bg-[#2B5BBA] text-white shadow-md shadow-blue-500/20" : "bg-muted text-muted-foreground hover:bg-muted/80"}`}
-                    >
-                      Débito
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => setTipoCartao("credito")}
-                      className={`flex-1 py-2 rounded-lg font-medium transition-all ${tipoCartao === "credito" ? "bg-[#2B5BBA] text-white shadow-md shadow-blue-500/20" : "bg-muted text-muted-foreground hover:bg-muted/80"}`}
-                    >
-                      Crédito
-                    </button>
-                  </div>
-                </div>
-              </div>
+              )}
 
               {tipoCartao === "credito" && (
-                <div>
-                  <label className="block text-sm font-medium text-foreground mb-2">
-                    Número de Parcelas
-                  </label>
-                  <select
-                    value={parcelas}
-                    onChange={(e) => setParcelas(Number(e.target.value))}
-                    className="w-full px-4 py-3 bg-background border border-border rounded-xl text-foreground focus:outline-none focus:ring-2 focus:ring-[#2B5BBA] transition-all font-medium"
-                  >
-                    {[...Array(12)].map((_, i) => {
-                      const num = i + 1;
-                      return (
-                        <option key={num} value={num}>
-                          {`${num.toString().padStart(2, "0")}x de R$ ${getValorParcela(num)}`}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div>
+                    <label className="block text-sm font-medium text-foreground mb-2">
+                      Cartão de Crédito
+                    </label>
+                    <select
+                      value={cartaoId}
+                      onChange={(e) => setCartaoId(e.target.value)}
+                      className="w-full px-4 py-3 bg-background border border-border rounded-xl text-foreground focus:outline-none focus:ring-2 focus:ring-[#2B5BBA] transition-all"
+                      required
+                    >
+                      <option value="">Selecione um cartão</option>
+                      {cartoes.map((c) => (
+                        <option key={c.id} value={c.id}>
+                          {c.nome}
                         </option>
-                      );
-                    })}
-                  </select>
+                      ))}
+                    </select>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-foreground mb-2">
+                      Número de Parcelas
+                    </label>
+                    <select
+                      value={parcelas}
+                      onChange={(e) => setParcelas(Number(e.target.value))}
+                      className="w-full px-4 py-3 bg-background border border-border rounded-xl text-foreground focus:outline-none focus:ring-2 focus:ring-[#2B5BBA] transition-all font-medium"
+                    >
+                      {[...Array(12)].map((_, i) => {
+                        const num = i + 1;
+                        return (
+                          <option key={num} value={num}>
+                            {`${num.toString().padStart(2, "0")}x de R$ ${getValorParcela(num)}`}
+                          </option>
+                        );
+                      })}
+                    </select>
+                  </div>
                 </div>
               )}
             </div>
@@ -461,9 +569,14 @@ export function NewTransactionModal({
             </button>
             <button
               type="submit"
-              className={`flex-1 py-3.5 rounded-xl font-bold text-white transition-all shadow-lg ${type === "receita" ? "bg-emerald-500 hover:bg-emerald-600 shadow-emerald-500/20" : "bg-red-500 hover:bg-red-600 shadow-red-500/20"}`}
+              disabled={isLoading}
+              className={`flex-1 py-3.5 rounded-xl font-bold text-white transition-all shadow-lg ${type === "receita" ? "bg-emerald-500 hover:bg-emerald-600 shadow-emerald-500/20" : "bg-red-500 hover:bg-red-600 shadow-red-500/20"} disabled:opacity-70 disabled:cursor-not-allowed`}
             >
-              Salvar Transação
+              {isLoading
+                ? "Salvando..."
+                : transactionToEdit
+                  ? "Salvar Alterações"
+                  : "Salvar Transação"}
             </button>
           </div>
         </form>

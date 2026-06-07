@@ -31,42 +31,28 @@ export class ContaRepository {
         saldo: dados.saldo,
         tipo: dados.tipo,
         usuarioId: dados.usuarioId,
-        numeroConta: dados.numeroConta || "",
-        agencia: dados.agencia || "",
+        numeroConta: dados.numeroConta ?? "",
+        agencia: dados.agencia ?? "",
       },
     });
   }
 
   async buscarTodasPorUsuarioId(usuarioId: number) {
     return prisma.conta.findMany({
-      where: {
-        usuarioId: usuarioId,
-      },
-      orderBy: {
-        nome: "asc",
-      },
+      where: { usuarioId },
+      orderBy: { nome: "asc" },
     });
   }
 
   async buscarPorIdEUsuarioId(id: number, usuarioId: number) {
-    return prisma.conta.findUnique({
-      where: {
-        id,
-        usuarioId,
-      },
-    });
+    return prisma.conta.findUnique({ where: { id, usuarioId } });
   }
 
   async atualizar(id: number, dados: DadosAtualizarConta) {
-    return prisma.conta.update({
-      where: { id },
-      data: dados,
-    });
+    return prisma.conta.update({ where: { id }, data: dados });
   }
 
   async deletar(id: number) {
-    return prisma.conta.delete({
-      where: { id },
-    });
+    return prisma.conta.delete({ where: { id } });
   }
 }

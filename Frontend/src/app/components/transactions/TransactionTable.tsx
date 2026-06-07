@@ -2,27 +2,34 @@ import { Edit2, Trash2, FileText, X } from "lucide-react";
 import { useState } from "react";
 
 export interface Transaction {
-  id: string;
-  date: string;
-  description: string;
-  category: string;
-  account: string;
-  paymentMethod: string;
-  amount: number;
-  type: "income" | "expense";
-  observation?: string;
+  id: number;
+  data: string;
+  descricao: string;
+  valor: number;
+  tipo: "RECEITA" | "DESPESA";
+  formaPagamento: string;
+  observacoes?: string;
+  contaId?: number;
+  categoriaId?: number;
+  cartaoCreditoId?: number;
+  conta?: { nome: string };
+  cartaoCredito?: { nome: string };
+  categoria?: { nome: string };
+  parcelas?: { length: number }[];
 }
 
 interface TransactionTableProps {
   transactions: Transaction[];
-  onEdit: (id: string) => void;
-  onDelete: (id: string) => void;
+  onEdit: (id: number) => void;
+  onDelete: (id: number) => void;
+  isLoading?: boolean;
 }
 
 export function TransactionTable({
   transactions,
   onEdit,
   onDelete,
+  isLoading = false,
 }: TransactionTableProps) {
   const [selectedObservation, setSelectedObservation] = useState<string | null>(
     null,
@@ -36,9 +43,41 @@ export function TransactionTable({
   };
 
   const formatDate = (dateString: string) => {
-    const [day, month, year] = dateString.split("/");
-    return `${day}/${month}/${year}`;
+    const date = new Date(dateString);
+    date.setMinutes(date.getMinutes() + date.getTimezoneOffset());
+    return date.toLocaleDateString("pt-BR");
   };
+
+  const getAccountName = (transaction: Transaction) => {
+    if (transaction.formaPagamento === "CREDITO" && transaction.cartaoCredito) {
+      return transaction.cartaoCredito.nome;
+    }
+    return transaction.conta?.nome || "-";
+  };
+
+  if (isLoading) {
+    return (
+      <div className="bg-card rounded-2xl p-12 text-center border border-border/50">
+        <div className="animate-spin w-8 h-8 border-4 border-[#2B5BBA] border-t-transparent rounded-full mx-auto mb-4"></div>
+        <p className="text-muted-foreground font-medium">
+          A carregar transações...
+        </p>
+      </div>
+    );
+  }
+
+  if (transactions.length === 0) {
+    return (
+      <div className="bg-card rounded-2xl p-12 text-center border border-border/50">
+        <p className="text-muted-foreground font-medium text-lg">
+          Nenhuma transação encontrada.
+        </p>
+        <p className="text-sm text-muted-foreground/70 mt-1">
+          Clique em "Nova Transação" para começar.
+        </p>
+      </div>
+    );
+  }
 
   return (
     <>
@@ -57,7 +96,7 @@ export function TransactionTable({
                   Categoria
                 </th>
                 <th className="px-6 py-4 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
-                  Conta
+                  Conta/Cartão
                 </th>
                 <th className="px-6 py-4 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
                   Forma Pgto
@@ -77,38 +116,49 @@ export function TransactionTable({
                   className="hover:bg-muted/30 transition-colors group"
                 >
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-foreground">
-                    {formatDate(transaction.date)}
+                    {formatDate(transaction.data)}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-foreground">
-                    {transaction.description}
+                    {transaction.descricao}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-muted-foreground">
-                    {transaction.category}
+                    {transaction.categoria?.nome === "PAGAMENTO DE FATURA"
+                      ? "Pagamento de Cartão"
+                      : transaction.categoria?.nome || "-"}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-muted-foreground">
-                    {transaction.account}
+                    {getAccountName(transaction)}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-muted-foreground">
-                    {transaction.paymentMethod}
+                    <span className="capitalize">
+                      {transaction.formaPagamento.toLowerCase()}
+                    </span>
+                    {transaction.formaPagamento === "CREDITO" &&
+                      transaction.parcelas &&
+                      transaction.parcelas.length > 1 && (
+                        <span className="ml-2 inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-[#2B5BBA]/10 text-[#2B5BBA]">
+                          {transaction.parcelas.length}x
+                        </span>
+                      )}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-right font-bold tracking-tight">
                     <span
                       className={
-                        transaction.type === "income"
+                        transaction.tipo === "RECEITA"
                           ? "text-emerald-600 dark:text-emerald-400"
                           : "text-red-600 dark:text-red-400"
                       }
                     >
-                      {transaction.type === "income" ? "+" : "-"}{" "}
-                      {formatCurrency(transaction.amount)}
+                      {transaction.tipo === "RECEITA" ? "+" : "-"}{" "}
+                      {formatCurrency(transaction.valor)}
                     </span>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-center">
                     <div className="flex items-center justify-center gap-1 opacity-60 md:opacity-15 md:group-hover:opacity-100 transition-opacity duration-200">
-                      {transaction.observation && (
+                      {transaction.observacoes && (
                         <button
                           onClick={() =>
-                            setSelectedObservation(transaction.observation!)
+                            setSelectedObservation(transaction.observacoes!)
                           }
                           className="p-2 text-muted-foreground hover:text-[#2B5BBA] hover:bg-blue-500/10 rounded-lg transition-colors"
                           title="Ver observação"
@@ -116,7 +166,6 @@ export function TransactionTable({
                           <FileText size={16} />
                         </button>
                       )}
-
                       <button
                         onClick={() => onEdit(transaction.id)}
                         className="p-2 text-muted-foreground hover:text-[#2B5BBA] hover:bg-blue-500/10 rounded-lg transition-colors"
@@ -137,31 +186,6 @@ export function TransactionTable({
               ))}
             </tbody>
           </table>
-        </div>
-
-        <div className="px-6 py-4 border-t border-border bg-card flex flex-col sm:flex-row items-center justify-between gap-4">
-          <p className="text-sm font-medium text-muted-foreground">
-            Mostrando{" "}
-            <span className="text-foreground">1-{transactions.length}</span> de{" "}
-            <span className="text-foreground">152</span> transações
-          </p>
-          <div className="flex items-center gap-1.5">
-            <button className="px-3 py-1.5 text-sm font-medium text-foreground border border-border/50 rounded-lg hover:bg-muted transition-colors">
-              Anterior
-            </button>
-            <button className="px-3 py-1.5 text-sm font-medium text-white bg-[#2B5BBA] rounded-lg shadow-sm">
-              1
-            </button>
-            <button className="px-3 py-1.5 text-sm font-medium text-foreground border border-border/50 rounded-lg hover:bg-muted transition-colors">
-              2
-            </button>
-            <button className="px-3 py-1.5 text-sm font-medium text-foreground border border-border/50 rounded-lg hover:bg-muted transition-colors">
-              3
-            </button>
-            <button className="px-3 py-1.5 text-sm font-medium text-foreground border border-border/50 rounded-lg hover:bg-muted transition-colors">
-              Próximo
-            </button>
-          </div>
         </div>
       </div>
 

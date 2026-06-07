@@ -1,4 +1,9 @@
-import { TrendingUp, TrendingDown, BarChart3 } from "lucide-react";
+import {
+  TrendingUp,
+  TrendingDown,
+  BarChart3,
+  type LucideIcon,
+} from "lucide-react";
 
 interface ReportSummaryCardProps {
   type: "income" | "expense" | "balance";
@@ -6,7 +11,10 @@ interface ReportSummaryCardProps {
   percentageChange: number;
 }
 
-const typeConfig = {
+const typeConfig: Record<
+  string,
+  { label: string; icon: LucideIcon; iconBg: string; iconColor: string }
+> = {
   income: {
     label: "Total de Receitas",
     icon: TrendingUp,
@@ -62,17 +70,13 @@ export function ReportSummaryCard({
 
       <div className="flex items-center gap-1.5 pt-3 border-t border-border/50">
         <span
-          className={`text-sm font-bold ${
-            isPositive
-              ? "text-emerald-600 dark:text-emerald-400"
-              : "text-red-600 dark:text-red-400"
-          }`}
+          className={`text-sm font-bold ${isPositive ? "text-emerald-600 dark:text-emerald-400" : "text-red-600 dark:text-red-400"}`}
         >
           {isPositive ? "+" : ""}
           {percentageChange}%
         </span>
         <span className="text-sm font-medium text-muted-foreground">
-          vs. mês anterior
+          vs. período anterior
         </span>
       </div>
     </div>

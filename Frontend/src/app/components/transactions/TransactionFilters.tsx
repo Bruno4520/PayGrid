@@ -1,110 +1,126 @@
-import { Filter } from "lucide-react";
+import { Search } from "lucide-react";
+import { useState } from "react";
 
-interface TransactionFiltersProps {
-  onFilter: () => void;
+export interface FilterOptions {
+  search: string;
+  period: string;
+  account: string;
+  category: string;
+  type: string;
 }
 
-export function TransactionFilters({ onFilter }: TransactionFiltersProps) {
+interface TransactionFiltersProps {
+  onFilterChange: (filters: FilterOptions) => void;
+  accounts: string[];
+  categories: string[];
+}
+
+export function TransactionFilters({
+  onFilterChange,
+  accounts,
+  categories,
+}: TransactionFiltersProps) {
+  const [filters, setFilters] = useState<FilterOptions>({
+    search: "",
+    period: "Todos",
+    account: "Todas",
+    category: "Todas",
+    type: "Todos",
+  });
+
+  const handleChange = (key: keyof FilterOptions, value: string) => {
+    const newFilters = { ...filters, [key]: value };
+    setFilters(newFilters);
+    onFilterChange(newFilters);
+  };
+
   return (
     <div className="bg-card rounded-2xl p-6 shadow-sm border border-border/50 mb-6 transition-colors duration-300">
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-4 mb-2">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
         <div>
-          <label
-            htmlFor="period"
-            className="block text-sm font-medium text-foreground mb-2"
-          >
+          <label className="block text-sm font-medium text-foreground mb-2">
             Período
           </label>
           <select
-            id="period"
+            value={filters.period}
+            onChange={(e) => handleChange("period", e.target.value)}
             className="w-full px-4 py-2.5 bg-muted/50 border border-transparent rounded-xl text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-[#2B5BBA] focus:bg-background transition-all"
           >
-            <option>Este mês</option>
-            <option>Últimos 30 dias</option>
-            <option>Últimos 7 dias</option>
-            <option>Mês passado</option>
-            <option>Este ano</option>
-            <option>Personalizado</option>
+            <option value="Todos">Todos os períodos</option>
+            <option value="Este mês">Este mês</option>
+            <option value="Últimos 30 dias">Últimos 30 dias</option>
+            <option value="Mês passado">Mês passado</option>
+            <option value="Este ano">Este ano</option>
           </select>
         </div>
 
         <div>
-          <label
-            htmlFor="account"
-            className="block text-sm font-medium text-foreground mb-2"
-          >
-            Conta
+          <label className="block text-sm font-medium text-foreground mb-2">
+            Conta / Cartão
           </label>
           <select
-            id="account"
+            value={filters.account}
+            onChange={(e) => handleChange("account", e.target.value)}
             className="w-full px-4 py-2.5 bg-muted/50 border border-transparent rounded-xl text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-[#2B5BBA] focus:bg-background transition-all"
           >
-            <option>Todas as contas</option>
-            <option>Conta Corrente</option>
-            <option>Poupança</option>
-            <option>Cartão Crédito</option>
+            <option value="Todas">Todas as contas</option>
+            {accounts.map((acc) => (
+              <option key={acc} value={acc}>
+                {acc}
+              </option>
+            ))}
           </select>
         </div>
 
         <div>
-          <label
-            htmlFor="category"
-            className="block text-sm font-medium text-foreground mb-2"
-          >
+          <label className="block text-sm font-medium text-foreground mb-2">
             Categoria
           </label>
           <select
-            id="category"
+            value={filters.category}
+            onChange={(e) => handleChange("category", e.target.value)}
             className="w-full px-4 py-2.5 bg-muted/50 border border-transparent rounded-xl text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-[#2B5BBA] focus:bg-background transition-all"
           >
-            <option>Todas</option>
-            <option>Salário</option>
-            <option>Alimentação</option>
-            <option>Transporte</option>
-            <option>Casa</option>
-            <option>Entretenimento</option>
-            <option>Renda Extra</option>
+            <option value="Todas">Todas as categorias</option>
+            {categories.map((cat) => (
+              <option key={cat} value={cat}>
+                {cat}
+              </option>
+            ))}
           </select>
         </div>
 
         <div>
-          <label
-            htmlFor="type"
-            className="block text-sm font-medium text-foreground mb-2"
-          >
+          <label className="block text-sm font-medium text-foreground mb-2">
             Tipo
           </label>
           <select
-            id="type"
+            value={filters.type}
+            onChange={(e) => handleChange("type", e.target.value)}
             className="w-full px-4 py-2.5 bg-muted/50 border border-transparent rounded-xl text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-[#2B5BBA] focus:bg-background transition-all"
           >
-            <option>Todos</option>
-            <option>Receita</option>
-            <option>Despesa</option>
+            <option value="Todos">Todos os tipos</option>
+            <option value="RECEITA">Receita</option>
+            <option value="DESPESA">Despesa</option>
           </select>
         </div>
 
-        <div className="md:col-span-2 lg:col-span-2">
-          <label
-            htmlFor="search"
-            className="block text-sm font-medium text-foreground mb-2"
-          >
+        <div>
+          <label className="block text-sm font-medium text-foreground mb-2">
             Buscar
           </label>
-          <div className="flex gap-2">
-            <input
-              id="search"
-              type="text"
-              placeholder="Ex: Supermercado..."
-              className="flex-1 px-4 py-2.5 bg-muted/50 border border-transparent rounded-xl text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-[#2B5BBA] focus:bg-background transition-all"
+          <div className="relative">
+            <Search
+              className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground"
+              size={16}
             />
-            <button
-              onClick={onFilter}
-              className="px-6 py-2.5 bg-[#2B5BBA] text-white rounded-xl hover:opacity-90 font-medium transition-opacity flex items-center gap-2 shrink-0 focus:outline-none focus:ring-2 focus:ring-[#2B5BBA] focus:ring-offset-2 dark:focus:ring-offset-zinc-900"
-            >
-              <Filter size={18} />
-              <span className="hidden xl:inline">Filtrar</span>
-            </button>
+            <input
+              type="text"
+              value={filters.search}
+              onChange={(e) => handleChange("search", e.target.value)}
+              placeholder="Descrição..."
+              className="w-full pl-9 pr-4 py-2.5 bg-muted/50 border border-transparent rounded-xl text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-[#2B5BBA] focus:bg-background transition-all"
+            />
           </div>
         </div>
       </div>

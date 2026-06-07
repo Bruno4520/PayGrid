@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Eye, EyeOff } from "lucide-react";
 
-interface SignupFormData {
+export interface SignupFormData {
   fullName: string;
   email: string;
   password: string;
@@ -9,11 +9,12 @@ interface SignupFormData {
   acceptedTerms: boolean;
 }
 
-interface SignupCardProps {
+export interface SignupCardProps {
   onSignup: (data: SignupFormData) => void;
   onLogin: () => void;
   onTermsClick: () => void;
   onPrivacyClick: () => void;
+  isLoading?: boolean;
 }
 
 export function SignupCard({
@@ -21,6 +22,7 @@ export function SignupCard({
   onLogin,
   onTermsClick,
   onPrivacyClick,
+  isLoading = false,
 }: SignupCardProps) {
   const [formData, setFormData] = useState<SignupFormData>({
     fullName: "",
@@ -121,12 +123,11 @@ export function SignupCard({
           <input
             id="fullName"
             type="text"
+            disabled={isLoading}
             value={formData.fullName}
             onChange={(e) => handleInputChange("fullName", e.target.value)}
             placeholder="Digite seu nome completo"
-            className={`w-full px-4 py-3 bg-muted/50 border ${
-              errors.fullName ? "border-red-500" : "border-transparent"
-            } rounded-xl text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-[#2B5BBA] focus:bg-background transition-all`}
+            className={`w-full px-4 py-3 bg-muted/50 border ${errors.fullName ? "border-red-500" : "border-transparent"} rounded-xl text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-[#2B5BBA] focus:bg-background transition-all`}
             required
           />
           {errors.fullName && (
@@ -141,12 +142,11 @@ export function SignupCard({
           <input
             id="email"
             type="email"
+            disabled={isLoading}
             value={formData.email}
             onChange={(e) => handleInputChange("email", e.target.value)}
             placeholder="seu@email.com"
-            className={`w-full px-4 py-3 bg-muted/50 border ${
-              errors.email ? "border-red-500" : "border-transparent"
-            } rounded-xl text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-[#2B5BBA] focus:bg-background transition-all`}
+            className={`w-full px-4 py-3 bg-muted/50 border ${errors.email ? "border-red-500" : "border-transparent"} rounded-xl text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-[#2B5BBA] focus:bg-background transition-all`}
             required
           />
           {errors.email && (
@@ -162,16 +162,16 @@ export function SignupCard({
             <input
               id="password"
               type={showPassword ? "text" : "password"}
+              disabled={isLoading}
               value={formData.password}
               onChange={(e) => handleInputChange("password", e.target.value)}
               placeholder="Digite sua senha"
-              className={`w-full px-4 pr-12 py-3 bg-muted/50 border ${
-                errors.password ? "border-red-500" : "border-transparent"
-              } rounded-xl text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-[#2B5BBA] focus:bg-background transition-all`}
+              className={`w-full px-4 pr-12 py-3 bg-muted/50 border ${errors.password ? "border-red-500" : "border-transparent"} rounded-xl text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-[#2B5BBA] focus:bg-background transition-all`}
               required
             />
             <button
               type="button"
+              disabled={isLoading}
               onClick={() => setShowPassword(!showPassword)}
               className="absolute right-4 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
             >
@@ -196,18 +196,18 @@ export function SignupCard({
             <input
               id="confirmPassword"
               type={showConfirmPassword ? "text" : "password"}
+              disabled={isLoading}
               value={formData.confirmPassword}
               onChange={(e) =>
                 handleInputChange("confirmPassword", e.target.value)
               }
               placeholder="Digite novamente sua senha"
-              className={`w-full px-4 pr-12 py-3 bg-muted/50 border ${
-                errors.confirmPassword ? "border-red-500" : "border-transparent"
-              } rounded-xl text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-[#2B5BBA] focus:bg-background transition-all`}
+              className={`w-full px-4 pr-12 py-3 bg-muted/50 border ${errors.confirmPassword ? "border-red-500" : "border-transparent"} rounded-xl text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-[#2B5BBA] focus:bg-background transition-all`}
               required
             />
             <button
               type="button"
+              disabled={isLoading}
               onClick={() => setShowConfirmPassword(!showConfirmPassword)}
               className="absolute right-4 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
             >
@@ -229,6 +229,7 @@ export function SignupCard({
             <input
               id="terms"
               type="checkbox"
+              disabled={isLoading}
               checked={formData.acceptedTerms}
               onChange={(e) =>
                 handleInputChange("acceptedTerms", e.target.checked)
@@ -261,9 +262,14 @@ export function SignupCard({
 
         <button
           type="submit"
-          className="w-full bg-[#2B5BBA] text-white font-medium py-3.5 rounded-xl hover:opacity-90 transition-opacity focus:outline-none focus:ring-2 focus:ring-[#2B5BBA] focus:ring-offset-2 dark:focus:ring-offset-zinc-900"
+          disabled={isLoading}
+          className="w-full bg-[#2B5BBA] text-white font-medium py-3.5 rounded-xl hover:opacity-90 transition-opacity focus:outline-none focus:ring-2 focus:ring-[#2B5BBA] focus:ring-offset-2 dark:focus:ring-offset-zinc-900 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
         >
-          Criar conta
+          {isLoading ? (
+            <span className="animate-pulse">Criando conta...</span>
+          ) : (
+            "Criar conta"
+          )}
         </button>
 
         <div className="text-center pt-4 border-t border-border/50">
@@ -272,6 +278,7 @@ export function SignupCard({
           </span>
           <button
             type="button"
+            disabled={isLoading}
             onClick={onLogin}
             className="text-sm font-medium text-[#2B5BBA] hover:text-[#1e4594] dark:hover:text-[#5588ff] transition-colors"
           >

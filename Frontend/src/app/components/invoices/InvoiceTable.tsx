@@ -56,7 +56,10 @@ export function InvoiceTable({ month, year, items }: InvoiceTableProps) {
           </thead>
           <tbody className="divide-y divide-border/50">
             {items.map((item) => (
-              <tr key={item.id} className="hover:bg-muted/30 transition-colors">
+              <tr
+                key={item.id}
+                className="hover:bg-muted/30 transition-colors group"
+              >
                 <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-muted-foreground">
                   {item.date}
                 </td>
@@ -65,7 +68,7 @@ export function InvoiceTable({ month, year, items }: InvoiceTableProps) {
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap">
                   <span
-                    className={`inline-block px-3 py-1 rounded-full text-xs font-bold tracking-wide ${item.categoryColor}`}
+                    className={`inline-block px-3 py-1 rounded-md text-xs font-bold tracking-wide ${item.categoryColor}`}
                   >
                     {item.category}
                   </span>
@@ -85,9 +88,9 @@ export function InvoiceTable({ month, year, items }: InvoiceTableProps) {
               <tr>
                 <td
                   colSpan={5}
-                  className="px-6 py-8 text-center text-sm font-medium text-muted-foreground"
+                  className="px-6 py-12 text-center text-sm font-medium text-muted-foreground"
                 >
-                  Nenhuma transação encontrada nesta fatura.
+                  Nenhuma compra encontrada para esta fatura.
                 </td>
               </tr>
             )}

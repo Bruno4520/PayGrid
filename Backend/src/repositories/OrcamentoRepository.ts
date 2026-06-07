@@ -30,40 +30,73 @@ export class OrcamentoRepository {
     });
   }
 
-  async buscarTodosPorUsuarioId(usuarioId: number) {
-    return prisma.orcamento.findMany({
-      where: { usuarioId },
-      include: {
-        categoria: {
-          select: { nome: true },
-        },
+  async buscarOrcamentosDoMes(usuarioId: number, mes: number, ano: number) {
+    const categorias = await prisma.categoria.findMany({
+      where: {
+        usuarioId,
+        sistema: false,
       },
-      orderBy: [{ ano: "desc" }, { mes: "desc" }],
+      orderBy: { nome: "asc" },
     });
+
+    const orcamentos = await prisma.orcamento.findMany({
+      where: { usuarioId, mes, ano },
+    });
+
+    const resultado = await Promise.all(
+      categorias.map(async (cat) => {
+        const orcamento = orcamentos.find((o) => o.categoriaId === cat.id);
+        const dataInicio = new Date(ano, mes - 1, 1);
+        const dataFim = new Date(ano, mes, 0, 23, 59, 59);
+
+        const transacoesAVista = await prisma.transacao.aggregate({
+          _sum: { valor: true },
+          where: {
+            categoriaId: cat.id,
+            tipo: "DESPESA",
+            formaPagamento: { not: "CREDITO" },
+            data: { gte: dataInicio, lte: dataFim },
+            faturaPaga: null,
+          },
+        });
+
+        const parcelas = await prisma.parcela.aggregate({
+          _sum: { valor: true },
+          where: {
+            transacao: { categoriaId: cat.id },
+            fatura: { mes: mes, ano: ano },
+          },
+        });
+
+        const gastoTotal =
+          (transacoesAVista._sum.valor || 0) + (parcelas._sum.valor || 0);
+
+        return {
+          categoria: cat,
+          orcamento: orcamento || null,
+          gastoAtual: gastoTotal,
+        };
+      }),
+    );
+
+    return resultado;
   }
 
-  async calcularGastoAtual(orcamento: {
-    categoriaId: number;
-    mes: number;
-    ano: number;
-  }) {
-    const dataInicio = new Date(orcamento.ano, orcamento.mes - 1, 1);
-    const dataFim = new Date(orcamento.ano, orcamento.mes, 0);
-
-    const resultado = await prisma.transacao.aggregate({
-      _sum: {
-        valor: true,
-      },
+  async deletar(
+    usuarioId: number,
+    categoriaId: number,
+    mes: number,
+    ano: number,
+  ) {
+    return prisma.orcamento.delete({
       where: {
-        categoriaId: orcamento.categoriaId,
-        tipo: "DESPESA",
-        data: {
-          gte: dataInicio,
-          lte: dataFim,
+        usuarioId_categoriaId_mes_ano: {
+          usuarioId,
+          categoriaId,
+          mes,
+          ano,
         },
       },
     });
-
-    return resultado._sum.valor || 0;
   }
 }

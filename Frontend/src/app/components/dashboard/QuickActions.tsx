@@ -18,17 +18,15 @@ function QuickActionCard({
   return (
     <button
       onClick={onClick}
-      className="group flex items-center gap-4 p-4 bg-background hover:bg-muted/50 rounded-xl border border-border/50 hover:border-border transition-all text-left w-full"
+      className="group flex flex-col items-center justify-center p-4 bg-muted/30 hover:bg-muted/50 rounded-2xl border border-border/50 hover:border-border transition-all text-center w-full h-full shadow-sm hover:shadow-md"
     >
       <div
-        className={`w-12 h-12 ${bgColor} rounded-xl flex items-center justify-center flex-shrink-0 transition-transform group-hover:scale-105`}
+        className={`w-12 h-12 ${bgColor} rounded-xl flex items-center justify-center flex-shrink-0 mb-3 transition-transform group-hover:scale-110`}
       >
         {icon}
       </div>
-      <div className="flex-1 min-w-0">
-        <h4 className="font-semibold text-foreground mb-0.5">{title}</h4>
-        <p className="text-sm text-muted-foreground truncate">{description}</p>
-      </div>
+      <h4 className="font-bold text-foreground text-sm mb-1">{title}</h4>
+      <p className="text-xs text-muted-foreground font-medium">{description}</p>
     </button>
   );
 }
@@ -47,10 +45,10 @@ export function QuickActions({
   onPayInvoice,
 }: QuickActionsProps) {
   return (
-    <div className="bg-card text-card-foreground rounded-2xl p-6 shadow-sm border border-border/50 transition-colors duration-300 h-full">
-      <h3 className="text-lg font-bold tracking-tight mb-5">Ações Rápidas</h3>
+    <div className="bg-card text-card-foreground rounded-3xl p-6 shadow-sm border border-border/50 transition-colors duration-300 h-full flex flex-col">
+      <h3 className="text-lg font-bold tracking-tight mb-6">Ações Rápidas</h3>
 
-      <div className="space-y-3">
+      <div className="grid grid-cols-2 gap-4 flex-1">
         <QuickActionCard
           icon={
             <Plus
@@ -59,7 +57,7 @@ export function QuickActions({
             />
           }
           title="Nova Receita"
-          description="Adicionar entrada de dinheiro"
+          description="Entrada de valor"
           bgColor="bg-emerald-500/10"
           onClick={onNewIncome}
         />
@@ -67,7 +65,7 @@ export function QuickActions({
         <QuickActionCard
           icon={<Minus className="text-red-600 dark:text-red-400" size={20} />}
           title="Nova Despesa"
-          description="Registrar um gasto"
+          description="Registrar gasto"
           bgColor="bg-red-500/10"
           onClick={onNewExpense}
         />
@@ -93,7 +91,7 @@ export function QuickActions({
             />
           }
           title="Pagar Fatura"
-          description="Realizar o pagamento de uma fatura"
+          description="Quitar cartão"
           bgColor="bg-purple-500/10"
           onClick={onPayInvoice}
         />

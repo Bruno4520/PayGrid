@@ -33,7 +33,7 @@ export function Footer() {
               </h3>
             </div>
             <p className="text-sm text-muted-foreground leading-relaxed">
-              Simulador educacional de investimentos para planejamento
+              Plataforma completa de gestão de despesas e planejamento
               financeiro inteligente.
             </p>
           </div>
@@ -44,7 +44,7 @@ export function Footer() {
               <li>
                 <a
                   href="#"
-                  className="text-muted-foreground hover:text-foreground transition-colors"
+                  className="text-muted-foreground cursor-default pointer-events-none"
                 >
                   Central de Ajuda
                 </a>
@@ -52,7 +52,7 @@ export function Footer() {
               <li>
                 <a
                   href="#"
-                  className="text-muted-foreground hover:text-foreground transition-colors"
+                  className="text-muted-foreground cursor-default pointer-events-none"
                 >
                   Termos de Uso
                 </a>
@@ -60,7 +60,7 @@ export function Footer() {
               <li>
                 <a
                   href="#"
-                  className="text-muted-foreground hover:text-foreground transition-colors"
+                  className="text-muted-foreground cursor-default pointer-events-none"
                 >
                   Política de Privacidade
                 </a>

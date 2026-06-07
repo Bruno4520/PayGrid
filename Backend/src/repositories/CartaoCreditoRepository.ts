@@ -38,9 +38,27 @@ export class CartaoCreditoRepository {
   }
 
   async buscarTodosPorUsuarioId(usuarioId: number) {
-    return prisma.cartaoCredito.findMany({
+    const cartoes = await prisma.cartaoCredito.findMany({
       where: { usuarioId },
+      include: {
+        faturas: {
+          where: { estaPaga: false },
+        },
+      },
       orderBy: { nome: "asc" },
+    });
+
+    return cartoes.map((cartao) => {
+      const usedLimit = cartao.faturas.reduce(
+        (acc, fatura) => acc + fatura.valorTotal,
+        0,
+      );
+
+      const { faturas, ...cartaoSemFaturas } = cartao;
+      return {
+        ...cartaoSemFaturas,
+        usedLimit,
+      };
     });
   }
 

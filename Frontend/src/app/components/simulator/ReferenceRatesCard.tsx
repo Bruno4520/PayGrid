@@ -2,10 +2,10 @@ import { TrendingUp } from "lucide-react";
 
 export function ReferenceRatesCard() {
   const rates = [
-    { label: "CDI Atual", value: "13,65% a.a." },
-    { label: "SELIC Atual", value: "13,75% a.a." },
-    { label: "IPCA (12 meses)", value: "4,62%" },
-    { label: "Última atualização:", value: "Dez/2026" },
+    { label: "CDI Atual", value: "10,40% a.a." },
+    { label: "SELIC Atual", value: "10,50% a.a." },
+    { label: "IPCA (12 meses)", value: "4,50%" },
+    { label: "Última atualização:", value: "Jun/2026" },
   ];
 
   return (
@@ -17,9 +17,7 @@ export function ReferenceRatesCard() {
             className="text-[#2B5BBA] dark:text-[#5588ff]"
           />
         </div>
-        <h3 className="text-xl font-bold text-foreground">
-          Taxas de Referência
-        </h3>
+        <h3 className="text-xl font-bold text-foreground">Taxas de Mercado</h3>
       </div>
 
       <div className="space-y-4">

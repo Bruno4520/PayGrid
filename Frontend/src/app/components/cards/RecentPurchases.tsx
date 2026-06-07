@@ -8,25 +8,17 @@ import {
   Edit2,
   Trash2,
 } from "lucide-react";
-
-export interface Purchase {
-  id: string;
-  merchant: string;
-  date: string;
-  time: string;
-  amount: number;
-  category: string;
-  icon: "shopping" | "fuel" | "food" | "music" | "other";
-}
+import type { Transaction } from "../transactions/TransactionTable";
 
 interface RecentPurchasesProps {
   cardId: string;
+  purchases: Transaction[];
   onNewPurchase: (cardId: string) => void;
-  onEditPurchase: (purchaseId: string) => void;
-  onDeletePurchase: (purchaseId: string) => void;
+  onEditPurchase: (transaction: Transaction) => void;
+  onDeletePurchase: (purchaseId: number) => void;
 }
 
-const iconMap = {
+const iconMap: Record<string, any> = {
   shopping: ShoppingCart,
   fuel: Fuel,
   food: Utensils,
@@ -34,7 +26,7 @@ const iconMap = {
   other: FileText,
 };
 
-const iconColorMap = {
+const iconColorMap: Record<string, string> = {
   shopping: "bg-red-500/10 text-red-600 dark:text-red-400",
   fuel: "bg-blue-500/10 text-blue-600 dark:text-blue-400",
   food: "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400",
@@ -44,92 +36,58 @@ const iconColorMap = {
 
 export function RecentPurchases({
   cardId,
+  purchases,
   onNewPurchase,
   onEditPurchase,
   onDeletePurchase,
 }: RecentPurchasesProps) {
-  const getMockPurchases = (id: string): Purchase[] => {
-    if (id === "1") {
-      return [
-        {
-          id: "p1",
-          merchant: "Churrascaria Fogo Forte",
-          date: "17/05/2026",
-          time: "13:45",
-          amount: 185.9,
-          category: "Alimentação",
-          icon: "food",
-        },
-        {
-          id: "p2",
-          merchant: "Supermercado Extra",
-          date: "14/05/2026",
-          time: "18:30",
-          amount: 680.0,
-          category: "Alimentação",
-          icon: "shopping",
-        },
-        {
-          id: "p3",
-          merchant: "Amazon Brasil (Parcela 3/10)",
-          date: "02/05/2026",
-          time: "09:15",
-          amount: 234.1,
-          category: "Eletrónicos",
-          icon: "shopping",
-        },
-      ];
-    }
-    return [
-      {
-        id: "p4",
-        merchant: "Posto Ipiranga",
-        date: "17/05/2026",
-        time: "19:20",
-        amount: 250.0,
-        category: "Transporte",
-        icon: "fuel",
-      },
-      {
-        id: "p5",
-        merchant: "Uber (Trabalho)",
-        date: "15/05/2026",
-        time: "08:15",
-        amount: 45.0,
-        category: "Transporte",
-        icon: "other",
-      },
-      {
-        id: "p6",
-        merchant: "Spotify Premium",
-        date: "13/05/2026",
-        time: "10:00",
-        amount: 21.9,
-        category: "Lazer",
-        icon: "music",
-      },
-      {
-        id: "p7",
-        merchant: "Internet (Claro)",
-        date: "11/05/2026",
-        time: "14:00",
-        amount: 119.9,
-        category: "Moradia",
-        icon: "other",
-      },
-      {
-        id: "p8",
-        merchant: "Shopee",
-        date: "05/05/2026",
-        time: "21:30",
-        amount: 263.2,
-        category: "Compras",
-        icon: "shopping",
-      },
-    ];
-  };
+  const formattedPurchases = purchases.map((t) => {
+    const dateObj = new Date(t.data);
+    dateObj.setMinutes(dateObj.getMinutes() + dateObj.getTimezoneOffset());
 
-  const purchases = getMockPurchases(cardId);
+    const catName = t.categoria?.nome?.toLowerCase() || "";
+    let icon = "other";
+    if (
+      catName.includes("alimentação") ||
+      catName.includes("comida") ||
+      catName.includes("restaurante")
+    )
+      icon = "food";
+    else if (
+      catName.includes("transporte") ||
+      catName.includes("combustível") ||
+      catName.includes("posto")
+    )
+      icon = "fuel";
+    else if (
+      catName.includes("compra") ||
+      catName.includes("mercado") ||
+      catName.includes("shopping")
+    )
+      icon = "shopping";
+    else if (
+      catName.includes("lazer") ||
+      catName.includes("música") ||
+      catName.includes("entretenimento")
+    )
+      icon = "music";
+
+    return {
+      id: t.id,
+      rawTransaction: t,
+      merchant: t.descricao,
+      date: dateObj.toLocaleDateString("pt-BR"),
+      time: new Date(t.data).toLocaleTimeString("pt-BR", {
+        hour: "2-digit",
+        minute: "2-digit",
+      }),
+      amount: t.valor,
+      type: t.tipo,
+      category: t.categoria?.nome || "Outros",
+      icon: icon,
+      parcelas: t.parcelas?.length || 1,
+    };
+  });
 
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat("pt-BR", {
@@ -146,13 +104,12 @@ export function RecentPurchases({
           onClick={() => onNewPurchase(cardId)}
           className="inline-flex items-center gap-1.5 bg-[#2B5BBA]/10 text-[#2B5BBA] dark:text-[#5588ff] px-3 py-1.5 rounded-lg hover:bg-[#2B5BBA]/20 transition-colors font-medium text-sm"
         >
-          <Plus size={16} />
-          Nova Compra
+          <Plus size={16} /> Nova Compra
         </button>
       </div>
 
       <div className="space-y-2">
-        {purchases.map((purchase) => {
+        {formattedPurchases.map((purchase) => {
           const Icon = iconMap[purchase.icon] || iconMap.other;
           return (
             <div
@@ -168,16 +125,25 @@ export function RecentPurchases({
                 <div className="flex-1">
                   <p className="text-sm font-semibold text-foreground mb-0.5">
                     {purchase.merchant}
+                    {purchase.parcelas > 1 && (
+                      <span className="ml-2 text-xs font-bold text-[#2B5BBA]">
+                        ({purchase.parcelas}x)
+                      </span>
+                    )}
                   </p>
                   <p className="text-xs font-medium text-muted-foreground">
-                    {purchase.date} às {purchase.time}
+                    {purchase.date} às{" "}
+                    {purchase.time === "00:00" ? "12:00" : purchase.time}
                   </p>
                 </div>
               </div>
 
               <div className="text-right group-hover:opacity-0 transition-opacity absolute right-4">
-                <p className="text-sm font-bold tracking-tight text-foreground">
-                  -{formatCurrency(purchase.amount)}
+                <p
+                  className={`text-sm font-bold tracking-tight ${purchase.type === "RECEITA" ? "text-emerald-600 dark:text-emerald-400" : "text-red-600 dark:text-red-400"}`}
+                >
+                  {purchase.type === "RECEITA" ? "+" : "-"}{" "}
+                  {formatCurrency(purchase.amount)}
                 </p>
                 <p className="text-xs font-medium text-muted-foreground mt-0.5">
                   {purchase.category}
@@ -186,16 +152,14 @@ export function RecentPurchases({
 
               <div className="flex items-center justify-end gap-1 opacity-0 group-hover:opacity-100 transition-opacity absolute right-4">
                 <button
-                  onClick={() => onEditPurchase(purchase.id)}
+                  onClick={() => onEditPurchase(purchase.rawTransaction)}
                   className="p-2 text-muted-foreground hover:text-[#2B5BBA] hover:bg-blue-500/10 rounded-lg transition-colors"
-                  title="Editar compra"
                 >
                   <Edit2 size={18} />
                 </button>
                 <button
                   onClick={() => onDeletePurchase(purchase.id)}
                   className="p-2 text-muted-foreground hover:text-red-600 hover:bg-red-500/10 rounded-lg transition-colors"
-                  title="Excluir compra"
                 >
                   <Trash2 size={18} />
                 </button>
@@ -204,7 +168,7 @@ export function RecentPurchases({
           );
         })}
 
-        {purchases.length === 0 && (
+        {formattedPurchases.length === 0 && (
           <div className="py-8 text-center">
             <p className="text-sm font-medium text-muted-foreground">
               Nenhuma compra recente registrada neste cartão.

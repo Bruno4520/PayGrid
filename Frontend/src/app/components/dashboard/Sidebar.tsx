@@ -5,7 +5,6 @@ import {
   CreditCard,
   FileText,
   PieChart,
-  BarChart3,
   Calculator,
 } from "lucide-react";
 import { Link, useLocation } from "react-router";
@@ -21,7 +20,7 @@ function SidebarItem({ to, icon, label, isActive }: SidebarItemProps) {
   return (
     <Link
       to={to}
-      className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all font-medium ${
+      className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all font-semibold ${
         isActive
           ? "bg-[#2B5BBA] text-white shadow-md shadow-blue-900/20"
           : "text-muted-foreground hover:bg-muted hover:text-foreground"
@@ -50,18 +49,14 @@ export function Sidebar() {
     { to: "/contas", icon: <Building2 size={20} />, label: "Contas" },
     { to: "/cartoes", icon: <CreditCard size={20} />, label: "Cartões" },
     { to: "/faturas", icon: <FileText size={20} />, label: "Faturas" },
-    {
-      to: "/orcamentos",
-      icon: <PieChart size={20} />,
-      label: "Orçamentos",
-    },
-    { to: "/relatorios", icon: <BarChart3 size={20} />, label: "Relatórios" },
+    { to: "/orcamentos", icon: <PieChart size={20} />, label: "Orçamentos" },
+    { to: "/relatorios", icon: <PieChart size={20} />, label: "Relatórios" },
     { to: "/simulador", icon: <Calculator size={20} />, label: "Simulador" },
   ];
 
   return (
     <aside className="w-64 bg-card border-r border-border min-h-screen flex flex-col shrink-0 transition-colors duration-300">
-      <div className="p-6 flex items-center gap-3 mb-2">
+      <div className="p-6 flex items-center gap-3 mb-2 mt-2">
         <div className="w-10 h-10 bg-[#2B5BBA] rounded-xl flex items-center justify-center shadow-lg">
           <svg
             width="24"
@@ -90,7 +85,7 @@ export function Sidebar() {
         </h1>
       </div>
 
-      <nav className="flex-1 px-4 space-y-1 overflow-y-auto">
+      <nav className="flex-1 px-4 py-4 space-y-1.5 overflow-y-auto">
         {menuItems.map((item) => (
           <SidebarItem
             key={item.to}

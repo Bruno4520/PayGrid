@@ -19,6 +19,7 @@ interface DadosCriarTransacao {
   contaId: number;
   categoriaId?: number;
   observacoes?: string;
+  data: Date | string;
 }
 
 interface DadosCompraCredito extends Omit<
@@ -29,17 +30,44 @@ interface DadosCompraCredito extends Omit<
   numeroParcelas: number;
 }
 
-interface DadosAtualizarTransacao extends Omit<
-  DadosCriarTransacao,
-  "formaPagamento"
-> {}
-
+interface DadosAtualizarTransacao extends DadosCriarTransacao {}
 interface DadosAtualizarCompraCredito extends DadosCompraCredito {}
 
+interface CartaoBase {
+  diaFechamentoFatura: number;
+  diaVencimentoFatura: number;
+}
+
 export class TransacaoRepository {
+  async buscarTodasPorUsuarioId(usuarioId: number) {
+    return prisma.transacao.findMany({
+      where: {
+        OR: [{ conta: { usuarioId } }, { cartaoCredito: { usuarioId } }],
+      },
+      include: {
+        conta: true,
+        cartaoCredito: true,
+        categoria: true,
+        parcelas: true,
+      },
+      orderBy: { data: "desc" },
+    });
+  }
+
   async criar(dados: DadosCriarTransacao) {
     return prisma.$transaction(async (tx) => {
-      const transacao = await tx.transacao.create({ data: dados });
+      const transacao = await tx.transacao.create({
+        data: {
+          descricao: dados.descricao,
+          valor: dados.valor,
+          tipo: dados.tipo,
+          formaPagamento: dados.formaPagamento,
+          contaId: dados.contaId,
+          categoriaId: dados.categoriaId || null,
+          observacoes: dados.observacoes || null,
+          data: new Date(dados.data),
+        },
+      });
 
       const valorAtualizacao =
         dados.tipo === "RECEITA" ? dados.valor : -dados.valor;
@@ -57,10 +85,7 @@ export class TransacaoRepository {
     });
   }
 
-  async criarCompraCredito(
-    dados: DadosCompraCredito,
-    cartao: { diaFechamentoFatura: number; diaVencimentoFatura: number },
-  ) {
+  async criarCompraCredito(dados: DadosCompraCredito, cartao: CartaoBase) {
     return prisma.$transaction(async (tx) => {
       const transacao = await tx.transacao.create({
         data: {
@@ -71,6 +96,7 @@ export class TransacaoRepository {
           categoriaId: dados.categoriaId || null,
           cartaoCreditoId: dados.cartaoCreditoId,
           observacoes: dados.observacoes || null,
+          data: new Date(dados.data),
         },
       });
 
@@ -79,7 +105,7 @@ export class TransacaoRepository {
       );
 
       for (let i = 1; i <= dados.numeroParcelas; i++) {
-        const dataCompra = new Date();
+        const dataCompra = new Date(dados.data);
 
         let mesFatura = dataCompra.getMonth();
         let anoFatura = dataCompra.getFullYear();
@@ -223,9 +249,13 @@ export class TransacaoRepository {
           descricao: novosDados.descricao,
           valor: novosDados.valor,
           tipo: novosDados.tipo,
+          formaPagamento: novosDados.formaPagamento,
           contaId: novosDados.contaId || null,
           categoriaId: novosDados.categoriaId || null,
           observacoes: novosDados.observacoes || null,
+          data: novosDados.data
+            ? new Date(novosDados.data)
+            : transacaoAntiga.data,
         },
       });
     });
@@ -234,7 +264,7 @@ export class TransacaoRepository {
   async atualizarCredito(
     transacaoAntiga: Transacao,
     novosDados: DadosAtualizarCompraCredito,
-    cartao: any,
+    cartao: CartaoBase,
   ) {
     return prisma.$transaction(async (tx) => {
       const parcelas = await tx.parcela.findMany({
@@ -262,7 +292,9 @@ export class TransacaoRepository {
       );
 
       for (let i = 1; i <= novosDados.numeroParcelas; i++) {
-        const dataCompra = new Date(transacaoAntiga.data);
+        const dataCompra = novosDados.data
+          ? new Date(novosDados.data)
+          : new Date(transacaoAntiga.data);
 
         let mesFatura = dataCompra.getMonth();
         let anoFatura = dataCompra.getFullYear();
@@ -270,7 +302,6 @@ export class TransacaoRepository {
         if (dataCompra.getDate() >= cartao.diaFechamentoFatura) mesFatura++;
 
         mesFatura += i - 1;
-
         anoFatura += Math.floor(mesFatura / 12);
         mesFatura = mesFatura % 12;
 
@@ -321,6 +352,9 @@ export class TransacaoRepository {
           categoriaId: novosDados.categoriaId || null,
           cartaoCreditoId: novosDados.cartaoCreditoId,
           observacoes: novosDados.observacoes || null,
+          data: novosDados.data
+            ? new Date(novosDados.data)
+            : transacaoAntiga.data,
         },
       });
     });

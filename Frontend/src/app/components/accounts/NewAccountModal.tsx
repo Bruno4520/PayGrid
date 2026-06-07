@@ -1,12 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { X, Building, Sprout, Wallet } from "lucide-react";
 
-interface NewAccountModalProps {
-  isOpen: boolean;
-  onClose: () => void;
-  onSave?: (account: AccountData) => void;
-}
-
 export interface AccountData {
   name: string;
   type: "checking" | "savings" | "wallet";
@@ -15,10 +9,25 @@ export interface AccountData {
   accountNumber?: string;
 }
 
+export interface ExtendedAccount extends AccountData {
+  id: string;
+  typeName: string;
+  icon: string;
+  details: string;
+}
+
+interface NewAccountModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  onSave?: (account: AccountData) => void;
+  accountToEdit?: ExtendedAccount | null;
+}
+
 export function NewAccountModal({
   isOpen,
   onClose,
   onSave,
+  accountToEdit = null,
 }: NewAccountModalProps) {
   const [type, setType] = useState<"checking" | "savings" | "wallet">(
     "checking",
@@ -49,6 +58,58 @@ export function NewAccountModal({
     setBalanceNum(num);
   };
 
+  const handleAgencyChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const onlyNumbers = e.target.value.replace(/\D/g, "").slice(0, 4);
+    setAgency(onlyNumbers);
+  };
+
+  const handleAccountNumberChange = (
+    e: React.ChangeEvent<HTMLInputElement>,
+  ) => {
+    let numbers = e.target.value.replace(/\D/g, "").slice(0, 10);
+    if (numbers.length > 1) {
+      numbers = numbers.replace(/(\d+)(\d{1})$/, "$1-$2");
+    }
+    setAccountNumber(numbers);
+  };
+
+  useEffect(() => {
+    if (isOpen) {
+      document.body.style.overflow = "hidden";
+      if (accountToEdit) {
+        setType(accountToEdit.type);
+        setName(accountToEdit.name);
+        setBalanceNum(accountToEdit.balance);
+        setBalanceStr(
+          accountToEdit.balance.toLocaleString("pt-BR", {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2,
+          }),
+        );
+
+        setAgency(
+          accountToEdit.agency
+            ? accountToEdit.agency.replace(/\D/g, "").slice(0, 4)
+            : "",
+        );
+
+        let accNum = accountToEdit.accountNumber
+          ? accountToEdit.accountNumber.replace(/\D/g, "").slice(0, 10)
+          : "";
+        if (accNum.length > 1)
+          accNum = accNum.replace(/(\d+)(\d{1})$/, "$1-$2");
+        setAccountNumber(accNum);
+      } else {
+        handleReset();
+      }
+    } else {
+      document.body.style.overflow = "unset";
+    }
+    return () => {
+      document.body.style.overflow = "unset";
+    };
+  }, [isOpen, accountToEdit]);
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (onSave) {
@@ -59,26 +120,21 @@ export function NewAccountModal({
         ...(type !== "wallet" && { agency, accountNumber }),
       });
     }
-    handleClose();
   };
 
-  const handleClose = () => {
+  const handleReset = () => {
     setType("checking");
     setName("");
     setBalanceStr("");
     setBalanceNum(0);
     setAgency("");
     setAccountNumber("");
-    onClose();
   };
 
-  useEffect(() => {
-    if (isOpen) document.body.style.overflow = "hidden";
-    else document.body.style.overflow = "unset";
-    return () => {
-      document.body.style.overflow = "unset";
-    };
-  }, [isOpen]);
+  const handleClose = () => {
+    handleReset();
+    onClose();
+  };
 
   if (!isOpen) return null;
 
@@ -91,10 +147,11 @@ export function NewAccountModal({
         className="absolute inset-0 bg-black/60 backdrop-blur-sm transition-opacity"
         onClick={handleClose}
       />
-
       <div className="relative bg-card text-card-foreground rounded-3xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto border border-border/50 animate-in fade-in zoom-in-95 duration-200">
         <div className="sticky top-0 bg-card/80 backdrop-blur-md border-b border-border/50 px-8 py-5 flex items-center justify-between rounded-t-3xl z-10">
-          <h2 className="text-xl font-bold tracking-tight">Nova Conta</h2>
+          <h2 className="text-xl font-bold tracking-tight">
+            {accountToEdit ? "Editar Conta" : "Nova Conta"}
+          </h2>
           <button
             onClick={handleClose}
             className="text-muted-foreground hover:text-foreground hover:bg-muted p-2 rounded-xl transition-colors"
@@ -159,10 +216,9 @@ export function NewAccountModal({
                 required
               />
             </div>
-
             <div>
               <label className="block text-sm font-medium text-foreground mb-2">
-                Saldo Inicial
+                Saldo {accountToEdit ? "Atual" : "Inicial"}
               </label>
               <div className="relative">
                 <span className="absolute left-4 top-1/2 -translate-y-1/2 font-bold text-[#2B5BBA]">
@@ -189,9 +245,10 @@ export function NewAccountModal({
                 <input
                   type="text"
                   value={agency}
-                  onChange={(e) => setAgency(e.target.value)}
-                  placeholder="Ex: 0001"
-                  className="w-full px-4 py-3 bg-background border border-border rounded-xl text-foreground focus:outline-none focus:ring-2 focus:ring-[#2B5BBA] transition-all"
+                  onChange={handleAgencyChange}
+                  placeholder="0000"
+                  maxLength={4}
+                  className="w-full px-4 py-3 bg-background border border-border rounded-xl text-foreground focus:outline-none focus:ring-2 focus:ring-[#2B5BBA] transition-all font-mono tracking-wider"
                   required
                 />
               </div>
@@ -202,9 +259,10 @@ export function NewAccountModal({
                 <input
                   type="text"
                   value={accountNumber}
-                  onChange={(e) => setAccountNumber(e.target.value)}
-                  placeholder="Ex: 12345-6"
-                  className="w-full px-4 py-3 bg-background border border-border rounded-xl text-foreground focus:outline-none focus:ring-2 focus:ring-[#2B5BBA] transition-all"
+                  onChange={handleAccountNumberChange}
+                  placeholder="00000-0"
+                  maxLength={11}
+                  className="w-full px-4 py-3 bg-background border border-border rounded-xl text-foreground focus:outline-none focus:ring-2 focus:ring-[#2B5BBA] transition-all font-mono tracking-wider"
                   required
                 />
               </div>
@@ -223,7 +281,7 @@ export function NewAccountModal({
               type="submit"
               className="flex-1 py-3.5 rounded-xl font-bold text-white bg-[#2B5BBA] hover:bg-[#1e4594] transition-all shadow-lg shadow-blue-500/20"
             >
-              Criar Conta
+              {accountToEdit ? "Salvar Alterações" : "Criar Conta"}
             </button>
           </div>
         </form>

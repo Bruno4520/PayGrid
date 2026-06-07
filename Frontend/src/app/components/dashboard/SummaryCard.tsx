@@ -26,7 +26,7 @@ export function SummaryCard({
   progressBar,
 }: SummaryCardProps) {
   return (
-    <div className="bg-card text-card-foreground rounded-2xl p-6 border border-border/50 shadow-sm transition-colors duration-300">
+    <div className="bg-card text-card-foreground rounded-3xl p-6 border border-border/50 shadow-sm transition-colors duration-300">
       <div className="flex items-start justify-between mb-4">
         <div
           className={`w-12 h-12 ${iconBgColor} rounded-xl flex items-center justify-center`}
@@ -36,7 +36,7 @@ export function SummaryCard({
 
         {trend && (
           <span
-            className={`flex items-center text-sm font-medium px-2 py-1 rounded-md ${
+            className={`flex items-center text-sm font-bold px-2 py-1 rounded-md ${
               trend.isPositive
                 ? "text-emerald-600 bg-emerald-500/10 dark:text-emerald-400"
                 : "text-red-600 bg-red-500/10 dark:text-red-400"
@@ -56,12 +56,15 @@ export function SummaryCard({
 
       {progressBar && (
         <div className="mt-4">
-          <div className="w-full h-2 bg-muted rounded-full overflow-hidden">
+          <div className="w-full bg-muted rounded-full h-2 overflow-hidden">
             <div
-              className={`h-full ${progressBar.color} transition-all duration-500 ease-in-out`}
-              style={{ width: `${progressBar.percentage}%` }}
-            ></div>
+              className={`h-full rounded-full transition-all duration-1000 ${progressBar.color}`}
+              style={{ width: `${Math.min(progressBar.percentage, 100)}%` }}
+            />
           </div>
+          <p className="text-xs text-muted-foreground mt-2 font-medium">
+            {progressBar.percentage.toFixed(1)}% utilizado
+          </p>
         </div>
       )}
     </div>

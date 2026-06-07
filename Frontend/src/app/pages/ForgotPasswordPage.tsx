@@ -1,13 +1,32 @@
 import { useNavigate } from "react-router";
+import { toast } from "sonner";
 import { ForgotPasswordCard } from "../components/password/ForgotPasswordCard";
-
 import { ThemeToggle } from "../components/ui/theme-toggle";
+import { api } from "../../services/api";
 
 export function ForgotPasswordPage() {
   const navigate = useNavigate();
 
-  const handleSendLink = (email: string) => {
-    console.log("Enviar link de recuperação para:", email);
+  const handleSendLink = async (email: string) => {
+    try {
+      const response = await api.post("/usuarios/recuperar-senha", { email });
+
+      if (response.data.debugLink) {
+        toast.success("Link de recuperação gerado!", {
+          description: (
+            <a
+              href={response.data.debugLink}
+              className="underline font-bold text-[#2B5BBA]"
+            >
+              Clique aqui para redefinir a senha
+            </a>
+          ),
+          duration: 10000,
+        });
+      }
+    } catch (error: any) {
+      toast.error("Não foi possível processar a solicitação.");
+    }
   };
 
   const handleBackToLogin = () => {
