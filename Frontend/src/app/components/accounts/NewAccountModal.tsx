@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { X, Building, Sprout, Wallet } from "lucide-react";
+import { X, Building, Sprout, Wallet, Loader2 } from "lucide-react";
 
 export interface AccountData {
   name: string;
@@ -19,7 +19,7 @@ export interface ExtendedAccount extends AccountData {
 interface NewAccountModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onSave?: (account: AccountData) => void;
+  onSave?: (account: AccountData) => void | Promise<void>;
   accountToEdit?: ExtendedAccount | null;
 }
 
@@ -37,6 +37,7 @@ export function NewAccountModal({
   const [balanceNum, setBalanceNum] = useState(0);
   const [agency, setAgency] = useState("");
   const [accountNumber, setAccountNumber] = useState("");
+  const [isSaving, setIsSaving] = useState(false);
 
   const formatCurrency = (value: string) => {
     if (!value) return { formatted: "", num: 0 };
@@ -86,7 +87,6 @@ export function NewAccountModal({
             maximumFractionDigits: 2,
           }),
         );
-
         setAgency(
           accountToEdit.agency
             ? accountToEdit.agency.replace(/\D/g, "").slice(0, 4)
@@ -110,15 +110,20 @@ export function NewAccountModal({
     };
   }, [isOpen, accountToEdit]);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (onSave) {
-      onSave({
-        name,
-        type,
-        balance: balanceNum,
-        ...(type !== "wallet" && { agency, accountNumber }),
-      });
+    setIsSaving(true);
+    try {
+      if (onSave) {
+        await onSave({
+          name,
+          type,
+          balance: balanceNum,
+          ...(type !== "wallet" && { agency, accountNumber }),
+        });
+      }
+    } finally {
+      setIsSaving(false);
     }
   };
 
@@ -279,9 +284,15 @@ export function NewAccountModal({
             </button>
             <button
               type="submit"
-              className="flex-1 py-3.5 rounded-xl font-bold text-white bg-[#2B5BBA] hover:bg-[#1e4594] transition-all shadow-lg shadow-blue-500/20"
+              disabled={isSaving}
+              className="flex-1 py-3.5 rounded-xl font-bold text-white bg-[#2B5BBA] hover:bg-[#1e4594] transition-all shadow-lg shadow-blue-500/20 disabled:opacity-70 disabled:cursor-not-allowed flex justify-center items-center gap-2"
             >
-              {accountToEdit ? "Salvar Alterações" : "Criar Conta"}
+              {isSaving && <Loader2 size={18} className="animate-spin" />}
+              {isSaving
+                ? "Salvando..."
+                : accountToEdit
+                  ? "Salvar Alterações"
+                  : "Criar Conta"}
             </button>
           </div>
         </form>

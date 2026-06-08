@@ -10,6 +10,7 @@ import {
   GraduationCap,
   Zap,
   MoreHorizontal,
+  Loader2,
 } from "lucide-react";
 
 export interface CategoryInitialData {
@@ -33,7 +34,7 @@ export interface CategorySavePayload {
 interface CategoryModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onSave: (categoryData: CategorySavePayload) => void;
+  onSave: (categoryData: CategorySavePayload) => void | Promise<void>;
   initialData?: CategoryInitialData | null;
 }
 
@@ -74,11 +75,14 @@ export function CategoryModal({
   const [valor, setValor] = useState("");
   const [valorNumerico, setValorNumerico] = useState(0);
 
+  const [isSaving, setIsSaving] = useState(false);
+
   const isEditing = !!initialData?.id;
   const isSystem = !!initialData?.isSystem;
 
   useEffect(() => {
     if (isOpen) {
+      document.body.style.overflow = "hidden";
       if (initialData) {
         setNome(initialData.nome || "");
         setDescricao(initialData.descricao || "");
@@ -103,7 +107,13 @@ export function CategoryModal({
         setValor("");
         setValorNumerico(0);
       }
+    } else {
+      document.body.style.overflow = "unset";
     }
+
+    return () => {
+      document.body.style.overflow = "unset";
+    };
   }, [isOpen, initialData]);
 
   const handleValorChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -120,21 +130,29 @@ export function CategoryModal({
     );
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    onSave({
-      nome,
-      descricao,
-      icone: selectedIcon,
-      cor: selectedColor,
-      plannedBudget: valorNumerico,
-    });
+    setIsSaving(true);
+    try {
+      await onSave({
+        nome,
+        descricao,
+        icone: selectedIcon,
+        cor: selectedColor,
+        plannedBudget: valorNumerico,
+      });
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm"
+      onWheel={(e) => e.stopPropagation()}
+    >
       <div className="bg-card w-full max-w-md rounded-3xl shadow-2xl overflow-hidden border border-border/50 animate-in fade-in zoom-in-95 duration-200">
         <div className="flex justify-between items-center p-6 border-b border-border/50 bg-muted/30">
           <h2 className="text-xl font-bold text-foreground tracking-tight">
@@ -242,9 +260,11 @@ export function CategoryModal({
             </button>
             <button
               type="submit"
-              className="flex-1 py-3.5 rounded-xl font-bold text-white bg-[#2B5BBA] hover:bg-[#1e4594] transition-all shadow-lg shadow-blue-500/20"
+              disabled={isSaving}
+              className="flex-1 py-3.5 rounded-xl font-bold text-white bg-[#2B5BBA] hover:bg-[#1e4594] transition-all shadow-lg shadow-blue-500/20 disabled:opacity-70 disabled:cursor-not-allowed flex justify-center items-center gap-2"
             >
-              Salvar Alterações
+              {isSaving && <Loader2 size={18} className="animate-spin" />}
+              {isSaving ? "Salvando..." : "Salvar Alterações"}
             </button>
           </div>
         </form>

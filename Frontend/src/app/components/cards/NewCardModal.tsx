@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from "react";
-import { X } from "lucide-react";
+import { X, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import type { CardItemData } from "./CreditCardItem";
 
 interface NewCardModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onSave?: (data: any) => void;
+  onSave?: (data: any) => void | Promise<void>;
   cardToEdit?: CardItemData | null;
 }
 
@@ -22,6 +22,7 @@ export function NewCardModal({
   const [closingDay, setClosingDay] = useState(5);
   const [dueDay, setDueDay] = useState(12);
   const [lastDigits, setLastDigits] = useState("");
+  const [isSaving, setIsSaving] = useState(false);
 
   const formatCurrency = (amount: number) => {
     return amount.toLocaleString("pt-BR", {
@@ -77,7 +78,7 @@ export function NewCardModal({
     onClose();
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     if (lastDigits.length !== 4) {
@@ -85,14 +86,19 @@ export function NewCardModal({
       return;
     }
 
-    if (onSave) {
-      onSave({
-        nome: name,
-        limite: limitNum,
-        diaFechamentoFatura: closingDay,
-        diaVencimentoFatura: dueDay,
-        ultimosDigitos: lastDigits,
-      });
+    setIsSaving(true);
+    try {
+      if (onSave) {
+        await onSave({
+          nome: name,
+          limite: limitNum,
+          diaFechamentoFatura: closingDay,
+          diaVencimentoFatura: dueDay,
+          ultimosDigitos: lastDigits,
+        });
+      }
+    } finally {
+      setIsSaving(false);
     }
   };
 
@@ -213,9 +219,15 @@ export function NewCardModal({
             </button>
             <button
               type="submit"
-              className="flex-1 py-3.5 bg-[#2B5BBA] text-white rounded-xl font-bold shadow-lg shadow-blue-500/20 hover:bg-[#1e4594] transition-all"
+              disabled={isSaving}
+              className="flex-1 py-3.5 bg-[#2B5BBA] text-white rounded-xl font-bold shadow-lg shadow-blue-500/20 hover:bg-[#1e4594] transition-all disabled:opacity-70 disabled:cursor-not-allowed flex items-center justify-center gap-2"
             >
-              {cardToEdit ? "Salvar Alterações" : "Criar Cartão"}
+              {isSaving && <Loader2 size={18} className="animate-spin" />}
+              {isSaving
+                ? "Salvando..."
+                : cardToEdit
+                  ? "Salvar Alterações"
+                  : "Criar Cartão"}
             </button>
           </div>
         </form>

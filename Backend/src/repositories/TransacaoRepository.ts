@@ -200,6 +200,8 @@ export class TransacaoRepository {
         select: { faturaId: true, valor: true },
       });
 
+      const faturasAfetadas = new Set<number>();
+
       for (const parcela of parcelas) {
         await tx.fatura.update({
           where: { id: parcela.faturaId },
@@ -209,11 +211,24 @@ export class TransacaoRepository {
             },
           },
         });
+        faturasAfetadas.add(parcela.faturaId);
       }
 
       await tx.transacao.delete({
         where: { id: transacaoId },
       });
+
+      for (const faturaId of faturasAfetadas) {
+        const qtdParcelas = await tx.parcela.count({
+          where: { faturaId },
+        });
+
+        if (qtdParcelas === 0) {
+          await tx.fatura.delete({
+            where: { id: faturaId },
+          });
+        }
+      }
     });
   }
 
@@ -272,97 +287,118 @@ export class TransacaoRepository {
     novosDados: DadosAtualizarCompraCredito,
     cartao: CartaoBase,
   ) {
-    return prisma.$transaction(async (tx) => {
-      const parcelas = await tx.parcela.findMany({
-        where: { transacaoId: transacaoAntiga.id },
-        select: { faturaId: true, valor: true },
-      });
-
-      for (const parcela of parcelas) {
-        await tx.fatura.update({
-          where: { id: parcela.faturaId },
-          data: {
-            valorTotal: {
-              decrement: parcela.valor,
-            },
-          },
+    return prisma.$transaction(
+      async (tx) => {
+        const parcelas = await tx.parcela.findMany({
+          where: { transacaoId: transacaoAntiga.id },
+          select: { faturaId: true, valor: true },
         });
-      }
 
-      await tx.parcela.deleteMany({
-        where: { transacaoId: transacaoAntiga.id },
-      });
+        const faturasAfetadas = new Set<number>();
 
-      const valorParcela = parseFloat(
-        (novosDados.valor / novosDados.numeroParcelas).toFixed(2),
-      );
+        for (const parcela of parcelas) {
+          await tx.fatura.update({
+            where: { id: parcela.faturaId },
+            data: {
+              valorTotal: {
+                decrement: parcela.valor,
+              },
+            },
+          });
+          faturasAfetadas.add(parcela.faturaId);
+        }
 
-      for (let i = 1; i <= novosDados.numeroParcelas; i++) {
-        const dataCompra = novosDados.data
-          ? new Date(novosDados.data)
-          : new Date(transacaoAntiga.data);
+        await tx.parcela.deleteMany({
+          where: { transacaoId: transacaoAntiga.id },
+        });
 
-        let mesFatura = dataCompra.getMonth();
-        let anoFatura = dataCompra.getFullYear();
+        for (const faturaId of faturasAfetadas) {
+          const qtdParcelas = await tx.parcela.count({
+            where: { faturaId },
+          });
 
-        if (dataCompra.getDate() >= cartao.diaFechamentoFatura) mesFatura++;
+          if (qtdParcelas === 0) {
+            await tx.fatura.delete({
+              where: { id: faturaId },
+            });
+          }
+        }
 
-        mesFatura += i - 1;
-        anoFatura += Math.floor(mesFatura / 12);
-        mesFatura = mesFatura % 12;
-
-        const dataVencimentoFatura = new Date(
-          anoFatura,
-          mesFatura + 1,
-          cartao.diaVencimentoFatura,
+        const valorParcela = parseFloat(
+          (novosDados.valor / novosDados.numeroParcelas).toFixed(2),
         );
 
-        const fatura = await tx.fatura.upsert({
-          where: {
-            cartaoCreditoId_mes_ano: {
-              cartaoCreditoId: novosDados.cartaoCreditoId,
+        for (let i = 1; i <= novosDados.numeroParcelas; i++) {
+          const dataCompra = novosDados.data
+            ? new Date(novosDados.data)
+            : new Date(transacaoAntiga.data);
+
+          let mesFatura = dataCompra.getMonth();
+          let anoFatura = dataCompra.getFullYear();
+
+          if (dataCompra.getDate() >= cartao.diaFechamentoFatura) mesFatura++;
+
+          mesFatura += i - 1;
+          anoFatura += Math.floor(mesFatura / 12);
+          mesFatura = mesFatura % 12;
+
+          const dataVencimentoFatura = new Date(
+            anoFatura,
+            mesFatura + 1,
+            cartao.diaVencimentoFatura,
+          );
+
+          const fatura = await tx.fatura.upsert({
+            where: {
+              cartaoCreditoId_mes_ano: {
+                cartaoCreditoId: novosDados.cartaoCreditoId,
+                mes: mesFatura + 1,
+                ano: anoFatura,
+              },
+            },
+            update: {},
+            create: {
               mes: mesFatura + 1,
               ano: anoFatura,
+              valorTotal: 0,
+              dataVencimento: dataVencimentoFatura,
+              cartaoCreditoId: novosDados.cartaoCreditoId,
             },
-          },
-          update: {},
-          create: {
-            mes: mesFatura + 1,
-            ano: anoFatura,
-            valorTotal: 0,
-            dataVencimento: dataVencimentoFatura,
-            cartaoCreditoId: novosDados.cartaoCreditoId,
-          },
-        });
+          });
 
-        await tx.parcela.create({
+          await tx.parcela.create({
+            data: {
+              numeroParcela: i,
+              valor: valorParcela,
+              transacaoId: transacaoAntiga.id,
+              faturaId: fatura.id,
+            },
+          });
+
+          await tx.fatura.update({
+            where: { id: fatura.id },
+            data: { valorTotal: { increment: valorParcela } },
+          });
+        }
+
+        return tx.transacao.update({
+          where: { id: transacaoAntiga.id },
           data: {
-            numeroParcela: i,
-            valor: valorParcela,
-            transacaoId: transacaoAntiga.id,
-            faturaId: fatura.id,
+            descricao: novosDados.descricao,
+            valor: novosDados.valor,
+            categoriaId: novosDados.categoriaId || null,
+            cartaoCreditoId: novosDados.cartaoCreditoId,
+            observacoes: novosDados.observacoes || null,
+            data: novosDados.data
+              ? new Date(novosDados.data)
+              : transacaoAntiga.data,
           },
         });
-
-        await tx.fatura.update({
-          where: { id: fatura.id },
-          data: { valorTotal: { increment: valorParcela } },
-        });
-      }
-
-      return tx.transacao.update({
-        where: { id: transacaoAntiga.id },
-        data: {
-          descricao: novosDados.descricao,
-          valor: novosDados.valor,
-          categoriaId: novosDados.categoriaId || null,
-          cartaoCreditoId: novosDados.cartaoCreditoId,
-          observacoes: novosDados.observacoes || null,
-          data: novosDados.data
-            ? new Date(novosDados.data)
-            : transacaoAntiga.data,
-        },
-      });
-    });
+      },
+      {
+        maxWait: 5000,
+        timeout: 15000,
+      },
+    );
   }
 }

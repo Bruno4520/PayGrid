@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { X } from "lucide-react";
+import { X, Loader2, Info } from "lucide-react";
 import { toast } from "sonner";
 import { isAxiosError } from "axios";
 import { api } from "../../../services/api";
@@ -558,6 +558,18 @@ export function NewTransactionModal({
               )}
             </div>
           )}
+          {formaPagamento === "cartao" &&
+            tipoCartao === "credito" &&
+            parcelas > 1 && (
+              <div className="flex items-start gap-3 p-4 bg-blue-500/10 border border-blue-500/20 rounded-xl text-blue-700 dark:text-blue-400 mt-2">
+                <Info size={20} className="shrink-0 mt-0.5" />
+                <p className="text-sm font-medium leading-relaxed">
+                  As compras parceladas calculam e preenchem as faturas dos
+                  próximos meses automaticamente. O processamento pode levar
+                  alguns segundos, por favor, não feche a janela.
+                </p>
+              </div>
+            )}
 
           <div className="flex gap-4 pt-6 border-t border-border/50 mt-8">
             <button
@@ -570,10 +582,15 @@ export function NewTransactionModal({
             <button
               type="submit"
               disabled={isLoading}
-              className={`flex-1 py-3.5 rounded-xl font-bold text-white transition-all shadow-lg ${type === "receita" ? "bg-emerald-500 hover:bg-emerald-600 shadow-emerald-500/20" : "bg-red-500 hover:bg-red-600 shadow-red-500/20"} disabled:opacity-70 disabled:cursor-not-allowed`}
+              className={`flex-1 py-3.5 rounded-xl font-bold text-white transition-all shadow-lg flex items-center justify-center gap-2 ${type === "receita" ? "bg-emerald-500 hover:bg-emerald-600 shadow-emerald-500/20" : "bg-red-500 hover:bg-red-600 shadow-red-500/20"} disabled:opacity-70 disabled:cursor-not-allowed`}
             >
+              {isLoading && <Loader2 size={18} className="animate-spin" />}
               {isLoading
-                ? "Salvando..."
+                ? parcelas > 1 &&
+                  formaPagamento === "cartao" &&
+                  tipoCartao === "credito"
+                  ? "Processando..."
+                  : "Salvando..."
                 : transactionToEdit
                   ? "Salvar Alterações"
                   : "Salvar Transação"}

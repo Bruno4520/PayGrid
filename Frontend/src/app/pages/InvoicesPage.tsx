@@ -1,4 +1,5 @@
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useRef } from "react";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 import { Download, CheckCircle, X } from "lucide-react";
 import { toast } from "sonner";
 import { isAxiosError } from "axios";
@@ -69,6 +70,12 @@ export function InvoicesPage() {
   const [contas, setContas] = useState<Conta[]>([]);
   const [selectedContaId, setSelectedContaId] = useState("");
   const [isPaying, setIsPaying] = useState(false);
+
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
+
+  const [isDragging, setIsDragging] = useState(false);
+  const [startX, setStartX] = useState(0);
+  const [scrollLeft, setScrollLeft] = useState(0);
 
   const fetchInvoices = async (currentSelectedId?: number | null) => {
     try {
@@ -190,6 +197,40 @@ export function InvoicesPage() {
     return "open";
   };
 
+  const scrollCards = (direction: "left" | "right") => {
+    if (scrollContainerRef.current) {
+      const scrollAmount = 340;
+
+      scrollContainerRef.current.scrollBy({
+        left: direction === "left" ? -scrollAmount : scrollAmount,
+        behavior: "smooth",
+      });
+    }
+  };
+
+  const handleMouseDown = (e: React.MouseEvent) => {
+    setIsDragging(true);
+
+    if (scrollContainerRef.current) {
+      setStartX(e.pageX - scrollContainerRef.current.offsetLeft);
+      setScrollLeft(scrollContainerRef.current.scrollLeft);
+    }
+  };
+
+  const handleMouseLeave = () => setIsDragging(false);
+  const handleMouseUp = () => setIsDragging(false);
+
+  const handleMouseMove = (e: React.MouseEvent) => {
+    if (!isDragging || !scrollContainerRef.current) return;
+
+    e.preventDefault();
+
+    const x = e.pageX - scrollContainerRef.current.offsetLeft;
+    const walk = (x - startX) * 1.5;
+
+    scrollContainerRef.current.scrollLeft = scrollLeft - walk;
+  };
+
   return (
     <div className="flex min-h-screen bg-background transition-colors duration-300">
       <Sidebar />
@@ -224,32 +265,59 @@ export function InvoicesPage() {
             </div>
           ) : (
             <>
-              <div className="flex overflow-x-auto hide-scrollbar gap-6 mb-8 py-6 px-4 -mx-4">
-                {invoices.map((invoice) => {
-                  const dateObj = new Date(invoice.dataVencimento);
-                  dateObj.setMinutes(
-                    dateObj.getMinutes() + dateObj.getTimezoneOffset(),
-                  );
+              <div className="mb-8">
+                <div className="flex items-center justify-end gap-2 mb-4">
+                  <button
+                    onClick={() => scrollCards("left")}
+                    className="p-2 bg-card border border-border/50 hover:bg-muted rounded-xl transition-all shadow-sm"
+                  >
+                    <ChevronLeft size={20} />
+                  </button>
 
-                  return (
-                    <div key={invoice.id} className="min-w-[300px] shrink-0">
-                      <InvoiceCard
-                        cardName={
-                          invoice.cartaoCredito.nome || "Cartão de Crédito"
-                        }
-                        month={monthNames[invoice.mes - 1]}
-                        year={invoice.ano}
-                        status={getStatus(invoice)}
-                        dueDate={dateObj.toLocaleDateString("pt-BR")}
-                        totalAmount={invoice.valorTotal}
-                        purchasesCount={invoice.parcelas.length}
-                        isActive={selectedInvoiceId === invoice.id}
-                        onClick={() => setSelectedInvoiceId(invoice.id)}
-                      />
-                    </div>
-                  );
-                })}
-                <div className="w-1 shrink-0" aria-hidden="true"></div>
+                  <button
+                    onClick={() => scrollCards("right")}
+                    className="p-2 bg-card border border-border/50 hover:bg-muted rounded-xl transition-all shadow-sm"
+                  >
+                    <ChevronRight size={20} />
+                  </button>
+                </div>
+
+                <div
+                  ref={scrollContainerRef}
+                  onMouseDown={handleMouseDown}
+                  onMouseLeave={handleMouseLeave}
+                  onMouseUp={handleMouseUp}
+                  onMouseMove={handleMouseMove}
+                  className={`flex overflow-x-auto hide-scrollbar gap-6 py-6 px-4 -mx-4 transition-all ${
+                    isDragging ? "cursor-grabbing select-none" : "cursor-grab"
+                  }`}
+                >
+                  {invoices.map((invoice) => {
+                    const dateObj = new Date(invoice.dataVencimento);
+                    dateObj.setMinutes(
+                      dateObj.getMinutes() + dateObj.getTimezoneOffset(),
+                    );
+
+                    return (
+                      <div key={invoice.id} className="min-w-[300px] shrink-0">
+                        <InvoiceCard
+                          cardName={
+                            invoice.cartaoCredito.nome || "Cartão de Crédito"
+                          }
+                          month={monthNames[invoice.mes - 1]}
+                          year={invoice.ano}
+                          status={getStatus(invoice)}
+                          dueDate={dateObj.toLocaleDateString("pt-BR")}
+                          totalAmount={invoice.valorTotal}
+                          purchasesCount={invoice.parcelas.length}
+                          isActive={selectedInvoiceId === invoice.id}
+                          onClick={() => setSelectedInvoiceId(invoice.id)}
+                        />
+                      </div>
+                    );
+                  })}
+                  <div className="w-1 shrink-0" aria-hidden="true"></div>
+                </div>
               </div>
 
               <div className="mb-8">
