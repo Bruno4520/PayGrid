@@ -31,29 +31,35 @@ export class UsuarioRepository {
   async criar(dados: { nome: string; email: string; senha: string }) {
     const senhaHash = await argon2.hash(dados.senha);
 
-    return prisma.$transaction(async (tx) => {
-      const usuario = await tx.usuario.create({
-        data: {
-          nome: dados.nome,
-          email: dados.email,
-          senha: senhaHash,
-        },
-        select: { id: true, nome: true, email: true },
-      });
+    return prisma.$transaction(
+      async (tx) => {
+        const usuario = await tx.usuario.create({
+          data: {
+            nome: dados.nome,
+            email: dados.email,
+            senha: senhaHash,
+          },
+          select: { id: true, nome: true, email: true },
+        });
 
-      const categorias = CATEGORIAS_BASICAS.map((c) => ({
-        ...c,
-        usuarioId: usuario.id,
-      }));
+        const categorias = CATEGORIAS_BASICAS.map((c) => ({
+          ...c,
+          usuarioId: usuario.id,
+        }));
 
-      await tx.categoria.createMany({ data: categorias });
+        await tx.categoria.createMany({ data: categorias });
 
-      if (process.env.ENABLE_SEED === "true") {
-        await populateUser(tx, usuario.id);
-      }
+        if (process.env.ENABLE_SEED === "true") {
+          await populateUser(tx, usuario.id);
+        }
 
-      return usuario;
-    });
+        return usuario;
+      },
+      {
+        maxWait: 10000,
+        timeout: 60000,
+      },
+    );
   }
 
   async buscarPorEmail(email: string) {

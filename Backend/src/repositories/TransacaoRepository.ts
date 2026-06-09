@@ -225,42 +225,48 @@ export class TransacaoRepository {
   }
 
   async deletarCredito(transacaoId: number) {
-    return prisma.$transaction(async (tx) => {
-      const parcelas = await tx.parcela.findMany({
-        where: { transacaoId: transacaoId },
-        select: { faturaId: true, valor: true },
-      });
+    return prisma.$transaction(
+      async (tx) => {
+        const parcelas = await tx.parcela.findMany({
+          where: { transacaoId: transacaoId },
+          select: { faturaId: true, valor: true },
+        });
 
-      const faturasAfetadas = new Set<number>();
+        const faturasAfetadas = new Set<number>();
 
-      for (const parcela of parcelas) {
-        await tx.fatura.update({
-          where: { id: parcela.faturaId },
-          data: {
-            valorTotal: {
-              decrement: parcela.valor,
+        for (const parcela of parcelas) {
+          await tx.fatura.update({
+            where: { id: parcela.faturaId },
+            data: {
+              valorTotal: {
+                decrement: parcela.valor,
+              },
             },
-          },
-        });
-        faturasAfetadas.add(parcela.faturaId);
-      }
-
-      await tx.transacao.delete({
-        where: { id: transacaoId },
-      });
-
-      for (const faturaId of faturasAfetadas) {
-        const qtdParcelas = await tx.parcela.count({
-          where: { faturaId },
-        });
-
-        if (qtdParcelas === 0) {
-          await tx.fatura.delete({
-            where: { id: faturaId },
           });
+          faturasAfetadas.add(parcela.faturaId);
         }
-      }
-    });
+
+        await tx.transacao.delete({
+          where: { id: transacaoId },
+        });
+
+        for (const faturaId of faturasAfetadas) {
+          const qtdParcelas = await tx.parcela.count({
+            where: { faturaId },
+          });
+
+          if (qtdParcelas === 0) {
+            await tx.fatura.delete({
+              where: { id: faturaId },
+            });
+          }
+        }
+      },
+      {
+        maxWait: 5000,
+        timeout: 15000,
+      },
+    );
   }
 
   async buscarTodasPorContaId(contaId: number) {
