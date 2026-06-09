@@ -20,6 +20,8 @@ interface DadosCriarTransacao {
   categoriaId?: number;
   observacoes?: string;
   data: Date | string;
+  tipoTransferencia?: "interna" | "externa" | string;
+  contaDestinoId?: number;
 }
 
 interface DadosCompraCredito extends Omit<
@@ -80,6 +82,35 @@ export class TransacaoRepository {
           },
         },
       });
+
+      if (dados.tipoTransferencia === "interna" && dados.contaDestinoId) {
+        const tipoDestino = dados.tipo === "RECEITA" ? "DESPESA" : "RECEITA";
+
+        await tx.transacao.create({
+          data: {
+            descricao: `Transferência: ${dados.descricao}`,
+            valor: dados.valor,
+            tipo: tipoDestino,
+            formaPagamento: dados.formaPagamento,
+            contaId: dados.contaDestinoId,
+            categoriaId: dados.categoriaId || null,
+            observacoes: dados.observacoes || null,
+            data: new Date(dados.data),
+          },
+        });
+
+        const valorAtualizacaoDestino =
+          tipoDestino === "RECEITA" ? dados.valor : -dados.valor;
+
+        await tx.conta.update({
+          where: { id: dados.contaDestinoId },
+          data: {
+            saldo: {
+              increment: valorAtualizacaoDestino,
+            },
+          },
+        });
+      }
 
       return transacao;
     });

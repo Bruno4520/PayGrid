@@ -84,7 +84,7 @@ export function TransactionTable({
   return (
     <>
       <div className="bg-card rounded-2xl shadow-sm border border-border/50 overflow-hidden transition-colors duration-300">
-        <div className="overflow-x-auto">
+        <div className="overflow-x-auto hide-scrollbar">
           <table className="w-full text-left border-collapse">
             <thead className="bg-muted/50 border-b border-border">
               <tr>
@@ -124,7 +124,10 @@ export function TransactionTable({
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-foreground">
                       {formatDate(transaction.data)}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-foreground">
+                    <td
+                      className="px-6 py-4 text-sm font-medium text-foreground max-w-[150px] sm:max-w-[200px] md:max-w-[250px] truncate"
+                      title={transaction.descricao}
+                    >
                       {transaction.descricao}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-muted-foreground">
@@ -132,7 +135,10 @@ export function TransactionTable({
                         ? "Pagamento de Cartão"
                         : transaction.categoria?.nome || "-"}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-muted-foreground">
+                    <td
+                      className="px-6 py-4 text-sm text-muted-foreground max-w-[120px] sm:max-w-[180px] truncate"
+                      title={getAccountName(transaction)}
+                    >
                       {getAccountName(transaction)}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-muted-foreground">

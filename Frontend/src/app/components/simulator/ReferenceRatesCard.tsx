@@ -2,9 +2,9 @@ import { TrendingUp } from "lucide-react";
 
 export function ReferenceRatesCard() {
   const rates = [
-    { label: "CDI Atual", value: "10,40% a.a." },
-    { label: "SELIC Atual", value: "10,50% a.a." },
-    { label: "IPCA (12 meses)", value: "4,50%" },
+    { label: "CDI Atual", value: "14,40% a.a." },
+    { label: "SELIC Atual", value: "14,50% a.a." },
+    { label: "IPCA (12 meses)", value: "4,39%" },
     { label: "Última atualização:", value: "Jun/2026" },
   ];
 

@@ -422,7 +422,7 @@ export function NewTransactionModal({
             </div>
           )}
 
-          {formaPagamento === "pix" && (
+          {formaPagamento === "pix" && !transactionToEdit && (
             <div className="p-5 bg-muted/30 rounded-2xl border border-border/50">
               <label className="block text-sm font-medium text-foreground mb-3">
                 Tipo de Transferência

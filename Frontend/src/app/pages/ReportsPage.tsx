@@ -243,7 +243,7 @@ export function ReportsPage() {
             </p>
           </div>
 
-          <div className="bg-card rounded-3xl p-6 shadow-sm border border-border/50 mb-8 transition-colors duration-300 relative z-40">
+          <div className="bg-card rounded-3xl p-6 shadow-sm border border-border/50 mb-8 transition-colors duration-300 relative z-20">
             <div className="flex items-center gap-2 mb-4 text-foreground font-bold">
               <Filter size={18} /> Filtros e Visões
             </div>

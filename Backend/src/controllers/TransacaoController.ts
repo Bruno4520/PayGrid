@@ -91,6 +91,8 @@ export class TransacaoController {
           categoriaId,
           observacoes,
           data,
+          tipoTransferencia,
+          contaDestinoId,
         } = req.body;
 
         if (!descricao || !valor || !tipo || !contaId || !data) {
@@ -105,7 +107,34 @@ export class TransacaoController {
           usuarioId,
         );
         if (!conta) {
-          return res.status(403).json({ mensagem: "Conta não encontrada." });
+          return res
+            .status(403)
+            .json({ mensagem: "Conta de origem não encontrada." });
+        }
+
+        if (tipoTransferencia === "interna") {
+          if (!contaDestinoId) {
+            return res.status(400).json({
+              mensagem:
+                "A conta de destino é obrigatória para transferências internas.",
+            });
+          }
+          if (contaId === contaDestinoId) {
+            return res.status(400).json({
+              mensagem: "A conta de origem e destino não podem ser a mesma.",
+            });
+          }
+
+          const contaDestino = await contaRepository.buscarPorIdEUsuarioId(
+            contaDestinoId,
+            usuarioId,
+          );
+          if (!contaDestino) {
+            return res.status(403).json({
+              mensagem:
+                "A conta de destino não foi encontrada ou não lhe pertence.",
+            });
+          }
         }
 
         if (categoriaId) {
@@ -129,6 +158,8 @@ export class TransacaoController {
           categoriaId,
           observacoes,
           data,
+          tipoTransferencia,
+          contaDestinoId,
         });
 
         return res.status(201).json(novaTransacao);
@@ -158,11 +189,9 @@ export class TransacaoController {
       );
       return res.status(200).json(transacoes);
     } catch (error) {
-      return res
-        .status(500)
-        .json({
-          mensagem: "Erro interno do servidor ao listar transações por conta.",
-        });
+      return res.status(500).json({
+        mensagem: "Erro interno do servidor ao listar transações por conta.",
+      });
     }
   }
 
@@ -178,12 +207,9 @@ export class TransacaoController {
 
       if (transacao.formaPagamento === "CREDITO") {
         if (!transacao.cartaoCreditoId) {
-          return res
-            .status(500)
-            .json({
-              mensagem:
-                "Erro de integridade: Transação de crédito sem cartão vinculado.",
-            });
+          return res.status(500).json({
+            mensagem: "Erro: Transação de crédito sem cartão vinculado.",
+          });
         }
 
         const cartao = await cartaoCreditoRepository.buscarPorIdEUsuarioId(

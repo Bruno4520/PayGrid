@@ -73,11 +73,11 @@ export function SimulatorPage() {
 
     let taxaAno = 10.0;
     if (rateType === "cdi") {
-      taxaAno = 10.4 * (cdiPercentage / 100);
+      taxaAno = 14.4 * (cdiPercentage / 100);
     } else if (rateType === "selic") {
-      taxaAno = 10.5;
+      taxaAno = 14.5;
     } else if (rateType === "ipca") {
-      taxaAno = 4.5 + 5.0;
+      taxaAno = 4.39 + 5.0;
     } else if (rateType === "pre") {
       taxaAno = Number(customRate.replace(/\./g, "").replace(",", "."));
     }
