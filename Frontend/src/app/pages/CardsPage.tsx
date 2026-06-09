@@ -1,5 +1,12 @@
 import { useState, useEffect } from "react";
-import { Plus, CreditCard, Edit2, Trash2, GripHorizontal } from "lucide-react";
+import {
+  Plus,
+  CreditCard,
+  Edit2,
+  Trash2,
+  GripHorizontal,
+  Loader2,
+} from "lucide-react";
 import { toast } from "sonner";
 import { isAxiosError } from "axios";
 import { Sidebar } from "../components/dashboard/Sidebar";
@@ -45,6 +52,11 @@ export function CardsPage() {
   const [isTransactionModalOpen, setIsTransactionModalOpen] = useState(false);
 
   const [draggedIdx, setDraggedIdx] = useState<number | null>(null);
+
+  const [deletingCardId, setDeletingCardId] = useState<string | null>(null);
+  const [deletingPurchaseId, setDeletingPurchaseId] = useState<number | null>(
+    null,
+  );
 
   const fetchCardsAndTransactions = async () => {
     try {
@@ -140,6 +152,8 @@ export function CardsPage() {
         "Tem certeza que deseja excluir este cartão? Todas as faturas e compras vinculadas serão apagadas permanentemente.",
       )
     ) {
+      setDeletingCardId(id);
+      toast.info("A excluir o cartão e as faturas...");
       try {
         await api.delete(`/cartoes/${id}`);
         toast.success("Cartão excluído com sucesso.");
@@ -151,6 +165,8 @@ export function CardsPage() {
             ? error.response.data.mensagem
             : "Não foi possível excluir o cartão.";
         toast.error(message);
+      } finally {
+        setDeletingCardId(null);
       }
     }
   };
@@ -187,12 +203,15 @@ export function CardsPage() {
     if (
       window.confirm("Tem certeza que deseja excluir esta compra do cartão?")
     ) {
+      setDeletingPurchaseId(purchaseId);
       try {
         await api.delete(`/transacoes/${purchaseId}`);
         toast.success("Compra excluída.");
         fetchCardsAndTransactions();
       } catch (error) {
         toast.error("Erro ao excluir compra.");
+      } finally {
+        setDeletingPurchaseId(null);
       }
     }
   };
@@ -285,26 +304,40 @@ export function CardsPage() {
                       <div className="flex items-center gap-2">
                         <button
                           onClick={() => handleEditCard(selectedCard)}
-                          className="p-2 text-muted-foreground hover:text-[#2B5BBA] hover:bg-blue-500/10 rounded-lg transition-colors"
+                          disabled={deletingCardId !== null}
+                          className="p-2 text-muted-foreground hover:text-[#2B5BBA] hover:bg-blue-500/10 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                           title="Editar Cartão"
                         >
                           <Edit2 size={18} />
                         </button>
                         <button
                           onClick={() => handleDeleteCard(selectedCard.id)}
-                          className="p-2 text-muted-foreground hover:text-red-600 hover:bg-red-500/10 rounded-lg transition-colors"
+                          disabled={deletingCardId !== null}
+                          className="p-2 text-muted-foreground hover:text-red-600 hover:bg-red-500/10 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                           title="Excluir Cartão"
                         >
-                          <Trash2 size={18} />
+                          {deletingCardId === selectedCard.id ? (
+                            <Loader2
+                              size={18}
+                              className="animate-spin text-red-600"
+                            />
+                          ) : (
+                            <Trash2 size={18} />
+                          )}
                         </button>
                       </div>
                     </div>
 
-                    <CardDetails card={selectedCard} />
+                    <div
+                      className={`${deletingCardId === selectedCard.id ? "opacity-50" : ""}`}
+                    >
+                      <CardDetails card={selectedCard} />
+                    </div>
 
                     <RecentPurchases
                       cardId={selectedCard.id}
                       purchases={cardTransactions}
+                      deletingPurchaseId={deletingPurchaseId}
                       onNewPurchase={handleNewPurchase}
                       onEditPurchase={handleEditPurchase}
                       onDeletePurchase={handleDeletePurchase}

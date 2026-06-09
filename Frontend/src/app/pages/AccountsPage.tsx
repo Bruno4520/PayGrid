@@ -53,6 +53,13 @@ export function AccountsPage() {
   const [activeFilter, setActiveFilter] = useState<string>("all");
   const [draggedIdx, setDraggedIdx] = useState<number | null>(null);
 
+  const [deletingAccountId, setDeletingAccountId] = useState<string | null>(
+    null,
+  );
+  const [deletingTransactionId, setDeletingTransactionId] = useState<
+    number | null
+  >(null);
+
   const fetchAccountsAndTransactions = async () => {
     try {
       setLoading(true);
@@ -142,6 +149,8 @@ export function AccountsPage() {
         "Tem certeza que deseja excluir esta conta? Todas as transações vinculadas serão apagadas.",
       )
     ) {
+      setDeletingAccountId(id);
+      toast.info("A excluir a conta e os seus registos...");
       try {
         await api.delete(`/contas/${id}`);
         toast.success("Conta excluída com sucesso.");
@@ -153,6 +162,8 @@ export function AccountsPage() {
             ? error.response.data.mensagem
             : "Não foi possível excluir a conta.";
         toast.error(message);
+      } finally {
+        setDeletingAccountId(null);
       }
     }
   };
@@ -185,12 +196,15 @@ export function AccountsPage() {
 
   const handleDeleteTransaction = async (transactionId: number) => {
     if (window.confirm("Tem certeza que deseja excluir esta movimentação?")) {
+      setDeletingTransactionId(transactionId);
       try {
         await api.delete(`/transacoes/${transactionId}`);
         toast.success("Movimentação excluída.");
         fetchAccountsAndTransactions();
       } catch (error) {
         toast.error("Erro ao excluir transação.");
+      } finally {
+        setDeletingTransactionId(null);
       }
     }
   };
@@ -295,6 +309,7 @@ export function AccountsPage() {
                             details={account.details}
                             onEdit={handleEditAccount}
                             onDelete={handleDeleteAccount}
+                            isDeleting={deletingAccountId === account.id}
                           />
                         </div>
                       </div>
@@ -316,6 +331,7 @@ export function AccountsPage() {
                 transactions={filteredTransactions}
                 activeFilter={activeFilter}
                 accountName={accounts.find((a) => a.id === activeFilter)?.name}
+                deletingTransactionId={deletingTransactionId}
                 onNewTransaction={() => {
                   setTransactionToEdit(null);
                   setIsTransactionModalOpen(true);

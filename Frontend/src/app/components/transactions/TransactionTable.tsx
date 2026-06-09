@@ -1,4 +1,4 @@
-import { Edit2, Trash2, FileText, X } from "lucide-react";
+import { Edit2, Trash2, FileText, X, Loader2 } from "lucide-react";
 import { useState } from "react";
 
 export interface Transaction {
@@ -23,6 +23,7 @@ interface TransactionTableProps {
   onEdit: (id: number) => void;
   onDelete: (id: number) => void;
   isLoading?: boolean;
+  deletingId?: number | null;
 }
 
 export function TransactionTable({
@@ -30,6 +31,7 @@ export function TransactionTable({
   onEdit,
   onDelete,
   isLoading = false,
+  deletingId = null,
 }: TransactionTableProps) {
   const [selectedObservation, setSelectedObservation] = useState<string | null>(
     null,
@@ -110,80 +112,95 @@ export function TransactionTable({
               </tr>
             </thead>
             <tbody className="divide-y divide-border/50">
-              {transactions.map((transaction) => (
-                <tr
-                  key={transaction.id}
-                  className="hover:bg-muted/30 transition-colors group"
-                >
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-foreground">
-                    {formatDate(transaction.data)}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-foreground">
-                    {transaction.descricao}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-muted-foreground">
-                    {transaction.categoria?.nome === "PAGAMENTO DE FATURA"
-                      ? "Pagamento de Cartão"
-                      : transaction.categoria?.nome || "-"}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-muted-foreground">
-                    {getAccountName(transaction)}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-muted-foreground">
-                    <span className="capitalize">
-                      {transaction.formaPagamento.toLowerCase()}
-                    </span>
-                    {transaction.formaPagamento === "CREDITO" &&
-                      transaction.parcelas &&
-                      transaction.parcelas.length > 1 && (
-                        <span className="ml-2 inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-[#2B5BBA]/10 text-[#2B5BBA]">
-                          {transaction.parcelas.length}x
-                        </span>
-                      )}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-right font-bold tracking-tight">
-                    <span
-                      className={
-                        transaction.tipo === "RECEITA"
-                          ? "text-emerald-600 dark:text-emerald-400"
-                          : "text-red-600 dark:text-red-400"
-                      }
-                    >
-                      {transaction.tipo === "RECEITA" ? "+" : "-"}{" "}
-                      {formatCurrency(transaction.valor)}
-                    </span>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-center">
-                    <div className="flex items-center justify-center gap-1 opacity-60 md:opacity-15 md:group-hover:opacity-100 transition-opacity duration-200">
-                      {transaction.observacoes && (
+              {transactions.map((transaction) => {
+                const isDeleting = deletingId === transaction.id;
+                const rowOpacity = isDeleting ? "opacity-50" : "";
+
+                return (
+                  <tr
+                    key={transaction.id}
+                    className={`hover:bg-muted/30 transition-colors group ${rowOpacity}`}
+                  >
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-foreground">
+                      {formatDate(transaction.data)}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-foreground">
+                      {transaction.descricao}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-muted-foreground">
+                      {transaction.categoria?.nome === "PAGAMENTO DE FATURA"
+                        ? "Pagamento de Cartão"
+                        : transaction.categoria?.nome || "-"}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-muted-foreground">
+                      {getAccountName(transaction)}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-muted-foreground">
+                      <span className="capitalize">
+                        {transaction.formaPagamento.toLowerCase()}
+                      </span>
+                      {transaction.formaPagamento === "CREDITO" &&
+                        transaction.parcelas &&
+                        transaction.parcelas.length > 1 && (
+                          <span className="ml-2 inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-[#2B5BBA]/10 text-[#2B5BBA]">
+                            {transaction.parcelas.length}x
+                          </span>
+                        )}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-right font-bold tracking-tight">
+                      <span
+                        className={
+                          transaction.tipo === "RECEITA"
+                            ? "text-emerald-600 dark:text-emerald-400"
+                            : "text-red-600 dark:text-red-400"
+                        }
+                      >
+                        {transaction.tipo === "RECEITA" ? "+" : "-"}{" "}
+                        {formatCurrency(transaction.valor)}
+                      </span>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-center">
+                      <div className="flex items-center justify-center gap-1 opacity-60 md:opacity-15 md:group-hover:opacity-100 transition-opacity duration-200">
+                        {transaction.observacoes && (
+                          <button
+                            onClick={() =>
+                              setSelectedObservation(transaction.observacoes!)
+                            }
+                            disabled={isDeleting || deletingId !== null}
+                            className="p-2 text-muted-foreground hover:text-[#2B5BBA] hover:bg-blue-500/10 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                            title="Ver observação"
+                          >
+                            <FileText size={16} />
+                          </button>
+                        )}
                         <button
-                          onClick={() =>
-                            setSelectedObservation(transaction.observacoes!)
-                          }
-                          className="p-2 text-muted-foreground hover:text-[#2B5BBA] hover:bg-blue-500/10 rounded-lg transition-colors"
-                          title="Ver observação"
+                          onClick={() => onEdit(transaction.id)}
+                          disabled={isDeleting || deletingId !== null}
+                          className="p-2 text-muted-foreground hover:text-[#2B5BBA] hover:bg-blue-500/10 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                          title="Editar transação"
                         >
-                          <FileText size={16} />
+                          <Edit2 size={16} />
                         </button>
-                      )}
-                      <button
-                        onClick={() => onEdit(transaction.id)}
-                        className="p-2 text-muted-foreground hover:text-[#2B5BBA] hover:bg-blue-500/10 rounded-lg transition-colors"
-                        title="Editar transação"
-                      >
-                        <Edit2 size={16} />
-                      </button>
-                      <button
-                        onClick={() => onDelete(transaction.id)}
-                        className="p-2 text-muted-foreground hover:text-red-600 hover:bg-red-500/10 rounded-lg transition-colors"
-                        title="Excluir transação"
-                      >
-                        <Trash2 size={16} />
-                      </button>
-                    </div>
-                  </td>
-                </tr>
-              ))}
+                        <button
+                          onClick={() => onDelete(transaction.id)}
+                          disabled={isDeleting || deletingId !== null}
+                          className="p-2 text-muted-foreground hover:text-red-600 hover:bg-red-500/10 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                          title="Excluir transação"
+                        >
+                          {isDeleting ? (
+                            <Loader2
+                              size={16}
+                              className="animate-spin text-red-600"
+                            />
+                          ) : (
+                            <Trash2 size={16} />
+                          )}
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                );
+              })}
             </tbody>
           </table>
         </div>

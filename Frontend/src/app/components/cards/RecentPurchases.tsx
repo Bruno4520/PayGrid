@@ -7,12 +7,14 @@ import {
   Plus,
   Edit2,
   Trash2,
+  Loader2,
 } from "lucide-react";
 import type { Transaction } from "../transactions/TransactionTable";
 
 interface RecentPurchasesProps {
   cardId: string;
   purchases: Transaction[];
+  deletingPurchaseId?: number | null;
   onNewPurchase: (cardId: string) => void;
   onEditPurchase: (transaction: Transaction) => void;
   onDeletePurchase: (purchaseId: number) => void;
@@ -37,6 +39,7 @@ const iconColorMap: Record<string, string> = {
 export function RecentPurchases({
   cardId,
   purchases,
+  deletingPurchaseId = null,
   onNewPurchase,
   onEditPurchase,
   onDeletePurchase,
@@ -111,10 +114,12 @@ export function RecentPurchases({
       <div className="space-y-2">
         {formattedPurchases.map((purchase) => {
           const Icon = iconMap[purchase.icon] || iconMap.other;
+          const isDeleting = deletingPurchaseId === purchase.id;
+
           return (
             <div
               key={purchase.id}
-              className="flex items-center justify-between p-3 rounded-2xl hover:bg-muted/50 transition-colors group relative"
+              className={`flex items-center justify-between p-3 rounded-2xl hover:bg-muted/50 transition-colors group relative ${isDeleting ? "opacity-50 pointer-events-none" : ""}`}
             >
               <div className="flex items-center gap-4 flex-1">
                 <div
@@ -153,15 +158,21 @@ export function RecentPurchases({
               <div className="flex items-center justify-end gap-1 opacity-0 group-hover:opacity-100 transition-opacity absolute right-4">
                 <button
                   onClick={() => onEditPurchase(purchase.rawTransaction)}
-                  className="p-2 text-muted-foreground hover:text-[#2B5BBA] hover:bg-blue-500/10 rounded-lg transition-colors"
+                  disabled={isDeleting || deletingPurchaseId !== null}
+                  className="p-2 text-muted-foreground hover:text-[#2B5BBA] hover:bg-blue-500/10 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   <Edit2 size={18} />
                 </button>
                 <button
                   onClick={() => onDeletePurchase(purchase.id)}
-                  className="p-2 text-muted-foreground hover:text-red-600 hover:bg-red-500/10 rounded-lg transition-colors"
+                  disabled={isDeleting || deletingPurchaseId !== null}
+                  className="p-2 text-muted-foreground hover:text-red-600 hover:bg-red-500/10 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  <Trash2 size={18} />
+                  {isDeleting ? (
+                    <Loader2 size={18} className="animate-spin text-red-600" />
+                  ) : (
+                    <Trash2 size={18} />
+                  )}
                 </button>
               </div>
             </div>

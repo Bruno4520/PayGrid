@@ -4,6 +4,7 @@ import {
   Wallet,
   Edit2,
   Trash2,
+  Loader2,
   type LucideIcon,
 } from "lucide-react";
 
@@ -14,6 +15,7 @@ interface AccountCardProps {
   balance: number;
   badge: string;
   details: string;
+  isDeleting?: boolean;
   onEdit: (id: string) => void;
   onDelete: (id: string) => void;
 }
@@ -61,6 +63,7 @@ export function AccountCard({
   balance,
   badge,
   details,
+  isDeleting,
   onEdit,
   onDelete,
 }: AccountCardProps) {
@@ -76,7 +79,7 @@ export function AccountCard({
 
   return (
     <div
-      className={`${config.bgColor} rounded-3xl p-6 shadow-sm border transition-all duration-300 hover:scale-[1.02] hover:shadow-md relative group`}
+      className={`${config.bgColor} rounded-3xl p-6 shadow-sm border transition-all duration-300 hover:scale-[1.02] hover:shadow-md relative group ${isDeleting ? "opacity-50" : ""}`}
     >
       <div className="flex items-start justify-between mb-6">
         <div
@@ -88,18 +91,30 @@ export function AccountCard({
         <div className="flex items-center gap-2">
           <div className="flex items-center gap-1 opacity-60 hover:opacity-100 transition-opacity">
             <button
-              onClick={() => onEdit(id)}
-              className="p-1.5 hover:bg-white/20 rounded-lg transition-colors"
+              onClick={(e) => {
+                e.stopPropagation();
+                onEdit(id);
+              }}
+              disabled={isDeleting}
+              className="p-1.5 hover:bg-white/20 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               title="Editar"
             >
               <Edit2 size={16} />
             </button>
             <button
-              onClick={() => onDelete(id)}
-              className="p-1.5 hover:bg-white/20 hover:text-red-200 rounded-lg transition-colors"
+              onClick={(e) => {
+                e.stopPropagation();
+                onDelete(id);
+              }}
+              disabled={isDeleting}
+              className="p-1.5 hover:bg-white/20 hover:text-red-200 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               title="Excluir"
             >
-              <Trash2 size={16} />
+              {isDeleting ? (
+                <Loader2 size={16} className="animate-spin" />
+              ) : (
+                <Trash2 size={16} />
+              )}
             </button>
           </div>
           <span className="px-3 py-1 rounded-full text-xs font-bold tracking-wide bg-white/20 text-white backdrop-blur-sm ml-2">

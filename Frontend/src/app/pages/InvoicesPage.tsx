@@ -65,6 +65,7 @@ export function InvoicesPage() {
     null,
   );
   const [loading, setLoading] = useState(true);
+  const [filterCard, setFilterCard] = useState<string>("all");
 
   const [isPayModalOpen, setIsPayModalOpen] = useState(false);
   const [contas, setContas] = useState<Conta[]>([]);
@@ -147,8 +148,29 @@ export function InvoicesPage() {
     toast.info("Funcionalidade de exportação em desenvolvimento.");
   };
 
+  const uniqueCards = useMemo(() => {
+    const cards = invoices.map((inv) => inv.cartaoCredito.nome);
+    return Array.from(new Set(cards)).sort();
+  }, [invoices]);
+
+  const filteredInvoices = useMemo(() => {
+    if (filterCard === "all") return invoices;
+    return invoices.filter((inv) => inv.cartaoCredito.nome === filterCard);
+  }, [invoices, filterCard]);
+
+  useEffect(() => {
+    if (filteredInvoices.length > 0) {
+      if (!filteredInvoices.find((i) => i.id === selectedInvoiceId)) {
+        setSelectedInvoiceId(filteredInvoices[0].id);
+      }
+    } else {
+      setSelectedInvoiceId(null);
+    }
+  }, [filteredInvoices, selectedInvoiceId]);
+
   const selectedInvoice =
-    invoices.find((inv) => inv.id === selectedInvoiceId) || invoices[0];
+    filteredInvoices.find((inv) => inv.id === selectedInvoiceId) ||
+    filteredInvoices[0];
 
   const tableItems: InvoiceItem[] = useMemo(() => {
     if (!selectedInvoice?.parcelas) return [];
@@ -266,58 +288,100 @@ export function InvoicesPage() {
           ) : (
             <>
               <div className="mb-8">
-                <div className="flex items-center justify-end gap-2 mb-4">
-                  <button
-                    onClick={() => scrollCards("left")}
-                    className="p-2 bg-card border border-border/50 hover:bg-muted rounded-xl transition-all shadow-sm"
-                  >
-                    <ChevronLeft size={20} />
-                  </button>
+                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-4">
+                  <div className="relative min-w-[220px]">
+                    <select
+                      value={filterCard}
+                      onChange={(e) => setFilterCard(e.target.value)}
+                      className="w-full pl-4 pr-10 py-2.5 bg-card border border-border/50 rounded-xl text-sm font-medium focus:outline-none focus:ring-2 focus:ring-[#2B5BBA] transition-all appearance-none shadow-sm text-foreground"
+                    >
+                      <option value="all">Todos os Cartões</option>
+                      {uniqueCards.map((cardName) => (
+                        <option key={cardName} value={cardName}>
+                          {cardName}
+                        </option>
+                      ))}
+                    </select>
+                    <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-muted-foreground">
+                      <svg
+                        width="16"
+                        height="16"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      >
+                        <path d="m6 9 6 6 6-6" />
+                      </svg>
+                    </div>
+                  </div>
 
-                  <button
-                    onClick={() => scrollCards("right")}
-                    className="p-2 bg-card border border-border/50 hover:bg-muted rounded-xl transition-all shadow-sm"
-                  >
-                    <ChevronRight size={20} />
-                  </button>
+                  <div className="flex items-center gap-2">
+                    <button
+                      onClick={() => scrollCards("left")}
+                      className="p-2 bg-card border border-border/50 hover:bg-muted rounded-xl transition-all shadow-sm"
+                    >
+                      <ChevronLeft size={20} />
+                    </button>
+
+                    <button
+                      onClick={() => scrollCards("right")}
+                      className="p-2 bg-card border border-border/50 hover:bg-muted rounded-xl transition-all shadow-sm"
+                    >
+                      <ChevronRight size={20} />
+                    </button>
+                  </div>
                 </div>
 
-                <div
-                  ref={scrollContainerRef}
-                  onMouseDown={handleMouseDown}
-                  onMouseLeave={handleMouseLeave}
-                  onMouseUp={handleMouseUp}
-                  onMouseMove={handleMouseMove}
-                  className={`flex overflow-x-auto hide-scrollbar gap-6 py-6 px-4 -mx-4 transition-all ${
-                    isDragging ? "cursor-grabbing select-none" : "cursor-grab"
-                  }`}
-                >
-                  {invoices.map((invoice) => {
-                    const dateObj = new Date(invoice.dataVencimento);
-                    dateObj.setMinutes(
-                      dateObj.getMinutes() + dateObj.getTimezoneOffset(),
-                    );
+                {filteredInvoices.length === 0 ? (
+                  <div className="text-center py-10 bg-card/50 rounded-2xl border border-border/30">
+                    <p className="text-muted-foreground">
+                      Nenhuma fatura encontrada para este cartão.
+                    </p>
+                  </div>
+                ) : (
+                  <div
+                    ref={scrollContainerRef}
+                    onMouseDown={handleMouseDown}
+                    onMouseLeave={handleMouseLeave}
+                    onMouseUp={handleMouseUp}
+                    onMouseMove={handleMouseMove}
+                    className={`flex overflow-x-auto hide-scrollbar gap-6 py-6 px-4 -mx-4 transition-all ${
+                      isDragging ? "cursor-grabbing select-none" : "cursor-grab"
+                    }`}
+                  >
+                    {filteredInvoices.map((invoice) => {
+                      const dateObj = new Date(invoice.dataVencimento);
+                      dateObj.setMinutes(
+                        dateObj.getMinutes() + dateObj.getTimezoneOffset(),
+                      );
 
-                    return (
-                      <div key={invoice.id} className="min-w-[300px] shrink-0">
-                        <InvoiceCard
-                          cardName={
-                            invoice.cartaoCredito.nome || "Cartão de Crédito"
-                          }
-                          month={monthNames[invoice.mes - 1]}
-                          year={invoice.ano}
-                          status={getStatus(invoice)}
-                          dueDate={dateObj.toLocaleDateString("pt-BR")}
-                          totalAmount={invoice.valorTotal}
-                          purchasesCount={invoice.parcelas.length}
-                          isActive={selectedInvoiceId === invoice.id}
-                          onClick={() => setSelectedInvoiceId(invoice.id)}
-                        />
-                      </div>
-                    );
-                  })}
-                  <div className="w-1 shrink-0" aria-hidden="true"></div>
-                </div>
+                      return (
+                        <div
+                          key={invoice.id}
+                          className="min-w-[300px] shrink-0"
+                        >
+                          <InvoiceCard
+                            cardName={
+                              invoice.cartaoCredito.nome || "Cartão de Crédito"
+                            }
+                            month={monthNames[invoice.mes - 1]}
+                            year={invoice.ano}
+                            status={getStatus(invoice)}
+                            dueDate={dateObj.toLocaleDateString("pt-BR")}
+                            totalAmount={invoice.valorTotal}
+                            purchasesCount={invoice.parcelas.length}
+                            isActive={selectedInvoiceId === invoice.id}
+                            onClick={() => setSelectedInvoiceId(invoice.id)}
+                          />
+                        </div>
+                      );
+                    })}
+                    <div className="w-1 shrink-0" aria-hidden="true"></div>
+                  </div>
+                )}
               </div>
 
               <div className="mb-8">

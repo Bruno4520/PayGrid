@@ -25,6 +25,7 @@ export function TransactionsPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [transactionToEdit, setTransactionToEdit] =
     useState<Transaction | null>(null);
+  const [deletingId, setDeletingId] = useState<number | null>(null);
 
   const [filters, setFilters] = useState<FilterOptions>({
     search: querySearch,
@@ -65,6 +66,19 @@ export function TransactionsPage() {
 
   const handleDelete = async (id: number) => {
     if (window.confirm("Tem certeza que deseja excluir esta transação?")) {
+      const transaction = transactions.find((t) => t.id === id);
+      const isCredit = transaction?.formaPagamento === "CREDITO";
+      const hasInstallments = (transaction?.parcelas?.length || 0) > 1;
+
+      setDeletingId(id);
+
+      if (isCredit && hasInstallments) {
+        toast.info(
+          "Excluindo transação e atualizando faturas. Este processo pode levar alguns segundos...",
+          { duration: 5000 },
+        );
+      }
+
       try {
         await api.delete(`/transacoes/${id}`);
         toast.success("Transação excluída com sucesso.");
@@ -73,8 +87,10 @@ export function TransactionsPage() {
         const message =
           isAxiosError(error) && error.response?.data?.mensagem
             ? error.response.data.mensagem
-            : "Erro ao excluir transação.";
+            : "Erro ao excluir transação. O servidor demorou muito para responder.";
         toast.error(message);
+      } finally {
+        setDeletingId(null);
       }
     }
   };
@@ -183,6 +199,7 @@ export function TransactionsPage() {
           <TransactionTable
             transactions={filteredTransactions}
             isLoading={isLoading}
+            deletingId={deletingId}
             onEdit={handleEdit}
             onDelete={handleDelete}
           />

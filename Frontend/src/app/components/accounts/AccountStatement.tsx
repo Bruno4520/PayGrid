@@ -1,4 +1,11 @@
-import { Search, Edit2, Trash2, ArrowDownUp, Plus } from "lucide-react";
+import {
+  Search,
+  Edit2,
+  Trash2,
+  ArrowDownUp,
+  Plus,
+  Loader2,
+} from "lucide-react";
 
 export interface StatementTransaction {
   id: number;
@@ -16,6 +23,7 @@ interface AccountStatementProps {
   transactions: StatementTransaction[];
   activeFilter: string;
   accountName?: string;
+  deletingTransactionId?: number | null;
   onNewTransaction: () => void;
   onEditTransaction: (transaction: StatementTransaction) => void;
   onDeleteTransaction: (id: number) => void;
@@ -25,6 +33,7 @@ export function AccountStatement({
   transactions,
   activeFilter,
   accountName,
+  deletingTransactionId,
   onNewTransaction,
   onEditTransaction,
   onDeleteTransaction,
@@ -66,76 +75,89 @@ export function AccountStatement({
           </div>
         ) : (
           <div className="divide-y divide-border/50">
-            {transactions.map((t) => (
-              <div
-                key={t.id}
-                className="flex flex-col sm:flex-row sm:items-center justify-between p-4 md:px-6 hover:bg-muted/30 transition-colors group rounded-xl"
-              >
-                <div className="flex items-start gap-4 mb-3 sm:mb-0">
-                  <div className="w-10 h-10 rounded-full flex items-center justify-center bg-muted flex-shrink-0 mt-1 sm:mt-0 text-muted-foreground">
-                    <span className="font-bold text-sm">
-                      {t.dateFormatted.split("/")[0]}
-                    </span>
+            {transactions.map((t) => {
+              const isDeleting = deletingTransactionId === t.id;
+
+              return (
+                <div
+                  key={t.id}
+                  className={`flex flex-col sm:flex-row sm:items-center justify-between p-4 md:px-6 hover:bg-muted/30 transition-colors group rounded-xl ${isDeleting ? "opacity-50 pointer-events-none" : ""}`}
+                >
+                  <div className="flex items-start gap-4 mb-3 sm:mb-0">
+                    <div className="w-10 h-10 rounded-full flex items-center justify-center bg-muted flex-shrink-0 mt-1 sm:mt-0 text-muted-foreground">
+                      <span className="font-bold text-sm">
+                        {t.dateFormatted.split("/")[0]}
+                      </span>
+                    </div>
+                    <div>
+                      <p className="font-bold text-foreground text-base leading-tight mb-1">
+                        {t.descricao}
+                      </p>
+                      <div className="flex items-center gap-2 text-xs font-medium text-muted-foreground">
+                        <span className="bg-muted px-2 py-0.5 rounded-md">
+                          {t.categoria?.nome || "Outros"}
+                        </span>
+                        <span>•</span>
+                        <span>{t.accountName}</span>
+                        <span>•</span>
+                        <span>
+                          {t.timeFormatted === "00:00"
+                            ? "12:00"
+                            : t.timeFormatted}
+                        </span>
+                      </div>
+                    </div>
                   </div>
-                  <div>
-                    <p className="font-bold text-foreground text-base leading-tight mb-1">
-                      {t.descricao}
-                    </p>
-                    <div className="flex items-center gap-2 text-xs font-medium text-muted-foreground">
-                      <span className="bg-muted px-2 py-0.5 rounded-md">
-                        {t.categoria?.nome || "Outros"}
-                      </span>
-                      <span>•</span>
-                      <span>{t.accountName}</span>
-                      <span>•</span>
-                      <span>
-                        {t.timeFormatted === "00:00"
-                          ? "12:00"
-                          : t.timeFormatted}
-                      </span>
+
+                  <div className="flex items-center justify-between sm:justify-end gap-6 sm:w-auto w-full border-t sm:border-0 border-border/50 pt-3 sm:pt-0 mt-1 sm:mt-0">
+                    <div className="text-left sm:text-right">
+                      <p
+                        className={`font-bold tracking-tight text-lg ${t.tipo === "RECEITA" ? "text-emerald-600 dark:text-emerald-400" : "text-red-600 dark:text-red-400"}`}
+                      >
+                        {t.tipo === "RECEITA" ? "+" : "-"}{" "}
+                        {t.valor.toLocaleString("pt-BR", {
+                          style: "currency",
+                          currency: "BRL",
+                        })}
+                      </p>
+                      <p className="text-xs font-medium text-muted-foreground capitalize">
+                        {t.formaPagamento.toLowerCase()}
+                      </p>
+                    </div>
+
+                    <div className="flex items-center gap-1 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity">
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          onEditTransaction(t);
+                        }}
+                        disabled={isDeleting || deletingTransactionId !== null}
+                        className="p-2 text-muted-foreground hover:text-[#2B5BBA] hover:bg-blue-500/10 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                      >
+                        <Edit2 size={18} />
+                      </button>
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          onDeleteTransaction(t.id);
+                        }}
+                        disabled={isDeleting || deletingTransactionId !== null}
+                        className="p-2 text-muted-foreground hover:text-red-600 hover:bg-red-500/10 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                      >
+                        {isDeleting ? (
+                          <Loader2
+                            size={18}
+                            className="animate-spin text-red-600"
+                          />
+                        ) : (
+                          <Trash2 size={18} />
+                        )}
+                      </button>
                     </div>
                   </div>
                 </div>
-
-                <div className="flex items-center justify-between sm:justify-end gap-6 sm:w-auto w-full border-t sm:border-0 border-border/50 pt-3 sm:pt-0 mt-1 sm:mt-0">
-                  <div className="text-left sm:text-right">
-                    <p
-                      className={`font-bold tracking-tight text-lg ${t.tipo === "RECEITA" ? "text-emerald-600 dark:text-emerald-400" : "text-red-600 dark:text-red-400"}`}
-                    >
-                      {t.tipo === "RECEITA" ? "+" : "-"}{" "}
-                      {t.valor.toLocaleString("pt-BR", {
-                        style: "currency",
-                        currency: "BRL",
-                      })}
-                    </p>
-                    <p className="text-xs font-medium text-muted-foreground capitalize">
-                      {t.formaPagamento.toLowerCase()}
-                    </p>
-                  </div>
-
-                  <div className="flex items-center gap-1 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity">
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        onEditTransaction(t);
-                      }}
-                      className="p-2 text-muted-foreground hover:text-[#2B5BBA] hover:bg-blue-500/10 rounded-lg transition-colors"
-                    >
-                      <Edit2 size={18} />
-                    </button>
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        onDeleteTransaction(t.id);
-                      }}
-                      className="p-2 text-muted-foreground hover:text-red-600 hover:bg-red-500/10 rounded-lg transition-colors"
-                    >
-                      <Trash2 size={18} />
-                    </button>
-                  </div>
-                </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         )}
       </div>
