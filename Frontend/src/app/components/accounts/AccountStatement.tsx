@@ -99,12 +99,6 @@ export function AccountStatement({
                         </span>
                         <span>•</span>
                         <span>{t.accountName}</span>
-                        <span>•</span>
-                        <span>
-                          {t.timeFormatted === "00:00"
-                            ? "12:00"
-                            : t.timeFormatted}
-                        </span>
                       </div>
                     </div>
                   </div>

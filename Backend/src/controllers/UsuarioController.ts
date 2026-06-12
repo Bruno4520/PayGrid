@@ -7,7 +7,7 @@ const repository = new UsuarioRepository();
 
 export class UsuarioController {
   async criar(req: Request, res: Response) {
-    const { nome, email, senha } = req.body;
+    const { nome, email, senha, popularComDadosTeste } = req.body;
 
     if (!nome || !email || !senha) {
       return res
@@ -16,7 +16,10 @@ export class UsuarioController {
     }
 
     try {
-      const usuario = await repository.criar({ nome, email, senha });
+      const usuario = await repository.criar(
+        { nome, email, senha },
+        popularComDadosTeste === true,
+      );
       return res.status(201).json(usuario);
     } catch (error: unknown) {
       if (typeof error === "object" && error !== null && "code" in error) {

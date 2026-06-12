@@ -28,7 +28,10 @@ const CATEGORIAS_BASICAS = [
 ];
 
 export class UsuarioRepository {
-  async criar(dados: { nome: string; email: string; senha: string }) {
+  async criar(
+    dados: { nome: string; email: string; senha: string },
+    popularComDadosTeste: boolean = false,
+  ) {
     const senhaHash = await argon2.hash(dados.senha);
 
     return prisma.$transaction(
@@ -49,7 +52,7 @@ export class UsuarioRepository {
 
         await tx.categoria.createMany({ data: categorias });
 
-        if (process.env.ENABLE_SEED === "true") {
+        if (popularComDadosTeste) {
           await populateUser(tx, usuario.id);
         }
 

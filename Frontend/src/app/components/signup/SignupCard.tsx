@@ -7,6 +7,7 @@ export interface SignupFormData {
   password: string;
   confirmPassword: string;
   acceptedTerms: boolean;
+  isDemoAccount: boolean;
 }
 
 export interface SignupCardProps {
@@ -30,6 +31,7 @@ export function SignupCard({
     password: "",
     confirmPassword: "",
     acceptedTerms: false,
+    isDemoAccount: false,
   });
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
@@ -219,6 +221,30 @@ export function SignupCard({
               {errors.confirmPassword}
             </p>
           )}
+        </div>
+        <div
+          className={`flex items-center justify-between p-4 rounded-xl border transition-all duration-300 ${formData.isDemoAccount ? "bg-[#2B5BBA]/5 border-[#2B5BBA]/30" : "bg-muted/30 border-border/50 hover:border-[#2B5BBA]/30"}`}
+        >
+          <div className="flex flex-col">
+            <span className="text-sm font-semibold text-foreground">
+              Conta de Demonstração
+            </span>
+            <span className="text-xs text-muted-foreground mt-0.5">
+              Preencher com dados para teste
+            </span>
+          </div>
+          <label className="relative inline-flex items-center cursor-pointer">
+            <input
+              type="checkbox"
+              className="sr-only peer"
+              checked={formData.isDemoAccount}
+              onChange={(e) =>
+                handleInputChange("isDemoAccount", e.target.checked)
+              }
+              disabled={isLoading}
+            />
+            <div className="w-11 h-6 bg-muted-foreground/30 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#2B5BBA]"></div>
+          </label>
         </div>
 
         <div>

@@ -137,8 +137,7 @@ export function RecentPurchases({
                     )}
                   </p>
                   <p className="text-xs font-medium text-muted-foreground">
-                    {purchase.date} às{" "}
-                    {purchase.time === "00:00" ? "12:00" : purchase.time}
+                    {purchase.date}
                   </p>
                 </div>
               </div>

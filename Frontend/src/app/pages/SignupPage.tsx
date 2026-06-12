@@ -17,10 +17,20 @@ export function SignupPage() {
   const handleSignup = async (data: SignupFormData) => {
     setLoading(true);
     try {
+      if (data.isDemoAccount) {
+        toast.info(
+          "Criando conta e gerando simulações financeiras. Aguarde...",
+          {
+            duration: 8000,
+          },
+        );
+      }
+
       await api.post("/usuarios", {
         nome: data.fullName,
         email: data.email,
         senha: data.password,
+        popularComDadosTeste: data.isDemoAccount,
       });
 
       toast.success("Conta criada com sucesso! Redirecionando...");
