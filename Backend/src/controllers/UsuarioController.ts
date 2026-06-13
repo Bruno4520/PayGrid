@@ -2,8 +2,24 @@ import { type Request, type Response } from "express";
 import argon2 from "argon2";
 import jwt from "jsonwebtoken";
 import { UsuarioRepository } from "../repositories/UsuarioRepository.js";
+import {
+  buildPasswordResetUrl,
+  sendPasswordResetEmail,
+} from "../services/EmailService.js";
 
 const repository = new UsuarioRepository();
+
+const PASSWORD_REQUIREMENTS_MESSAGE =
+  "A senha deve ter no mínimo 8 caracteres, 1 número e 1 caractere especial.";
+
+const isStrongPassword = (password: unknown): password is string => {
+  return (
+    typeof password === "string" &&
+    password.length >= 8 &&
+    /\d/.test(password) &&
+    /[!@#$%^&*(),.?":{}|<>]/.test(password)
+  );
+};
 
 export class UsuarioController {
   async criar(req: Request, res: Response) {
@@ -13,6 +29,10 @@ export class UsuarioController {
       return res
         .status(400)
         .json({ mensagem: "Campos obrigatórios ausentes." });
+    }
+
+    if (!isStrongPassword(senha)) {
+      return res.status(400).json({ mensagem: PASSWORD_REQUIREMENTS_MESSAGE });
     }
 
     try {
@@ -94,6 +114,10 @@ export class UsuarioController {
         .json({ mensagem: "Dados incompletos para alteração de senha." });
     }
 
+    if (!isStrongPassword(novaSenha)) {
+      return res.status(400).json({ mensagem: PASSWORD_REQUIREMENTS_MESSAGE });
+    }
+
     try {
       const usuario = await repository.buscarPorIdComSenha(id);
 
@@ -122,16 +146,19 @@ export class UsuarioController {
 
   async recuperarSenha(req: Request, res: Response) {
     const { email } = req.body;
-    if (!email)
+
+    if (!email) {
       return res.status(400).json({ mensagem: "E-mail é obrigatório." });
+    }
+
+    const genericMessage =
+      "Se o e-mail existir, você receberá as instruções para redefinir sua senha.";
 
     try {
       const usuario = await repository.buscarPorEmail(email);
 
       if (!usuario) {
-        return res.status(200).json({
-          mensagem: "Se o e-mail existir, você receberá as instruções.",
-        });
+        return res.status(200).json({ mensagem: genericMessage });
       }
 
       const token = jwt.sign(
@@ -140,13 +167,35 @@ export class UsuarioController {
         { expiresIn: "15m" },
       );
 
-      return res.status(200).json({
-        mensagem: "Link de recuperação gerado.",
-        token,
-        debugLink: `/redefinir-senha?token=${token}`,
-      });
+      const resetUrl = buildPasswordResetUrl(token);
+
+      const emailResult = await sendPasswordResetEmail(
+        usuario.email,
+        usuario.nome,
+        resetUrl,
+      );
+
+      const response: {
+        mensagem: string;
+        debugLink?: string;
+      } = {
+        mensagem: genericMessage,
+      };
+
+      if (
+        emailResult.skipped &&
+        process.env.RESET_PASSWORD_DEBUG_LINK === "true"
+      ) {
+        response.debugLink = resetUrl;
+      }
+
+      return res.status(200).json(response);
     } catch (error) {
-      return res.status(500).json({ mensagem: "Erro interno." });
+      console.error("[PayGrid] Erro ao processar recuperação de senha:", error);
+
+      return res.status(500).json({
+        mensagem: "Não foi possível processar a solicitação de recuperação.",
+      });
     }
   }
 
@@ -157,6 +206,10 @@ export class UsuarioController {
       return res
         .status(400)
         .json({ mensagem: "Dados incompletos para redefinição." });
+    }
+
+    if (!isStrongPassword(novaSenha)) {
+      return res.status(400).json({ mensagem: PASSWORD_REQUIREMENTS_MESSAGE });
     }
 
     try {

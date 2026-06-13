@@ -5,6 +5,18 @@ import { isAxiosError } from "axios";
 import { api } from "../../services/api";
 import { ThemeToggle } from "../components/ui/theme-toggle";
 
+
+const PASSWORD_REQUIREMENTS_MESSAGE =
+  "A senha deve ter no mínimo 8 caracteres, 1 número e 1 caractere especial.";
+
+const isStrongPassword = (password: string): boolean => {
+  const minLength = password.length >= 8;
+  const hasNumber = /\d/.test(password);
+  const hasSpecialChar = /[!@#$%^&*(),.?":{}|<>]/.test(password);
+
+  return minLength && hasNumber && hasSpecialChar;
+};
+
 export function ResetPasswordPage() {
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -17,6 +29,10 @@ export function ResetPasswordPage() {
   const [searchParams] = useSearchParams();
   const token = searchParams.get("token");
   const navigate = useNavigate();
+
+  const passwordValidationState = newPassword
+    ? isStrongPassword(newPassword)
+    : null;
 
   useEffect(() => {
     if (!token) {
@@ -35,8 +51,8 @@ export function ResetPasswordPage() {
       return;
     }
 
-    if (newPassword.length < 6) {
-      setError("A senha deve ter pelo menos 6 caracteres.");
+    if (!isStrongPassword(newPassword)) {
+      setError(PASSWORD_REQUIREMENTS_MESSAGE);
       return;
     }
 
@@ -118,11 +134,11 @@ export function ResetPasswordPage() {
                   type={showNew ? "text" : "password"}
                   value={newPassword}
                   onChange={(e) => setNewPassword(e.target.value)}
-                  placeholder="Mínimo de 6 caracteres"
+                  placeholder="Digite sua nova senha"
                   className="w-full pl-4 pr-12 py-3.5 bg-muted/50 border border-transparent rounded-xl text-foreground focus:outline-none focus:ring-2 focus:ring-[#2B5BBA] transition-all font-medium"
                   required
                   disabled={isLoading || !token}
-                  minLength={6}
+                  minLength={8}
                 />
                 <button
                   type="button"
@@ -136,6 +152,19 @@ export function ResetPasswordPage() {
             </div>
 
             <div>
+              <p
+                className={
+                  "text-xs mt-2 mb-3 font-medium " +
+                  (passwordValidationState === null
+                    ? "text-muted-foreground"
+                    : passwordValidationState
+                      ? "text-emerald-500"
+                      : "text-red-500")
+                }
+              >
+                Mínimo 8 caracteres, 1 número e 1 caractere especial
+              </p>
+
               <label className="block text-sm font-medium text-foreground mb-2">
                 Confirmar Nova Senha
               </label>
@@ -182,6 +211,7 @@ export function ResetPasswordPage() {
                 !token ||
                 !newPassword ||
                 !confirmPassword ||
+                !isStrongPassword(newPassword) ||
                 newPassword !== confirmPassword
               }
               className="w-full py-4 mt-4 rounded-xl font-bold text-white bg-[#2B5BBA] hover:bg-[#1e4594] disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-lg shadow-blue-500/20"

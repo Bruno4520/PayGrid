@@ -11,14 +11,21 @@ export function ForgotPasswordPage() {
     try {
       const response = await api.post("/usuarios/recuperar-senha", { email });
 
-      if (response.data.debugLink) {
-        toast.success("Link de recuperação gerado!", {
+      toast.success("Solicitação enviada!", {
+        description:
+          response.data?.mensagem ||
+          "Se o e-mail existir, enviaremos as instruções de recuperação.",
+        duration: 7000,
+      });
+
+      if (response.data?.debugLink) {
+        toast.info("Link de teste gerado em ambiente local.", {
           description: (
             <a
               href={response.data.debugLink}
               className="underline font-bold text-[#2B5BBA]"
             >
-              Clique aqui para redefinir a senha
+              Abrir link de redefinição
             </a>
           ),
           duration: 10000,
