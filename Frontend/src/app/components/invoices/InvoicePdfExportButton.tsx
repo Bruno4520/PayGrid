@@ -3,11 +3,6 @@ import { toast } from "sonner";
 import { jsPDF } from "jspdf";
 import autoTable from "jspdf-autotable";
 
-interface InvoicePdfExportButtonProps {
-  invoice: FaturaPdfData | null | undefined;
-  monthNames: string[];
-}
-
 interface FaturaPdfData {
   id: number;
   mes: number;
@@ -18,19 +13,14 @@ interface FaturaPdfData {
   cartaoCredito: {
     nome: string;
   };
-  parcelas: {
-    id: number;
-    numeroParcela: number;
-    valor: number;
-    transacao: {
-      data: string;
-      descricao: string;
-      numeroParcelas?: number;
-      categoria: {
-        nome: string;
-      } | null;
-    };
-  }[];
+  parcelas: any[];
+}
+
+interface InvoicePdfExportButtonProps {
+  selectedInvoice: FaturaPdfData | null | undefined;
+  filteredInvoices: FaturaPdfData[];
+  invoices: FaturaPdfData[];
+  monthNames: string[];
 }
 
 type JsPdfWithAutoTable = jsPDF & {
@@ -43,7 +33,7 @@ const formatCurrency = (amount: number) => {
   return new Intl.NumberFormat("pt-BR", {
     style: "currency",
     currency: "BRL",
-  }).format(amount || 0);
+  }).format(amount);
 };
 
 const formatDate = (date: string) => {
@@ -70,22 +60,14 @@ const getInvoicePdfStatus = (invoice: FaturaPdfData) => {
   return "Aberta";
 };
 
-const sanitizeFileName = (value: string) => {
-  return value
-    .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "")
-    .replace(/[^a-zA-Z0-9-_]+/g, "-")
-    .replace(/-+/g, "-")
-    .replace(/^-|-$/g, "")
-    .toLowerCase();
-};
-
 export function InvoicePdfExportButton({
-  invoice,
+  selectedInvoice,
+  filteredInvoices,
+  invoices,
   monthNames,
 }: InvoicePdfExportButtonProps) {
   const handleExport = () => {
-    if (!invoice) {
+    if (!selectedInvoice) {
       toast.error("Selecione uma fatura para exportar.");
       return;
     }
@@ -103,27 +85,100 @@ export function InvoicePdfExportButton({
       const contentWidth = pageWidth - margin * 2;
       const generatedAt = new Date().toLocaleString("pt-BR");
 
-      const monthName = monthNames[invoice.mes - 1] || "Mês";
-      const competence = monthName + " " + invoice.ano;
-      const cardName = invoice.cartaoCredito.nome || "Cartão de Crédito";
-      const invoiceItems = invoice.parcelas || [];
-      const invoiceStatus = getInvoicePdfStatus(invoice);
+      const invoicesToExport =
+        filteredInvoices.length > 0 ? filteredInvoices : invoices;
 
-      const purchaseRows = invoiceItems.map((parcela) => {
-        const transacao = parcela.transacao;
-        const totalParcels = transacao.numeroParcelas || 1;
-        const installmentLabel =
-          totalParcels > 1
-            ? parcela.numeroParcela + "/" + totalParcels
-            : "À vista";
+      const competenceInvoices = invoicesToExport.filter(
+        (invoice) =>
+          invoice.mes === selectedInvoice.mes &&
+          invoice.ano === selectedInvoice.ano,
+      );
 
-        return {
-          data: formatDate(transacao.data),
-          descricao: transacao.descricao || "Compra sem descrição",
-          categoria: transacao.categoria?.nome || "Sem categoria",
-          parcela: installmentLabel,
-          valor: Number(parcela.valor || 0),
-        };
+      const competence =
+        monthNames[selectedInvoice.mes - 1] + " " + selectedInvoice.ano;
+
+      const competenceTotal = competenceInvoices.reduce(
+        (sum, invoice) => sum + invoice.valorTotal,
+        0,
+      );
+
+      const openTotal = competenceInvoices
+        .filter((invoice) => !invoice.estaPaga)
+        .reduce((sum, invoice) => sum + invoice.valorTotal, 0);
+
+      const paidTotal = competenceInvoices
+        .filter((invoice) => invoice.estaPaga)
+        .reduce((sum, invoice) => sum + invoice.valorTotal, 0);
+
+      const purchaseCount = competenceInvoices.reduce(
+        (sum, invoice) => sum + invoice.parcelas.length,
+        0,
+      );
+
+      const cardCount = new Set(
+        competenceInvoices.map((invoice) => invoice.cartaoCredito.nome),
+      ).size;
+
+      const competenceItems = competenceInvoices.flatMap((invoice) => {
+        return (invoice.parcelas || []).map((parcela: any) => {
+          const transacao =
+            parcela.transacao ||
+            parcela.transaction ||
+            parcela.compra ||
+            parcela.purchase ||
+            {};
+
+          const rawDate =
+            transacao.data ||
+            transacao.dataTransacao ||
+            transacao.createdAt ||
+            parcela.data ||
+            parcela.dataCompra ||
+            parcela.createdAt ||
+            invoice.dataVencimento;
+
+          const rawDescription =
+            transacao.descricao ||
+            transacao.description ||
+            parcela.descricao ||
+            parcela.description ||
+            "Compra sem descrição";
+
+          const rawCategory =
+            transacao.categoria?.nome ||
+            transacao.categoria?.name ||
+            transacao.categoria ||
+            parcela.categoria?.nome ||
+            parcela.categoria?.name ||
+            parcela.categoria ||
+            "Sem categoria";
+
+          const rawValue =
+            parcela.valor ||
+            parcela.valorParcela ||
+            parcela.amount ||
+            transacao.valor ||
+            transacao.amount ||
+            (invoice.parcelas.length === 1 ? invoice.valorTotal : 0);
+
+          const installmentLabel =
+            parcela.numeroParcela && parcela.totalParcelas
+              ? parcela.numeroParcela + "/" + parcela.totalParcelas
+              : parcela.parcelaAtual && parcela.totalParcelas
+                ? parcela.parcelaAtual + "/" + parcela.totalParcelas
+                : parcela.numero && parcela.total
+                  ? parcela.numero + "/" + parcela.total
+                  : "À vista";
+
+          return {
+            cartao: invoice.cartaoCredito.nome || "Cartão de Crédito",
+            data: formatDate(String(rawDate)),
+            descricao: String(rawDescription),
+            categoria: String(rawCategory),
+            parcela: installmentLabel,
+            valor: Number(rawValue),
+          };
+        });
       });
 
       const drawHeader = () => {
@@ -155,16 +210,17 @@ export function InvoicePdfExportButton({
         doc.setTextColor(15, 23, 42);
         doc.setFont("helvetica", "bold");
         doc.setFontSize(17);
-        doc.text("Relatório da Fatura", margin, 58);
+        doc.text("Relatório Financeiro de Faturas", margin, 58);
 
         doc.setFont("helvetica", "normal");
         doc.setFontSize(10);
         doc.setTextColor(100, 116, 139);
         doc.text(
-          "Competência: " + competence + " | Cartão: " + cardName,
+          "Competência: " +
+            competence +
+            " | Consolidação de cartões, compras e vencimentos.",
           margin,
           65,
-          { maxWidth: contentWidth },
         );
       };
 
@@ -188,7 +244,7 @@ export function InvoicePdfExportButton({
         doc.setTextColor(15, 23, 42);
         doc.setFont("helvetica", "bold");
         doc.setFontSize(12);
-        doc.text(value, x + 4, y + 15, { maxWidth: width - 8 });
+        doc.text(value, x + 4, y + 15);
 
         doc.setTextColor(100, 116, 139);
         doc.setFont("helvetica", "normal");
@@ -208,7 +264,7 @@ export function InvoicePdfExportButton({
           doc.setTextColor(100, 116, 139);
           doc.setFont("helvetica", "normal");
           doc.setFontSize(8.5);
-          doc.text(subtitle, margin, y + 5, { maxWidth: contentWidth });
+          doc.text(subtitle, margin, y + 5);
         }
       };
 
@@ -230,27 +286,27 @@ export function InvoicePdfExportButton({
         margin,
         76,
         cardWidth,
-        "Valor da fatura",
-        formatCurrency(invoice.valorTotal),
-        invoiceStatus,
+        "Valor consolidado",
+        formatCurrency(competenceTotal),
+        competenceInvoices.length + " fatura(s)",
       );
 
       drawMetricCard(
         margin + cardWidth + 4,
         76,
         cardWidth,
-        "Vencimento",
-        formatDate(invoice.dataVencimento),
-        competence,
+        "Em aberto",
+        formatCurrency(openTotal),
+        "Pago: " + formatCurrency(paidTotal),
       );
 
       drawMetricCard(
         margin + (cardWidth + 4) * 2,
         76,
         cardWidth,
-        "Cartão",
-        cardName,
-        "Fatura selecionada",
+        "Cartões",
+        String(cardCount),
+        "Cartões com fatura no mês",
       );
 
       drawMetricCard(
@@ -258,27 +314,26 @@ export function InvoicePdfExportButton({
         76,
         cardWidth,
         "Lançamentos",
-        String(invoiceItems.length),
+        String(purchaseCount),
         "Compras/parcelas",
       );
 
       drawSection(
-        "Dados da fatura",
-        "Resumo individual da fatura selecionada na tela.",
+        "Detalhamento por cartão",
+        "Resumo das faturas vinculadas à competência selecionada.",
         115,
       );
 
       autoTable(doc, {
         startY: 123,
-        head: [["Competência", "Cartão", "Vencimento", "Status", "Valor", "Compras"]],
-        body: [[
-          competence,
-          cardName,
+        head: [["Cartão", "Vencimento", "Status", "Valor da fatura", "Compras"]],
+        body: competenceInvoices.map((invoice) => [
+          invoice.cartaoCredito.nome || "Cartão de Crédito",
           formatDate(invoice.dataVencimento),
-          invoiceStatus,
+          getInvoicePdfStatus(invoice),
           formatCurrency(invoice.valorTotal),
-          String(invoiceItems.length),
-        ]],
+          String(invoice.parcelas.length),
+        ]),
         styles: {
           font: "helvetica",
           fontSize: 8,
@@ -296,11 +351,11 @@ export function InvoicePdfExportButton({
           fillColor: [248, 250, 252],
         },
         columnStyles: {
-          4: {
+          3: {
             halign: "right",
             fontStyle: "bold",
           },
-          5: {
+          4: {
             halign: "center",
           },
         },
@@ -310,29 +365,30 @@ export function InvoicePdfExportButton({
         },
       });
 
-      let currentY = getLastAutoTableY(doc, 145) + 14;
+      let currentY = getLastAutoTableY(doc, 150) + 14;
       currentY = ensureSpace(currentY, 70);
 
       drawSection(
-        "Lançamentos da fatura",
-        "Compras e parcelas que compõem somente a fatura selecionada.",
+        "Lançamentos da competência",
+        "Compras e parcelas que compõem o total consolidado do mês.",
         currentY,
       );
 
       autoTable(doc, {
         startY: currentY + 8,
-        head: [["Data", "Descrição", "Categoria", "Parcela", "Valor"]],
+        head: [["Cartão", "Data", "Descrição", "Categoria", "Parcela", "Valor"]],
         body:
-          purchaseRows.length > 0
-            ? purchaseRows.map((item) => [
+          competenceItems.length > 0
+            ? competenceItems.map((item) => [
+                item.cartao,
                 item.data,
                 item.descricao,
                 item.categoria,
                 item.parcela,
                 formatCurrency(item.valor),
               ])
-            : [["-", "Nenhuma compra encontrada", "-", "-", "-"]],
-        foot: [["", "", "", "Total", formatCurrency(invoice.valorTotal)]],
+            : [["-", "-", "Nenhuma compra encontrada", "-", "-", "-"]],
+        foot: [["", "", "", "", "Total", formatCurrency(competenceTotal)]],
         styles: {
           font: "helvetica",
           fontSize: 7.8,
@@ -355,9 +411,60 @@ export function InvoicePdfExportButton({
           fillColor: [248, 250, 252],
         },
         columnStyles: {
+          5: {
+            halign: "right",
+            fontStyle: "bold",
+          },
+        },
+        margin: {
+          left: margin,
+          right: margin,
+        },
+      });
+
+      currentY = getLastAutoTableY(doc, currentY + 85) + 14;
+      currentY = ensureSpace(currentY, 90);
+
+      drawSection(
+        "Agenda de vencimentos carregada na tela",
+        "Visão de acompanhamento das faturas futuras exibidas no filtro atual.",
+        currentY,
+      );
+
+      autoTable(doc, {
+        startY: currentY + 8,
+        head: [["Competência", "Cartão", "Vencimento", "Status", "Valor", "Compras"]],
+        body: invoicesToExport.map((invoice) => [
+          monthNames[invoice.mes - 1] + " " + invoice.ano,
+          invoice.cartaoCredito.nome || "Cartão de Crédito",
+          formatDate(invoice.dataVencimento),
+          getInvoicePdfStatus(invoice),
+          formatCurrency(invoice.valorTotal),
+          String(invoice.parcelas.length),
+        ]),
+        styles: {
+          font: "helvetica",
+          fontSize: 7.5,
+          cellPadding: 2.6,
+          textColor: [15, 23, 42],
+          lineColor: [226, 232, 240],
+          lineWidth: 0.1,
+        },
+        headStyles: {
+          fillColor: [43, 91, 186],
+          textColor: [255, 255, 255],
+          fontStyle: "bold",
+        },
+        alternateRowStyles: {
+          fillColor: [248, 250, 252],
+        },
+        columnStyles: {
           4: {
             halign: "right",
             fontStyle: "bold",
+          },
+          5: {
+            halign: "center",
           },
         },
         margin: {
@@ -394,25 +501,26 @@ export function InvoicePdfExportButton({
         );
       }
 
-      const fileName = sanitizeFileName(
-        "paygrid-fatura-" + cardName + "-" + monthName + "-" + invoice.ano,
-      );
+      const fileName = ("paygrid-relatorio-faturas-" + selectedInvoice.mes + "-" + selectedInvoice.ano)
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "")
+        .replace(/[^a-zA-Z0-9-_]+/g, "-")
+        .toLowerCase();
 
       doc.save(fileName + ".pdf");
-      toast.success("PDF da fatura exportado com sucesso.");
+      toast.success("PDF exportado com sucesso.");
     } catch (error) {
-      toast.error("Não foi possível exportar o PDF da fatura.");
+      toast.error("Não foi possível exportar o PDF.");
     }
   };
 
   return (
     <button
       onClick={handleExport}
-      disabled={!invoice}
-      className="inline-flex items-center gap-2 bg-card text-foreground px-6 py-3.5 rounded-xl border border-border/50 hover:bg-muted font-medium transition-colors shadow-sm disabled:opacity-60 disabled:cursor-not-allowed"
+      className="inline-flex items-center gap-2 bg-card text-foreground px-6 py-3.5 rounded-xl border border-border/50 hover:bg-muted font-medium transition-colors shadow-sm"
     >
       <Download size={18} />
-      Exportar fatura atual
+      Exportar para o mês atual
     </button>
   );
 }

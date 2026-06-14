@@ -267,7 +267,9 @@ const uniqueCards = useMemo(() => {
               </p>
             </div>
             <InvoicePdfExportButton
-              invoice={selectedInvoice ?? null}
+              selectedInvoice={selectedInvoice ?? null}
+              filteredInvoices={filteredInvoices}
+              invoices={invoices}
               monthNames={monthNames}
             />
           </div>
