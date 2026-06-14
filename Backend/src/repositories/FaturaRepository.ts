@@ -72,6 +72,7 @@ export class FaturaRepository {
             transacao: {
               include: {
                 categoria: true,
+                parcelas: true,
               },
             },
           },

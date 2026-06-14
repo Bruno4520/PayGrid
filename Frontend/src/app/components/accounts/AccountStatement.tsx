@@ -77,28 +77,52 @@ export function AccountStatement({
           <div className="divide-y divide-border/50">
             {transactions.map((t) => {
               const isDeleting = deletingTransactionId === t.id;
+              const [day, month] = t.dateFormatted.split("/");
+              const monthNames = [
+                "Jan",
+                "Fev",
+                "Mar",
+                "Abr",
+                "Mai",
+                "Jun",
+                "Jul",
+                "Ago",
+                "Set",
+                "Out",
+                "Nov",
+                "Dez",
+              ];
+              const monthAbbr = monthNames[parseInt(month, 10) - 1];
 
               return (
                 <div
                   key={t.id}
                   className={`flex flex-col sm:flex-row sm:items-center justify-between p-4 md:px-6 hover:bg-muted/30 transition-colors group rounded-xl ${isDeleting ? "opacity-50 pointer-events-none" : ""}`}
                 >
-                  <div className="flex items-start gap-4 mb-3 sm:mb-0">
-                    <div className="w-10 h-10 rounded-full flex items-center justify-center bg-muted flex-shrink-0 mt-1 sm:mt-0 text-muted-foreground">
-                      <span className="font-bold text-sm">
-                        {t.dateFormatted.split("/")[0]}
+                  <div className="flex items-start gap-4 mb-3 sm:mb-0 min-w-0">
+                    <div className="w-12 h-12 rounded-xl flex flex-col items-center justify-center bg-muted/80 border border-border/50 flex-shrink-0 mt-1 sm:mt-0 shadow-sm">
+                      <span className="font-bold text-sm text-foreground leading-none mb-0.5">
+                        {day}
+                      </span>
+                      <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider leading-none">
+                        {monthAbbr}
                       </span>
                     </div>
-                    <div>
-                      <p className="font-bold text-foreground text-base leading-tight mb-1">
+                    <div className="min-w-0 flex-1">
+                      <p
+                        className="font-bold text-foreground text-base leading-tight mb-1 truncate"
+                        title={t.descricao}
+                      >
                         {t.descricao}
                       </p>
-                      <div className="flex items-center gap-2 text-xs font-medium text-muted-foreground">
-                        <span className="bg-muted px-2 py-0.5 rounded-md">
+                      <div className="flex items-center gap-2 text-xs font-medium text-muted-foreground truncate">
+                        <span className="bg-muted px-2 py-0.5 rounded-md shrink-0">
                           {t.categoria?.nome || "Outros"}
                         </span>
-                        <span>•</span>
-                        <span>{t.accountName}</span>
+                        <span className="shrink-0">•</span>
+                        <span className="truncate" title={t.accountName}>
+                          {t.accountName}
+                        </span>
                       </div>
                     </div>
                   </div>

@@ -37,7 +37,7 @@ export function InvoiceTable({ month, year, items }: InvoiceTableProps) {
         <table className="w-full text-left border-collapse">
           <thead className="bg-muted/50 border-b border-border">
             <tr>
-              <th className="px-6 py-4 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+              <th className="px-6 py-4 text-center text-xs font-semibold text-muted-foreground uppercase tracking-wider">
                 Data
               </th>
               <th className="px-6 py-4 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
@@ -46,7 +46,7 @@ export function InvoiceTable({ month, year, items }: InvoiceTableProps) {
               <th className="px-6 py-4 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
                 Categoria
               </th>
-              <th className="px-6 py-4 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+              <th className="px-6 py-4 text-center text-xs font-semibold text-muted-foreground uppercase tracking-wider">
                 Parcela
               </th>
               <th className="px-6 py-4 text-right text-xs font-semibold text-muted-foreground uppercase tracking-wider">
@@ -60,10 +60,13 @@ export function InvoiceTable({ month, year, items }: InvoiceTableProps) {
                 key={item.id}
                 className="hover:bg-muted/30 transition-colors group"
               >
-                <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-muted-foreground">
+                <td className="px-6 py-4 whitespace-nowrap text-center text-sm font-medium text-muted-foreground">
                   {item.date}
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm font-semibold text-foreground">
+                <td
+                  className="px-6 py-4 text-sm font-semibold text-foreground max-w-[150px] sm:max-w-[250px] truncate"
+                  title={item.description}
+                >
                   {item.description}
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap">
@@ -73,8 +76,12 @@ export function InvoiceTable({ month, year, items }: InvoiceTableProps) {
                     {item.category}
                   </span>
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-muted-foreground">
-                  {item.installment}
+                <td className="px-6 py-4 whitespace-nowrap text-center">
+                  <span
+                    className={`text-sm ${item.installment === "À vista" ? "text-muted-foreground font-medium" : "text-[#2B5BBA] bg-[#2B5BBA]/10 px-2 py-0.5 rounded font-bold"}`}
+                  >
+                    {item.installment}
+                  </span>
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-right">
                   <span className="text-sm font-bold tracking-tight text-foreground">

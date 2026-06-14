@@ -14,7 +14,6 @@ import {
 } from "../components/invoices/InvoiceTable";
 import { api } from "../../services/api";
 
-
 const monthNames = [
   "Janeiro",
   "Fevereiro",
@@ -47,7 +46,7 @@ interface Fatura {
     transacao: {
       data: string;
       descricao: string;
-      numeroParcelas?: number;
+      parcelas?: any[];
       categoria: {
         nome: string;
       } | null;
@@ -60,7 +59,6 @@ interface Conta {
   nome: string;
   saldo: number;
 }
-
 
 export function InvoicesPage() {
   const [invoices, setInvoices] = useState<Fatura[]>([]);
@@ -146,7 +144,7 @@ export function InvoicesPage() {
       setIsPaying(false);
     }
   };
-const uniqueCards = useMemo(() => {
+  const uniqueCards = useMemo(() => {
     const cards = invoices.map((inv) => inv.cartaoCredito.nome);
     return Array.from(new Set(cards)).sort();
   }, [invoices]);
@@ -189,9 +187,9 @@ const uniqueCards = useMemo(() => {
         colorClass = "bg-red-500/10 text-red-600 dark:text-red-400";
       }
 
-      const totalParcels = t.numeroParcelas || 1;
+      const totalParcela = t.parcelas?.length || 1;
       const instStr =
-        totalParcels > 1 ? `${p.numeroParcela}/${totalParcels}` : "À vista";
+        totalParcela > 1 ? `${p.numeroParcela}/${totalParcela}` : "À vista";
 
       return {
         id: String(p.id),

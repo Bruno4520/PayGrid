@@ -75,17 +75,23 @@ export function AccountsTable({
                   className="hover:bg-muted/30 transition-colors group"
                 >
                   <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="flex items-center gap-4">
+                    <div className="flex items-center gap-4 min-w-0">
                       <div
-                        className={`w-12 h-12 rounded-xl flex items-center justify-center ${iconColorMap[account.icon]}`}
+                        className={`w-12 h-12 rounded-xl flex items-center justify-center shrink-0 ${iconColorMap[account.icon]}`}
                       >
                         <Icon size={22} />
                       </div>
-                      <div>
-                        <p className="text-sm font-semibold text-foreground mb-0.5">
+                      <div className="min-w-0 flex-1 max-w-[140px] sm:max-w-[250px]">
+                        <p
+                          className="text-sm font-semibold text-foreground mb-0.5 truncate"
+                          title={account.name}
+                        >
                           {account.name}
                         </p>
-                        <p className="text-xs font-medium text-muted-foreground">
+                        <p
+                          className="text-xs font-medium text-muted-foreground truncate"
+                          title={account.details}
+                        >
                           {account.details}
                         </p>
                       </div>

@@ -28,8 +28,13 @@ export class DashboardRepository {
       where: {
         OR: [{ conta: { usuarioId } }, { cartaoCredito: { usuarioId } }],
       },
-      include: { categoria: true, conta: true, parcelas: true },
-      orderBy: { data: "desc" },
+      include: {
+        categoria: true,
+        conta: true,
+        cartaoCredito: true,
+        parcelas: true,
+      },
+      orderBy: [{ data: "desc" }, { id: "desc" }],
       take: 5,
     });
 

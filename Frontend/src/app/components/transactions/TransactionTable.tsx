@@ -130,7 +130,14 @@ export function TransactionTable({
                     >
                       {transaction.descricao}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-muted-foreground">
+                    <td
+                      className="px-6 py-4 text-sm text-muted-foreground max-w-[110px] sm:max-w-[150px] truncate"
+                      title={
+                        transaction.categoria?.nome === "PAGAMENTO DE FATURA"
+                          ? "Pagamento de Cartão"
+                          : transaction.categoria?.nome || "-"
+                      }
+                    >
                       {transaction.categoria?.nome === "PAGAMENTO DE FATURA"
                         ? "Pagamento de Cartão"
                         : transaction.categoria?.nome || "-"}

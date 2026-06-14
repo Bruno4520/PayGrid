@@ -123,14 +123,25 @@ export function AccountCard({
         </div>
       </div>
 
-      <div>
-        <p className={`text-sm font-medium mb-1 ${config.subText}`}>{name}</p>
+      <div className="min-w-0">
         <p
-          className={`text-3xl font-bold tracking-tight mb-2 ${config.textColor}`}
+          className={`text-sm font-medium mb-1 truncate ${config.subText}`}
+          title={name}
+        >
+          {name}
+        </p>
+        <p
+          className={`text-3xl font-bold tracking-tight mb-2 truncate ${config.textColor}`}
+          title={formatCurrency(balance)}
         >
           {formatCurrency(balance)}
         </p>
-        <p className={`text-xs font-medium ${config.subText}`}>{details}</p>
+        <p
+          className={`text-xs font-medium truncate ${config.subText}`}
+          title={details}
+        >
+          {details}
+        </p>
       </div>
     </div>
   );

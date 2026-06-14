@@ -186,14 +186,12 @@ export function InvoicePdfExportButton({
             transacao.amount ||
             (invoice.parcelas.length === 1 ? invoice.valorTotal : 0);
 
+          const totalParcelas = transacao.parcelas?.length || 1;
+
           const installmentLabel =
-            parcela.numeroParcela && parcela.totalParcelas
-              ? parcela.numeroParcela + "/" + parcela.totalParcelas
-              : parcela.parcelaAtual && parcela.totalParcelas
-                ? parcela.parcelaAtual + "/" + parcela.totalParcelas
-                : parcela.numero && parcela.total
-                  ? parcela.numero + "/" + parcela.total
-                  : "À vista";
+            totalParcelas > 1
+              ? `${parcela.numeroParcela}/${totalParcelas}`
+              : "À vista";
 
           return {
             cartao: invoice.cartaoCredito.nome || "Cartão de Crédito",
@@ -351,13 +349,21 @@ export function InvoicePdfExportButton({
 
       autoTable(doc, {
         startY: 123,
-        head: [["Cartão", "Vencimento", "Status", "Valor da fatura", "Compras"]],
+        head: [
+          [
+            "Cartão",
+            { content: "Vencimento", styles: { halign: "center" } },
+            { content: "Status", styles: { halign: "center" } },
+            { content: "Compras", styles: { halign: "center" } },
+            { content: "Valor da fatura", styles: { halign: "right" } },
+          ],
+        ],
         body: competenceInvoices.map((invoice) => [
           invoice.cartaoCredito.nome || "Cartão de Crédito",
           formatDate(invoice.dataVencimento),
           getInvoicePdfStatus(invoice),
-          formatCurrency(invoice.valorTotal),
           String(invoice.parcelas.length),
+          formatCurrency(invoice.valorTotal),
         ]),
         styles: {
           font: "helvetica",
@@ -376,12 +382,18 @@ export function InvoicePdfExportButton({
           fillColor: [248, 250, 252],
         },
         columnStyles: {
+          1: {
+            halign: "center",
+          },
+          2: {
+            halign: "center",
+          },
           3: {
-            halign: "right",
-            fontStyle: "bold",
+            halign: "center",
           },
           4: {
-            halign: "center",
+            halign: "right",
+            fontStyle: "bold",
           },
         },
         margin: {
@@ -401,7 +413,16 @@ export function InvoicePdfExportButton({
 
       autoTable(doc, {
         startY: currentY + 8,
-        head: [["Cartão", "Data", "Descrição", "Categoria", "Parcela", "Valor"]],
+        head: [
+          [
+            "Cartão",
+            { content: "Data", styles: { halign: "center" } },
+            "Descrição",
+            "Categoria",
+            { content: "Parcela", styles: { halign: "center" } },
+            { content: "Valor", styles: { halign: "right" } },
+          ],
+        ],
         body:
           competenceItems.length > 0
             ? competenceItems.map((item) => [
@@ -436,6 +457,12 @@ export function InvoicePdfExportButton({
           fillColor: [248, 250, 252],
         },
         columnStyles: {
+          1: {
+            halign: "center",
+          },
+          4: {
+            halign: "center",
+          },
           5: {
             halign: "right",
             fontStyle: "bold",
@@ -458,14 +485,23 @@ export function InvoicePdfExportButton({
 
       autoTable(doc, {
         startY: currentY + 8,
-        head: [["Competência", "Cartão", "Vencimento", "Status", "Valor", "Compras"]],
+        head: [
+          [
+            "Competência",
+            "Cartão",
+            { content: "Vencimento", styles: { halign: "center" } },
+            { content: "Status", styles: { halign: "center" } },
+            { content: "Compras", styles: { halign: "center" } },
+            { content: "Valor", styles: { halign: "right" } },
+          ],
+        ],
         body: invoicesToExport.map((invoice) => [
           monthNames[invoice.mes - 1] + " " + invoice.ano,
           invoice.cartaoCredito.nome || "Cartão de Crédito",
           formatDate(invoice.dataVencimento),
           getInvoicePdfStatus(invoice),
-          formatCurrency(invoice.valorTotal),
           String(invoice.parcelas.length),
+          formatCurrency(invoice.valorTotal),
         ]),
         styles: {
           font: "helvetica",
@@ -484,17 +520,33 @@ export function InvoicePdfExportButton({
           fillColor: [248, 250, 252],
         },
         columnStyles: {
+          2: {
+            halign: "center",
+          },
+          3: {
+            halign: "center",
+          },
           4: {
-            halign: "right",
-            fontStyle: "bold",
+            halign: "center",
           },
           5: {
-            halign: "center",
+            halign: "right",
+            fontStyle: "bold",
           },
         },
         margin: {
           left: margin,
           right: margin,
+        },
+        didParseCell: (data) => {
+          if (data.section === "body") {
+            const invoice = invoicesToExport[data.row.index];
+
+            if (invoice && invoice.estaPaga) {
+              data.cell.styles.textColor = [148, 163, 184];
+              data.cell.styles.fontStyle = "italic";
+            }
+          }
         },
       });
 
@@ -526,7 +578,12 @@ export function InvoicePdfExportButton({
         );
       }
 
-      const fileName = ("paygrid-relatorio-faturas-" + selectedInvoice.mes + "-" + selectedInvoice.ano)
+      const fileName = (
+        "paygrid-relatorio-faturas-" +
+        selectedInvoice.mes +
+        "-" +
+        selectedInvoice.ano
+      )
         .normalize("NFD")
         .replace(/[\u0300-\u036f]/g, "")
         .replace(/[^a-zA-Z0-9-_]+/g, "-")
@@ -545,7 +602,7 @@ export function InvoicePdfExportButton({
       className="inline-flex items-center gap-2 bg-card text-foreground px-6 py-3.5 rounded-xl border border-border/50 hover:bg-muted font-medium transition-colors shadow-sm"
     >
       <Download size={18} />
-      Exportar para o mês atual
+      Exportar para o mês selecionado
     </button>
   );
 }

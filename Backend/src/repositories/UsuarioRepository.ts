@@ -20,6 +20,12 @@ const CATEGORIAS_BASICAS = [
     sistema: false,
   },
   {
+    nome: "Outros",
+    icone: "dots-horizontal",
+    cor: "bg-gray-500",
+    sistema: false,
+  },
+  {
     nome: "PAGAMENTO DE FATURA",
     icone: "other",
     cor: "bg-zinc-500",

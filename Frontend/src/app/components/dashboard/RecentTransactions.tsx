@@ -9,6 +9,12 @@ export interface DashboardTransaction {
   categoria?: {
     nome: string;
   };
+  conta?: {
+    nome: string;
+  };
+  cartaoCredito?: {
+    nome: string;
+  };
   parcelas?: unknown[];
 }
 
@@ -47,9 +53,9 @@ export function RecentTransactions({
             key={t.id}
             className="flex items-center justify-between p-3 rounded-2xl hover:bg-muted/50 transition-colors"
           >
-            <div className="flex items-center gap-4">
+            <div className="flex items-center gap-4 min-w-0">
               <div
-                className={`w-12 h-12 rounded-xl flex items-center justify-center ${
+                className={`w-12 h-12 rounded-xl shrink-0 flex items-center justify-center ${
                   t.tipo === "RECEITA"
                     ? "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400"
                     : "bg-red-500/10 text-red-600 dark:text-red-400"
@@ -61,23 +67,28 @@ export function RecentTransactions({
                   <ArrowDownRight size={20} />
                 )}
               </div>
-              <div>
-                <p className="text-sm font-bold text-foreground flex items-center gap-2">
-                  {t.descricao}
+              <div className="min-w-0 flex-1">
+                <p className="text-sm font-bold text-foreground flex items-center gap-2 truncate">
+                  <span className="truncate" title={t.descricao}>
+                    {t.descricao}
+                  </span>
+
                   {t.parcelas && t.parcelas.length > 1 && (
-                    <span className="text-[10px] font-bold bg-[#2B5BBA]/10 text-[#2B5BBA] px-1.5 py-0.5 rounded-md">
+                    <span className="text-[10px] font-bold bg-[#2B5BBA]/10 text-[#2B5BBA] px-1.5 py-0.5 rounded-md shrink-0">
                       {t.parcelas.length}x
                     </span>
                   )}
                 </p>
-                <p className="text-xs text-muted-foreground font-medium mt-0.5">
-                  {t.categoria?.nome || "Outros"} •{" "}
-                  {new Date(t.data).toLocaleDateString("pt-BR")}
+                <p className="text-xs text-muted-foreground font-medium mt-0.5 truncate">
+                  {t.categoria?.nome || "Outros"}
+                  {(t.conta?.nome || t.cartaoCredito?.nome) &&
+                    ` • ${t.conta?.nome || t.cartaoCredito?.nome}`}
+                  {` • ${new Date(t.data).toLocaleDateString("pt-BR")}`}
                 </p>
               </div>
             </div>
             <span
-              className={`text-sm font-bold ${
+              className={`text-sm font-bold shrink-0 ml-4 ${
                 t.tipo === "RECEITA"
                   ? "text-emerald-600 dark:text-emerald-400"
                   : "text-red-600 dark:text-red-400"

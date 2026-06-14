@@ -12,6 +12,8 @@ import {
   Edit2,
   Trash2,
   AlertTriangle,
+  Briefcase,
+  TrendingUp,
   type LucideIcon,
 } from "lucide-react";
 
@@ -39,6 +41,9 @@ const iconMap: Record<string, LucideIcon> = {
   energy: Zap,
   education: GraduationCap,
   other: MoreHorizontal,
+  "dots-horizontal": MoreHorizontal,
+  briefcase: Briefcase,
+  "trending-up": TrendingUp,
 };
 
 const colorStyles: Record<string, { bg: string; text: string }> = {

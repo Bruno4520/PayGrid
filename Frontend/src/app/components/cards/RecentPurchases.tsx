@@ -1,13 +1,19 @@
 import {
-  ShoppingCart,
-  Fuel,
-  Utensils,
-  Music,
-  FileText,
   Plus,
   Edit2,
   Trash2,
   Loader2,
+  Home,
+  Utensils,
+  Car,
+  HeartPulse,
+  Gamepad2,
+  ShoppingCart,
+  MoreHorizontal,
+  Zap,
+  GraduationCap,
+  Briefcase,
+  TrendingUp,
 } from "lucide-react";
 import type { Transaction } from "../transactions/TransactionTable";
 
@@ -21,19 +27,34 @@ interface RecentPurchasesProps {
 }
 
 const iconMap: Record<string, any> = {
-  shopping: ShoppingCart,
-  fuel: Fuel,
+  home: Home,
   food: Utensils,
-  music: Music,
-  other: FileText,
+  car: Car,
+  health: HeartPulse,
+  game: Gamepad2,
+  entertainment: Gamepad2,
+  shopping: ShoppingCart,
+  energy: Zap,
+  education: GraduationCap,
+  briefcase: Briefcase,
+  "trending-up": TrendingUp,
+  other: MoreHorizontal,
+  "dots-horizontal": MoreHorizontal,
 };
 
-const iconColorMap: Record<string, string> = {
-  shopping: "bg-red-500/10 text-red-600 dark:text-red-400",
-  fuel: "bg-blue-500/10 text-blue-600 dark:text-blue-400",
-  food: "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400",
-  music: "bg-purple-500/10 text-purple-600 dark:text-purple-400",
-  other: "bg-muted text-muted-foreground",
+const colorStyles: Record<string, string> = {
+  "bg-blue-500": "bg-blue-500/10 text-blue-600 dark:text-blue-400",
+  "bg-emerald-500": "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400",
+  "bg-emerald-600": "bg-emerald-600/10 text-emerald-600 dark:text-emerald-400",
+  "bg-purple-500": "bg-purple-500/10 text-purple-600 dark:text-purple-400",
+  "bg-red-500": "bg-red-500/10 text-red-600 dark:text-red-400",
+  "bg-orange-500": "bg-orange-500/10 text-orange-600 dark:text-orange-400",
+  "bg-yellow-500": "bg-yellow-500/10 text-yellow-600 dark:text-yellow-400",
+  "bg-pink-500": "bg-pink-500/10 text-pink-600 dark:text-pink-400",
+  "bg-zinc-500": "bg-zinc-500/10 text-zinc-600 dark:text-zinc-400",
+  "bg-gray-500": "bg-gray-500/10 text-gray-600 dark:text-gray-400",
+  "bg-green-600": "bg-green-600/10 text-green-600 dark:text-green-400",
+  "bg-cyan-500": "bg-cyan-500/10 text-cyan-600 dark:text-cyan-400",
 };
 
 export function RecentPurchases({
@@ -47,33 +68,9 @@ export function RecentPurchases({
   const formattedPurchases = purchases.map((t) => {
     const dateObj = new Date(t.data);
     dateObj.setMinutes(dateObj.getMinutes() + dateObj.getTimezoneOffset());
-
-    const catName = t.categoria?.nome?.toLowerCase() || "";
-    let icon = "other";
-    if (
-      catName.includes("alimentação") ||
-      catName.includes("comida") ||
-      catName.includes("restaurante")
-    )
-      icon = "food";
-    else if (
-      catName.includes("transporte") ||
-      catName.includes("combustível") ||
-      catName.includes("posto")
-    )
-      icon = "fuel";
-    else if (
-      catName.includes("compra") ||
-      catName.includes("mercado") ||
-      catName.includes("shopping")
-    )
-      icon = "shopping";
-    else if (
-      catName.includes("lazer") ||
-      catName.includes("música") ||
-      catName.includes("entretenimento")
-    )
-      icon = "music";
+    const categoryData = t.categoria as any;
+    const categoryIconId = categoryData?.icone || "other";
+    const categoryColorClass = categoryData?.cor || "bg-zinc-500";
 
     return {
       id: t.id,
@@ -87,7 +84,8 @@ export function RecentPurchases({
       amount: t.valor,
       type: t.tipo,
       category: t.categoria?.nome || "Outros",
-      icon: icon,
+      icon: categoryIconId,
+      colorClass: categoryColorClass,
       parcelas: t.parcelas?.length || 1,
     };
   });
@@ -114,6 +112,8 @@ export function RecentPurchases({
       <div className="space-y-2">
         {formattedPurchases.map((purchase) => {
           const Icon = iconMap[purchase.icon] || iconMap.other;
+          const colorStyle =
+            colorStyles[purchase.colorClass] || colorStyles["bg-zinc-500"];
           const isDeleting = deletingPurchaseId === purchase.id;
 
           return (
@@ -123,7 +123,7 @@ export function RecentPurchases({
             >
               <div className="flex items-center gap-4 flex-1">
                 <div
-                  className={`w-12 h-12 rounded-xl flex items-center justify-center ${iconColorMap[purchase.icon]}`}
+                  className={`w-12 h-12 rounded-xl flex items-center justify-center ${colorStyle}`}
                 >
                   <Icon size={20} />
                 </div>

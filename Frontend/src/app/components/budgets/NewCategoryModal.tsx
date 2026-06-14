@@ -11,6 +11,8 @@ import {
   Zap,
   MoreHorizontal,
   Loader2,
+  Briefcase,
+  TrendingUp,
 } from "lucide-react";
 
 export interface CategoryInitialData {
@@ -47,6 +49,8 @@ const ICONS = [
   { id: "entertainment", component: Gamepad2 },
   { id: "education", component: GraduationCap },
   { id: "energy", component: Zap },
+  { id: "briefcase", component: Briefcase },
+  { id: "trending-up", component: TrendingUp },
   { id: "other", component: MoreHorizontal },
 ];
 

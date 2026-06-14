@@ -52,15 +52,22 @@ export class TransacaoRepository {
         categoria: true,
         parcelas: true,
       },
-      orderBy: { data: "desc" },
+      orderBy: [{ data: "desc" }, { id: "desc" }],
     });
   }
 
   async criar(dados: DadosCriarTransacao) {
     return prisma.$transaction(async (tx) => {
+      const isTransferenciaInterna =
+        dados.tipoTransferencia === "interna" && dados.contaDestinoId;
+      const descricaoFinal =
+        isTransferenciaInterna && !dados.descricao.startsWith("Transferência:")
+          ? `Transferência: ${dados.descricao}`
+          : dados.descricao;
+
       const transacao = await tx.transacao.create({
         data: {
-          descricao: dados.descricao,
+          descricao: descricaoFinal,
           valor: dados.valor,
           tipo: dados.tipo,
           formaPagamento: dados.formaPagamento,
@@ -83,16 +90,16 @@ export class TransacaoRepository {
         },
       });
 
-      if (dados.tipoTransferencia === "interna" && dados.contaDestinoId) {
+      if (isTransferenciaInterna) {
         const tipoDestino = dados.tipo === "RECEITA" ? "DESPESA" : "RECEITA";
 
         await tx.transacao.create({
           data: {
-            descricao: `Transferência: ${dados.descricao}`,
+            descricao: descricaoFinal,
             valor: dados.valor,
             tipo: tipoDestino,
             formaPagamento: dados.formaPagamento,
-            contaId: dados.contaDestinoId,
+            contaId: dados.contaDestinoId!,
             categoriaId: dados.categoriaId || null,
             observacoes: dados.observacoes || null,
             data: new Date(dados.data),
@@ -103,7 +110,7 @@ export class TransacaoRepository {
           tipoDestino === "RECEITA" ? dados.valor : -dados.valor;
 
         await tx.conta.update({
-          where: { id: dados.contaDestinoId },
+          where: { id: dados.contaDestinoId! },
           data: {
             saldo: {
               increment: valorAtualizacaoDestino,

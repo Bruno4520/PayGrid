@@ -95,20 +95,20 @@ export async function populateUser(tx: any, usuarioId: number) {
       data: {
         usuarioId,
         nome: "Nubank",
-        limite: 600,
-        diaFechamentoFatura: 5,
-        diaVencimentoFatura: 12,
+        limite: 2600,
+        diaFechamentoFatura: 30,
+        diaVencimentoFatura: 6,
         ultimosDigitos: "4321",
       },
     });
 
-    const cartaoInter = await tx.cartaoCredito.create({
+    const cartaoItau = await tx.cartaoCredito.create({
       data: {
         usuarioId,
-        nome: "Inter Mastercard",
+        nome: "Itaú",
         limite: 1500,
-        diaFechamentoFatura: 15,
-        diaVencimentoFatura: 22,
+        diaFechamentoFatura: 20,
+        diaVencimentoFatura: 27,
         ultimosDigitos: "9090",
       },
     });
@@ -209,6 +209,91 @@ export async function populateUser(tx: any, usuarioId: number) {
       }
     }
 
+    async function pagarFatura(
+      cartaoId: number,
+      mes: number,
+      ano: number,
+      contaOrigemId: number,
+      dataPagamento: Date,
+    ) {
+      const fatura = await tx.fatura.findUnique({
+        where: {
+          cartaoCreditoId_mes_ano: {
+            cartaoCreditoId: cartaoId,
+            mes,
+            ano,
+          },
+        },
+      });
+
+      if (!fatura || fatura.estaPaga) return;
+
+      const catPagFatura = todasCategorias.find(
+        (c: any) => c.sistema && c.nome === "PAGAMENTO DE FATURA",
+      )?.id;
+
+      const transacaoPagamento = await tx.transacao.create({
+        data: {
+          descricao: `Pagamento fatura do cartão - ${mes}/${ano}`,
+          valor: fatura.valorTotal,
+          tipo: TipoTransacao.DESPESA,
+          formaPagamento: FormaPagamento.DEBITO,
+          contaId: contaOrigemId,
+          categoriaId: catPagFatura,
+          data: dataPagamento,
+        },
+      });
+
+      await tx.conta.update({
+        where: { id: contaOrigemId },
+        data: { saldo: { decrement: fatura.valorTotal } },
+      });
+
+      await tx.fatura.update({
+        where: { id: fatura.id },
+        data: {
+          estaPaga: true,
+          transacaoPagamentoId: transacaoPagamento.id,
+        },
+      });
+    }
+
+    const getDataRelativa = (
+      mesOffset: number,
+      dia: number,
+      hora: number,
+      minuto: number,
+    ) => {
+      const data = new Date();
+      let targetMonth = data.getMonth() + mesOffset;
+      let targetYear = data.getFullYear();
+
+      while (targetMonth < 0) {
+        targetMonth += 12;
+        targetYear--;
+      }
+      while (targetMonth > 11) {
+        targetMonth -= 12;
+        targetYear++;
+      }
+
+      const diasNoMes = new Date(targetYear, targetMonth + 1, 0).getDate();
+      const diaCorrigido = Math.min(dia, diasNoMes);
+
+      return new Date(targetYear, targetMonth, diaCorrigido, hora, minuto, 0);
+    };
+
+    const getDataDiasAtras = (dias: number, hora: number, minuto: number) => {
+      const data = new Date();
+      data.setDate(data.getDate() - dias);
+      data.setHours(hora, minuto, 0, 0);
+      return data;
+    };
+
+    const dataFaturaAnterior = getDataRelativa(-1, 15, 0, 0);
+    const mesFaturaPassada = dataFaturaAnterior.getMonth() + 1;
+    const anoFaturaPassada = dataFaturaAnterior.getFullYear();
+
     await criarTransacao({
       descricao: "Bolsa Auxílio / Estágio",
       valor: 900.0,
@@ -216,7 +301,7 @@ export async function populateUser(tx: any, usuarioId: number) {
       formaPagamento: FormaPagamento.PIX,
       contaId: contaNubank.id,
       categoriaId: catSalario,
-      data: new Date("2026-05-05T10:00:00Z"),
+      data: getDataRelativa(-1, 5, 10, 0),
     });
 
     await criarTransacao({
@@ -226,7 +311,27 @@ export async function populateUser(tx: any, usuarioId: number) {
       formaPagamento: FormaPagamento.PIX,
       contaId: contaNubank.id,
       categoriaId: catMoradia,
-      data: new Date("2026-05-06T10:30:00Z"),
+      data: getDataRelativa(-1, 6, 10, 30),
+    });
+
+    await criarTransacao({
+      descricao: "Bolsa Auxílio / Estágio",
+      valor: 900.0,
+      tipo: TipoTransacao.RECEITA,
+      formaPagamento: FormaPagamento.PIX,
+      contaId: contaNubank.id,
+      categoriaId: catSalario,
+      data: getDataRelativa(0, 5, 10, 0),
+    });
+
+    await criarTransacao({
+      descricao: "Aluguel",
+      valor: 600.0,
+      tipo: TipoTransacao.DESPESA,
+      formaPagamento: FormaPagamento.PIX,
+      contaId: contaNubank.id,
+      categoriaId: catMoradia,
+      data: getDataRelativa(0, 6, 10, 30),
     });
 
     await criarTransacao({
@@ -236,8 +341,19 @@ export async function populateUser(tx: any, usuarioId: number) {
       formaPagamento: FormaPagamento.DEBITO,
       contaId: contaNubank.id,
       categoriaId: catAlimentacao,
-      data: new Date("2026-05-08T18:45:00Z"),
+      data: getDataDiasAtras(45, 18, 45),
     });
+
+    await criarCredito(
+      {
+        descricao: "SSD 1TB",
+        valor: 550.0,
+        categoriaId: catLazer,
+        numeroParcelas: 4,
+        data: getDataDiasAtras(40, 16, 40),
+      },
+      cartaoItau,
+    );
 
     await criarTransacao({
       descricao: "Conta de Energia",
@@ -246,19 +362,8 @@ export async function populateUser(tx: any, usuarioId: number) {
       formaPagamento: FormaPagamento.PIX,
       contaId: contaNubank.id,
       categoriaId: catMoradia,
-      data: new Date("2026-05-10T09:15:00Z"),
+      data: getDataDiasAtras(30, 9, 15),
     });
-
-    await criarCredito(
-      {
-        descricao: "Pássaro Marron (Passagem)",
-        valor: 92.0,
-        categoriaId: catTransporte,
-        numeroParcelas: 1,
-        data: new Date("2026-05-12T14:20:00Z"),
-      },
-      cartaoNubank,
-    );
 
     await criarTransferencia(
       {
@@ -266,7 +371,7 @@ export async function populateUser(tx: any, usuarioId: number) {
         valor: 150.0,
         formaPagamento: FormaPagamento.PIX,
         categoriaId: catOutros,
-        data: new Date("2026-05-15T20:00:00Z"),
+        data: getDataDiasAtras(25, 20, 0),
       },
       contaNubank.id,
       contaCaixa.id,
@@ -274,22 +379,11 @@ export async function populateUser(tx: any, usuarioId: number) {
 
     await criarCredito(
       {
-        descricao: "SSD 1TB",
-        valor: 550.0,
-        categoriaId: catLazer,
-        numeroParcelas: 4,
-        data: new Date("2026-05-20T16:40:00Z"),
-      },
-      cartaoInter,
-    );
-
-    await criarCredito(
-      {
-        descricao: "Pizzaria",
-        valor: 45.0,
-        categoriaId: catAlimentacao,
+        descricao: "Pássaro Marron (Passagem)",
+        valor: 92.0,
+        categoriaId: catTransporte,
         numeroParcelas: 1,
-        data: new Date("2026-05-25T21:30:00Z"),
+        data: getDataDiasAtras(20, 14, 20),
       },
       cartaoNubank,
     );
@@ -301,38 +395,19 @@ export async function populateUser(tx: any, usuarioId: number) {
       formaPagamento: FormaPagamento.DINHEIRO,
       contaId: contaCarteira.id,
       categoriaId: catSalario,
-      data: new Date("2026-05-28T14:00:00Z"),
+      data: getDataDiasAtras(15, 14, 0),
     });
 
-    await criarTransacao({
-      descricao: "Padaria",
-      valor: 14.0,
-      tipo: TipoTransacao.DESPESA,
-      formaPagamento: FormaPagamento.DINHEIRO,
-      contaId: contaCarteira.id,
-      categoriaId: catAlimentacao,
-      data: new Date("2026-06-01T08:15:00Z"),
-    });
-
-    await criarTransacao({
-      descricao: "Bolsa Auxílio / Estágio",
-      valor: 900.0,
-      tipo: TipoTransacao.RECEITA,
-      formaPagamento: FormaPagamento.PIX,
-      contaId: contaNubank.id,
-      categoriaId: catSalario,
-      data: new Date("2026-06-05T10:00:00Z"),
-    });
-
-    await criarTransacao({
-      descricao: "Aluguel",
-      valor: 600.0,
-      tipo: TipoTransacao.DESPESA,
-      formaPagamento: FormaPagamento.PIX,
-      contaId: contaNubank.id,
-      categoriaId: catMoradia,
-      data: new Date("2026-06-06T10:30:00Z"),
-    });
+    await criarCredito(
+      {
+        descricao: "Pizzaria",
+        valor: 45.0,
+        categoriaId: catAlimentacao,
+        numeroParcelas: 1,
+        data: getDataDiasAtras(10, 21, 30),
+      },
+      cartaoNubank,
+    );
 
     await criarTransacao({
       descricao: "Barbearia",
@@ -341,7 +416,7 @@ export async function populateUser(tx: any, usuarioId: number) {
       formaPagamento: FormaPagamento.DEBITO,
       contaId: contaNubank.id,
       categoriaId: catSaude,
-      data: new Date("2026-06-07T16:00:00Z"),
+      data: getDataDiasAtras(7, 16, 0),
     });
 
     await criarCredito(
@@ -350,10 +425,20 @@ export async function populateUser(tx: any, usuarioId: number) {
         valor: 21.9,
         categoriaId: catLazer,
         numeroParcelas: 1,
-        data: new Date("2026-06-08T09:00:00Z"),
+        data: getDataDiasAtras(5, 9, 0),
       },
       cartaoNubank,
     );
+
+    await criarTransacao({
+      descricao: "Padaria",
+      valor: 14.0,
+      tipo: TipoTransacao.DESPESA,
+      formaPagamento: FormaPagamento.DINHEIRO,
+      contaId: contaCarteira.id,
+      categoriaId: catAlimentacao,
+      data: getDataDiasAtras(3, 8, 15),
+    });
 
     await criarCredito(
       {
@@ -361,13 +446,21 @@ export async function populateUser(tx: any, usuarioId: number) {
         valor: 140.5,
         categoriaId: catAlimentacao,
         numeroParcelas: 1,
-        data: new Date("2026-06-09T19:20:00Z"),
+        data: getDataDiasAtras(1, 19, 20),
       },
-      cartaoInter,
+      cartaoItau,
+    );
+
+    await pagarFatura(
+      cartaoNubank.id,
+      mesFaturaPassada,
+      anoFaturaPassada,
+      contaNubank.id,
+      getDataRelativa(0, 5, 9, 0),
     );
 
     console.log(
-      `Seed concluído para o usuário ID: ${usuarioId} [DADOS PARA TESTES]`,
+      `Seed concluído para o usuário ID: ${usuarioId} [DADOS PARA TESTES - DISTRIBUIÇÃO DINÂMICA 45 DIAS]`,
     );
   } catch (error) {
     console.error("Erro ao popular dados do usuário:", error);
