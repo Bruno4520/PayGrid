@@ -3,7 +3,22 @@ import { toast } from "sonner";
 import { jsPDF } from "jspdf";
 import autoTable from "jspdf-autotable";
 
-interface FaturaPdfData {
+const monthNames = [
+  "Janeiro",
+  "Fevereiro",
+  "Março",
+  "Abril",
+  "Maio",
+  "Junho",
+  "Julho",
+  "Agosto",
+  "Setembro",
+  "Outubro",
+  "Novembro",
+  "Dezembro",
+];
+
+interface Fatura {
   id: number;
   mes: number;
   ano: number;
@@ -13,14 +28,25 @@ interface FaturaPdfData {
   cartaoCredito: {
     nome: string;
   };
-  parcelas: any[];
+  parcelas: {
+    id: number;
+    numeroParcela: number;
+    valor: number;
+    transacao: {
+      data: string;
+      descricao: string;
+      numeroParcelas?: number;
+      categoria: {
+        nome: string;
+      } | null;
+    };
+  }[];
 }
 
 interface InvoicePdfExportButtonProps {
-  selectedInvoice: FaturaPdfData | null | undefined;
-  filteredInvoices: FaturaPdfData[];
-  invoices: FaturaPdfData[];
-  monthNames: string[];
+  selectedInvoice: Fatura | undefined;
+  filteredInvoices: Fatura[];
+  invoices: Fatura[];
 }
 
 type JsPdfWithAutoTable = jsPDF & {
@@ -46,7 +72,7 @@ const getLastAutoTableY = (doc: jsPDF, fallback: number) => {
   return (doc as JsPdfWithAutoTable).lastAutoTable?.finalY ?? fallback;
 };
 
-const getInvoicePdfStatus = (invoice: FaturaPdfData) => {
+const getInvoicePdfStatus = (invoice: Fatura) => {
   if (invoice.estaPaga) return "Paga";
 
   const today = new Date();
@@ -64,7 +90,6 @@ export function InvoicePdfExportButton({
   selectedInvoice,
   filteredInvoices,
   invoices,
-  monthNames,
 }: InvoicePdfExportButtonProps) {
   const handleExport = () => {
     if (!selectedInvoice) {

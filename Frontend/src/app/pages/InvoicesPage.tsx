@@ -270,7 +270,6 @@ const uniqueCards = useMemo(() => {
               selectedInvoice={selectedInvoice ?? null}
               filteredInvoices={filteredInvoices}
               invoices={invoices}
-              monthNames={monthNames}
             />
           </div>
 
