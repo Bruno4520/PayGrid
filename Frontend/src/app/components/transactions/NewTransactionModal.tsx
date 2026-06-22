@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { X, Loader2, Info } from "lucide-react";
+import { X, Loader2, Info, AlertTriangle } from "lucide-react";
 import { toast } from "sonner";
 import { isAxiosError } from "axios";
 import { api } from "../../../services/api";
@@ -20,6 +20,42 @@ interface ItemBase {
   id: number;
   nome: string;
 }
+
+
+const termosAposta = [
+  "aposta",
+  "apostas",
+  "bet365",
+  "betano",
+  "betfair",
+  "blaze",
+  "cassino",
+  "casino",
+  "fortune tiger",
+  "jogo do bicho",
+  "kto",
+  "loteria",
+  "novibet",
+  "pixbet",
+  "sportingbet",
+  "stake",
+  "superbet",
+  "tigrinho",
+];
+
+const normalizarTexto = (texto: string) =>
+  texto
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase();
+
+const descricaoIndicaAposta = (descricao: string) => {
+  const textoNormalizado = normalizarTexto(descricao);
+
+  return termosAposta.some((termo) =>
+    textoNormalizado.includes(normalizarTexto(termo)),
+  );
+};
 
 export function NewTransactionModal({
   isOpen,
@@ -54,6 +90,8 @@ export function NewTransactionModal({
 
   const formasPagamentoReceita = ["dinheiro", "pix"];
   const formasPagamentoDespesa = ["dinheiro", "pix", "cartao"];
+  const exibirAlertaAposta =
+    type === "despesa" && descricaoIndicaAposta(descricao);
 
   useEffect(() => {
     if (isOpen) {
@@ -357,7 +395,22 @@ export function NewTransactionModal({
               className="w-full px-4 py-3.5 bg-muted/50 border border-transparent rounded-xl text-foreground focus:outline-none focus:ring-2 focus:ring-[#2B5BBA] focus:bg-background transition-all"
               required
             />
-          </div>
+          
+            {exibirAlertaAposta && (
+              <div className="mt-3 flex items-start gap-3 rounded-xl border border-amber-500/30 bg-amber-500/10 p-4 text-amber-700 dark:text-amber-300">
+                <AlertTriangle size={20} className="mt-0.5 shrink-0" />
+                <div>
+                  <p className="text-sm font-semibold">
+                    Atenção: possível gasto com apostas identificado.
+                  </p>
+                  <p className="mt-1 text-sm leading-relaxed">
+                    Revise se essa despesa está alinhada com seu planejamento
+                    financeiro antes de salvar a transação.
+                  </p>
+                </div>
+              </div>
+            )}
+</div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
