@@ -21,7 +21,6 @@ interface ItemBase {
   nome: string;
 }
 
-
 const termosAposta = [
   "aposta",
   "apostas",
@@ -299,7 +298,7 @@ export function NewTransactionModal({
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center p-4"
+      className="fixed inset-0 z-50 flex items-center justify-center p-0 sm:p-4"
       onWheel={(e) => e.stopPropagation()}
     >
       <div
@@ -307,8 +306,8 @@ export function NewTransactionModal({
         onClick={handleClose}
       />
 
-      <div className="relative bg-card text-card-foreground rounded-3xl shadow-2xl w-full max-w-3xl max-h-[90vh] overflow-y-auto border border-border/50 animate-in fade-in zoom-in-95 duration-200">
-        <div className="sticky top-0 bg-card/80 backdrop-blur-md border-b border-border/50 px-8 py-5 flex items-center justify-between rounded-t-3xl z-10">
+      <div className="relative bg-card text-card-foreground sm:rounded-3xl shadow-2xl w-full max-w-3xl h-full sm:h-auto max-h-[100vh] sm:max-h-[90vh] overflow-y-auto border border-border/50 animate-in fade-in zoom-in-95 duration-200">
+        <div className="sticky top-0 bg-card/80 backdrop-blur-md border-b border-border/50 px-5 py-4 md:px-8 md:py-5 flex items-center justify-between sm:rounded-t-3xl z-10">
           <h2 className="text-xl font-bold tracking-tight">
             {transactionToEdit ? "Editar Transação" : "Nova Transação"}
           </h2>
@@ -320,8 +319,11 @@ export function NewTransactionModal({
           </button>
         </div>
 
-        <form onSubmit={handleSubmit} className="p-8 space-y-6">
-          <div className="flex gap-4">
+        <form
+          onSubmit={handleSubmit}
+          className="p-5 md:p-8 space-y-5 md:space-y-6"
+        >
+          <div className="flex gap-3 sm:gap-4">
             <button
               type="button"
               onClick={() => {
@@ -401,22 +403,31 @@ export function NewTransactionModal({
               className="w-full px-4 py-3.5 bg-muted/50 border border-transparent rounded-xl text-foreground focus:outline-none focus:ring-2 focus:ring-[#2B5BBA] focus:bg-background transition-all"
               required
             />
-          
+
             {exibirAlertaAposta && (
-              <div className="mt-3 flex items-start gap-3 rounded-xl border border-amber-500/30 bg-amber-500/10 p-4 text-amber-700 dark:text-amber-300">
-                <AlertTriangle size={20} className="mt-0.5 shrink-0" />
-                <div>
-                  <p className="text-sm font-semibold">
-                    Atenção: possível gasto com apostas identificado.
-                  </p>
-                  <p className="mt-1 text-sm leading-relaxed">
-                    Evite gastos com apostas. Revise se essa despesa é realmente
-                    necessária antes de salvar.
-                  </p>
+              <div className="bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-900/50 rounded-2xl p-5 mt-3 transition-colors">
+                <div className="flex items-start gap-3">
+                  <AlertTriangle
+                    size={20}
+                    className="text-amber-600 dark:text-amber-500 flex-shrink-0 mt-0.5"
+                  />
+                  <div>
+                    <h4 className="text-sm font-bold text-amber-900 dark:text-amber-400 mb-1">
+                      Atenção: possível gasto com apostas identificado
+                    </h4>
+                    <p className="text-sm font-medium text-amber-800 dark:text-amber-300/90 leading-relaxed">
+                      Apostas podem{" "}
+                      <span className="font-bold">
+                        comprometer seus objetivos financeiros
+                      </span>{" "}
+                      de longo prazo. Confirme se este valor realmente está
+                      previsto no seu orçamento mensal antes de salvar.
+                    </p>
+                  </div>
                 </div>
               </div>
             )}
-</div>
+          </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
@@ -630,18 +641,18 @@ export function NewTransactionModal({
               </div>
             )}
 
-          <div className="flex gap-4 pt-6 border-t border-border/50 mt-8">
+          <div className="flex flex-col-reverse sm:flex-row gap-3 sm:gap-4 pt-5 sm:pt-6 border-t border-border/50 mt-6 sm:mt-8">
             <button
               type="button"
               onClick={handleClose}
-              className="flex-1 py-3.5 bg-muted text-foreground rounded-xl font-semibold hover:bg-muted/80 transition-colors"
+              className="w-full sm:flex-1 py-3.5 bg-muted text-foreground rounded-xl font-semibold hover:bg-muted/80 transition-colors"
             >
               Cancelar
             </button>
             <button
               type="submit"
               disabled={isLoading}
-              className={`flex-1 py-3.5 rounded-xl font-bold text-white transition-all shadow-lg flex items-center justify-center gap-2 ${type === "receita" ? "bg-emerald-500 hover:bg-emerald-600 shadow-emerald-500/20" : "bg-red-500 hover:bg-red-600 shadow-red-500/20"} disabled:opacity-70 disabled:cursor-not-allowed`}
+              className={`w-full sm:flex-1 py-3.5 rounded-xl font-bold text-white transition-all shadow-lg flex items-center justify-center gap-2 ${type === "receita" ? "bg-emerald-500 hover:bg-emerald-600 shadow-emerald-500/20" : "bg-red-500 hover:bg-red-600 shadow-red-500/20"} disabled:opacity-70 disabled:cursor-not-allowed`}
             >
               {isLoading && <Loader2 size={18} className="animate-spin" />}
               {isLoading

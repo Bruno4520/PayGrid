@@ -62,19 +62,20 @@ export function BudgetSummaryCard({ type, value }: BudgetSummaryCardProps) {
   }
 
   return (
-    <div className="bg-card rounded-3xl p-6 shadow-sm border border-border/50 transition-colors duration-300">
-      <div className="flex items-center gap-4 mb-4">
+    <div className="bg-card rounded-3xl p-5 md:p-6 shadow-sm border border-border/50 transition-colors duration-300">
+      <div className="flex items-center gap-3 sm:gap-4 mb-3 sm:mb-4">
         <div
-          className={`w-12 h-12 rounded-xl flex items-center justify-center ${iconBgColor} transition-colors`}
+          className={`w-10 h-10 sm:w-12 sm:h-12 rounded-xl flex items-center justify-center ${iconBgColor} transition-colors shrink-0`}
         >
-          <Icon className={iconColor} size={24} />
+          <Icon size={20} className={`${iconColor} sm:w-6 sm:h-6`} />
         </div>
-        <p className="text-sm font-semibold text-muted-foreground">
+        <p className="text-xs sm:text-sm font-semibold text-muted-foreground">
           {config.label}
         </p>
       </div>
       <p
-        className={`text-3xl font-bold tracking-tight transition-colors ${valueColor}`}
+        className={`text-2xl sm:text-3xl font-bold tracking-tight transition-colors truncate ${valueColor}`}
+        title={formatCurrency(value)}
       >
         {formatCurrency(value)}
       </p>

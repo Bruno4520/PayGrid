@@ -48,20 +48,20 @@ export function AccountsTable({
 
   return (
     <div className="bg-card rounded-2xl shadow-sm border border-border/50 overflow-hidden transition-colors duration-300">
-      <div className="overflow-x-auto">
+      <div className="overflow-x-auto hide-scrollbar">
         <table className="w-full text-left border-collapse">
           <thead className="bg-muted/50 border-b border-border">
             <tr>
-              <th className="px-6 py-4 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+              <th className="px-4 py-3 sm:px-6 sm:py-4 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
                 Conta
               </th>
-              <th className="px-6 py-4 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+              <th className="px-4 py-3 sm:px-6 sm:py-4 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
                 Tipo
               </th>
-              <th className="px-6 py-4 text-right text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+              <th className="px-4 py-3 sm:px-6 sm:py-4 text-right text-xs font-semibold text-muted-foreground uppercase tracking-wider">
                 Saldo
               </th>
-              <th className="px-6 py-4 text-center text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+              <th className="px-4 py-3 sm:px-6 sm:py-4 text-center text-xs font-semibold text-muted-foreground uppercase tracking-wider">
                 Ações
               </th>
             </tr>
@@ -74,12 +74,12 @@ export function AccountsTable({
                   key={account.id}
                   className="hover:bg-muted/30 transition-colors group"
                 >
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="flex items-center gap-4 min-w-0">
+                  <td className="px-4 py-3 sm:px-6 sm:py-4 whitespace-nowrap">
+                    <div className="flex items-center gap-3 sm:gap-4 min-w-0">
                       <div
-                        className={`w-12 h-12 rounded-xl flex items-center justify-center shrink-0 ${iconColorMap[account.icon]}`}
+                        className={`w-10 h-10 sm:w-12 sm:h-12 rounded-xl flex items-center justify-center shrink-0 ${iconColorMap[account.icon]}`}
                       >
-                        <Icon size={22} />
+                        <Icon className="w-5 h-5 sm:w-[22px] sm:h-[22px]" />
                       </div>
                       <div className="min-w-0 flex-1 max-w-[140px] sm:max-w-[250px]">
                         <p
@@ -97,31 +97,31 @@ export function AccountsTable({
                       </div>
                     </div>
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
+                  <td className="px-4 py-3 sm:px-6 sm:py-4 whitespace-nowrap">
                     <span
-                      className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold ${typeColorMap[account.type]}`}
+                      className={`inline-flex items-center gap-1.5 px-2.5 py-1 sm:px-3 rounded-full text-[10px] sm:text-xs font-bold ${typeColorMap[account.type]}`}
                     >
                       <Icon size={14} />
                       {account.typeName}
                     </span>
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-right">
+                  <td className="px-4 py-3 sm:px-6 sm:py-4 whitespace-nowrap text-right">
                     <span className="text-sm font-bold tracking-tight text-foreground">
                       {formatCurrency(account.balance)}
                     </span>
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-center">
+                  <td className="px-4 py-3 sm:px-6 sm:py-4 whitespace-nowrap text-center">
                     <div className="flex items-center justify-center gap-1 opacity-60 md:opacity-15 md:group-hover:opacity-100 transition-opacity duration-200">
                       <button
                         onClick={() => onEdit(account.id)}
-                        className="p-2 text-muted-foreground hover:text-[#2B5BBA] hover:bg-blue-500/10 rounded-lg transition-colors"
+                        className="p-1.5 sm:p-2 text-muted-foreground hover:text-[#2B5BBA] hover:bg-blue-500/10 rounded-lg transition-colors"
                         title="Editar conta"
                       >
                         <Edit2 size={16} />
                       </button>
                       <button
                         onClick={() => onDelete(account.id)}
-                        className="p-2 text-muted-foreground hover:text-red-600 hover:bg-red-500/10 rounded-lg transition-colors"
+                        className="p-1.5 sm:p-2 text-muted-foreground hover:text-red-600 hover:bg-red-500/10 rounded-lg transition-colors"
                         title="Excluir conta"
                       >
                         <Trash2 size={16} />

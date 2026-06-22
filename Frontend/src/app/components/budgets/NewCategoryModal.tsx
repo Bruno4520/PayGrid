@@ -154,12 +154,12 @@ export function CategoryModal({
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm"
+      className="fixed inset-0 z-50 flex items-center justify-center p-0 sm:p-4 bg-black/60 backdrop-blur-sm"
       onWheel={(e) => e.stopPropagation()}
     >
-      <div className="bg-card w-full max-w-md rounded-3xl shadow-2xl overflow-hidden border border-border/50 animate-in fade-in zoom-in-95 duration-200">
-        <div className="flex justify-between items-center p-6 border-b border-border/50 bg-muted/30">
-          <h2 className="text-xl font-bold text-foreground tracking-tight">
+      <div className="relative bg-card w-full max-w-md h-full sm:h-auto max-h-[100vh] sm:max-h-[90vh] sm:rounded-3xl shadow-2xl overflow-y-auto border border-border/50 animate-in fade-in zoom-in-95 duration-200">
+        <div className="sticky top-0 bg-card/80 backdrop-blur-md flex justify-between items-center p-5 sm:p-6 border-b border-border/50 sm:rounded-t-3xl z-10">
+          <h2 className="text-lg sm:text-xl font-bold text-foreground tracking-tight">
             {isEditing ? "Editar Categoria e Limite" : "Nova Categoria"}
           </h2>
           <button
@@ -170,91 +170,92 @@ export function CategoryModal({
           </button>
         </div>
 
-        <form onSubmit={handleSubmit} className="p-6">
-          <div className="space-y-5">
-            <div className="bg-[#2B5BBA]/5 border border-[#2B5BBA]/20 rounded-2xl p-4">
-              <label className="block text-sm font-bold text-[#2B5BBA] mb-2 uppercase tracking-wider">
-                Limite do Mês (Orçamento)
-              </label>
-              <input
-                type="text"
-                value={valor}
-                onChange={handleValorChange}
-                placeholder="R$ 0,00"
-                className="w-full bg-transparent text-2xl font-bold text-foreground placeholder:text-muted-foreground focus:outline-none"
-              />
+        <form onSubmit={handleSubmit} className="p-5 sm:p-6 space-y-5">
+          <div className="bg-[#2B5BBA]/5 border border-[#2B5BBA]/20 rounded-2xl p-4 sm:p-5">
+            <label className="block text-xs sm:text-sm font-bold text-[#2B5BBA] mb-2 uppercase tracking-wider">
+              Limite do Mês (Orçamento)
+            </label>
+            <input
+              type="text"
+              value={valor}
+              onChange={handleValorChange}
+              placeholder="R$ 0,00"
+              className="w-full bg-transparent text-2xl sm:text-3xl font-bold text-foreground placeholder:text-muted-foreground focus:outline-none"
+            />
+            <p className="text-xs text-muted-foreground mt-1">
+              Deixe em branco para não definir limite.
+            </p>
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-foreground mb-2">
+              Nome da Categoria
+            </label>
+            <input
+              type="text"
+              value={nome}
+              onChange={(e) => setNome(e.target.value)}
+              disabled={isSystem}
+              className="w-full px-4 py-3 sm:py-3.5 bg-muted/50 border border-transparent rounded-xl text-foreground focus:ring-2 focus:ring-[#2B5BBA] outline-none transition-all disabled:opacity-60"
+              required
+            />
+            {isSystem && (
               <p className="text-xs text-muted-foreground mt-1">
-                Deixe em branco para não definir limite.
+                Categorias base do sistema não podem ser renomeadas.
               </p>
+            )}
+          </div>
+
+          <div
+            className={`space-y-5 ${isSystem ? "opacity-50 pointer-events-none" : ""}`}
+          >
+            <div>
+              <label className="block text-sm font-medium text-foreground mb-3">
+                Ícone
+              </label>
+              <div className="flex gap-2 flex-wrap">
+                {ICONS.map(({ id, component: IconComponent }) => (
+                  <button
+                    key={id}
+                    type="button"
+                    onClick={() => setSelectedIcon(id)}
+                    className={`p-2.5 sm:p-3 rounded-xl transition-all ${
+                      selectedIcon === id
+                        ? `${selectedColor} text-white shadow-md scale-105`
+                        : "bg-muted/50 text-muted-foreground hover:bg-muted hover:text-foreground"
+                    }`}
+                  >
+                    <IconComponent
+                      size={20}
+                      className="sm:w-5 sm:h-5 w-[18px] h-[18px]"
+                    />
+                  </button>
+                ))}
+              </div>
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-foreground mb-2">
-                Nome da Categoria
+              <label className="block text-sm font-medium text-foreground mb-3">
+                Cor
               </label>
-              <input
-                type="text"
-                value={nome}
-                onChange={(e) => setNome(e.target.value)}
-                disabled={isSystem}
-                className="w-full px-4 py-3 bg-muted/50 border border-transparent rounded-xl text-foreground focus:ring-2 focus:ring-[#2B5BBA] outline-none transition-all disabled:opacity-60"
-                required
-              />
-              {isSystem && (
-                <p className="text-xs text-muted-foreground mt-1">
-                  Categorias base do sistema não podem ser renomeadas.
-                </p>
-              )}
-            </div>
-
-            <div
-              className={`space-y-4 ${isSystem ? "opacity-50 pointer-events-none" : ""}`}
-            >
-              <div>
-                <label className="block text-sm font-medium text-foreground mb-3">
-                  Ícone
-                </label>
-                <div className="flex gap-2 flex-wrap">
-                  {ICONS.map(({ id, component: IconComponent }) => (
-                    <button
-                      key={id}
-                      type="button"
-                      onClick={() => setSelectedIcon(id)}
-                      className={`p-3 rounded-xl transition-all ${
-                        selectedIcon === id
-                          ? `${selectedColor} text-white shadow-md scale-105`
-                          : "bg-muted/50 text-muted-foreground hover:bg-muted hover:text-foreground"
-                      }`}
-                    >
-                      <IconComponent size={20} />
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-foreground mb-3">
-                  Cor
-                </label>
-                <div className="flex gap-3 flex-wrap">
-                  {COLORS.map((color) => (
-                    <button
-                      key={color}
-                      type="button"
-                      onClick={() => setSelectedColor(color)}
-                      className={`w-8 h-8 rounded-full transition-all ${color} ${
-                        selectedColor === color
-                          ? "ring-2 ring-offset-2 dark:ring-offset-zinc-900 ring-current scale-110"
-                          : "hover:scale-110 opacity-80 hover:opacity-100"
-                      }`}
-                    />
-                  ))}
-                </div>
+              <div className="flex gap-3 flex-wrap">
+                {COLORS.map((color) => (
+                  <button
+                    key={color}
+                    type="button"
+                    onClick={() => setSelectedColor(color)}
+                    className={`w-7 h-7 sm:w-8 sm:h-8 rounded-full transition-all ${color} ${
+                      selectedColor === color
+                        ? "ring-2 ring-offset-2 dark:ring-offset-zinc-900 ring-current scale-110"
+                        : "hover:scale-110 opacity-80 hover:opacity-100"
+                    }`}
+                  />
+                ))}
               </div>
             </div>
           </div>
 
-          <div className="flex gap-4 pt-6 border-t border-border/50 mt-8">
+          <div className="flex flex-col-reverse sm:flex-row gap-3 sm:gap-4 pt-5 sm:pt-6 border-t border-border/50 mt-6 sm:mt-8">
             <button
               type="button"
               onClick={onClose}

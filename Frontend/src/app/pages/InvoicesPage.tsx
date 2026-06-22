@@ -254,21 +254,23 @@ export function InvoicesPage() {
       <Sidebar />
       <div className="flex-1 flex flex-col overflow-hidden">
         <Header />
-        <main className="flex-1 overflow-y-auto p-6 md:p-8">
-          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-8 gap-4">
+        <main className="flex-1 overflow-y-auto p-4 sm:p-6 md:p-8">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-6 md:mb-8 gap-4">
             <div>
-              <h1 className="text-3xl font-bold tracking-tight text-foreground mb-1">
+              <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-foreground mb-1">
                 Faturas
               </h1>
-              <p className="text-muted-foreground font-medium">
+              <p className="text-sm sm:text-base text-muted-foreground font-medium">
                 Acompanhe o histórico e status das suas faturas
               </p>
             </div>
-            <InvoicePdfExportButton
-              selectedInvoice={selectedInvoice ?? null}
-              filteredInvoices={filteredInvoices}
-              invoices={invoices}
-            />
+            <div className="w-full sm:w-auto">
+              <InvoicePdfExportButton
+                selectedInvoice={selectedInvoice ?? null}
+                filteredInvoices={filteredInvoices}
+                invoices={invoices}
+              />
+            </div>
           </div>
 
           {loading ? (
@@ -276,14 +278,14 @@ export function InvoicesPage() {
               A carregar faturas...
             </div>
           ) : invoices.length === 0 ? (
-            <div className="text-center py-10 bg-card rounded-2xl border border-border/50">
+            <div className="text-center py-10 bg-card rounded-2xl border border-border/50 text-sm sm:text-base">
               Nenhuma fatura encontrada. Use o seu cartão para gerar faturas!
             </div>
           ) : (
             <>
-              <div className="mb-8">
+              <div className="mb-6 md:mb-8">
                 <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-4">
-                  <div className="relative min-w-[220px]">
+                  <div className="relative w-full sm:w-auto min-w-[220px]">
                     <select
                       value={filterCard}
                       onChange={(e) => setFilterCard(e.target.value)}
@@ -312,7 +314,7 @@ export function InvoicesPage() {
                     </div>
                   </div>
 
-                  <div className="flex items-center gap-2">
+                  <div className="hidden md:flex items-center gap-2 self-end sm:self-auto">
                     <button
                       onClick={() => scrollCards("left")}
                       className="p-2 bg-card border border-border/50 hover:bg-muted rounded-xl transition-all shadow-sm"
@@ -331,7 +333,7 @@ export function InvoicesPage() {
 
                 {filteredInvoices.length === 0 ? (
                   <div className="text-center py-10 bg-card/50 rounded-2xl border border-border/30">
-                    <p className="text-muted-foreground">
+                    <p className="text-muted-foreground text-sm sm:text-base">
                       Nenhuma fatura encontrada para este cartão.
                     </p>
                   </div>
@@ -342,7 +344,7 @@ export function InvoicesPage() {
                     onMouseLeave={handleMouseLeave}
                     onMouseUp={handleMouseUp}
                     onMouseMove={handleMouseMove}
-                    className={`flex overflow-x-auto hide-scrollbar gap-6 py-6 px-4 -mx-4 transition-all ${
+                    className={`flex overflow-x-auto hide-scrollbar gap-4 sm:gap-6 py-4 sm:py-6 px-1 sm:px-4 -mx-1 sm:-mx-4 transition-all ${
                       isDragging ? "cursor-grabbing select-none" : "cursor-grab"
                     }`}
                   >
@@ -355,7 +357,7 @@ export function InvoicesPage() {
                       return (
                         <div
                           key={invoice.id}
-                          className="min-w-[300px] shrink-0"
+                          className="min-w-[280px] sm:min-w-[300px] shrink-0"
                         >
                           <InvoiceCard
                             cardName={
@@ -382,10 +384,10 @@ export function InvoicesPage() {
                 {selectedInvoice && (
                   <>
                     {!selectedInvoice.estaPaga && (
-                      <div className="flex justify-end mb-4">
+                      <div className="flex flex-col sm:flex-row justify-end mb-4 sm:mb-6">
                         <button
                           onClick={() => setIsPayModalOpen(true)}
-                          className="inline-flex items-center gap-2 bg-emerald-500 hover:bg-emerald-600 text-white px-5 py-2.5 rounded-xl font-semibold transition-colors shadow-sm"
+                          className="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-emerald-500 hover:bg-emerald-600 text-white px-5 py-3.5 sm:py-2.5 rounded-xl font-semibold transition-colors shadow-sm"
                         >
                           <CheckCircle size={18} />
                           Pagar Fatura
@@ -408,11 +410,11 @@ export function InvoicesPage() {
 
       {isPayModalOpen && selectedInvoice && (
         <div
-          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm transition-opacity"
+          className="fixed inset-0 z-50 flex items-center justify-center p-0 sm:p-4 bg-black/60 backdrop-blur-sm transition-opacity"
           onWheel={(e) => e.stopPropagation()}
         >
-          <div className="relative bg-card text-card-foreground rounded-3xl shadow-2xl w-full max-w-md border border-border/50 animate-in fade-in zoom-in-95 duration-200">
-            <div className="p-6 border-b border-border/50 flex justify-between items-center">
+          <div className="relative bg-card text-card-foreground sm:rounded-3xl shadow-2xl w-full max-w-md h-full sm:h-auto max-h-[100vh] sm:max-h-[90vh] flex flex-col border border-border/50 animate-in fade-in zoom-in-95 duration-200">
+            <div className="sticky top-0 bg-card/80 backdrop-blur-md p-5 sm:p-6 border-b border-border/50 flex justify-between items-center sm:rounded-t-3xl z-10">
               <h2 className="text-xl font-bold">Pagar Fatura</h2>
               <button
                 onClick={() => setIsPayModalOpen(false)}
@@ -422,7 +424,10 @@ export function InvoicesPage() {
               </button>
             </div>
 
-            <form onSubmit={handlePayInvoice} className="p-6 space-y-6">
+            <form
+              onSubmit={handlePayInvoice}
+              className="p-5 sm:p-6 space-y-6 flex-1 overflow-y-auto flex flex-col"
+            >
               <div>
                 <p className="text-sm text-muted-foreground mb-4">
                   Você está prestes a pagar a fatura de{" "}
@@ -430,13 +435,12 @@ export function InvoicesPage() {
                     {monthNames[selectedInvoice.mes - 1]} {selectedInvoice.ano}
                   </strong>{" "}
                   no valor de{" "}
-                  <strong className="text-foreground">
+                  <strong className="text-foreground text-lg block mt-1">
                     {selectedInvoice.valorTotal.toLocaleString("pt-BR", {
                       style: "currency",
                       currency: "BRL",
                     })}
                   </strong>
-                  .
                 </p>
 
                 <label className="block text-sm font-medium mb-2">
@@ -462,18 +466,18 @@ export function InvoicesPage() {
                 </select>
               </div>
 
-              <div className="flex gap-4 pt-2">
+              <div className="flex flex-col-reverse sm:flex-row gap-3 sm:gap-4 mt-auto sm:pt-2">
                 <button
                   type="button"
                   onClick={() => setIsPayModalOpen(false)}
-                  className="flex-1 py-3 bg-muted rounded-xl font-bold hover:bg-muted/80 transition-colors"
+                  className="flex-1 py-3.5 bg-muted rounded-xl font-bold hover:bg-muted/80 transition-colors"
                 >
                   Cancelar
                 </button>
                 <button
                   type="submit"
                   disabled={isPaying || !selectedContaId}
-                  className="flex-1 py-3 bg-emerald-500 text-white rounded-xl font-bold hover:bg-emerald-600 disabled:opacity-70 transition-all shadow-md shadow-emerald-500/20"
+                  className="flex-1 py-3.5 bg-emerald-500 text-white rounded-xl font-bold hover:bg-emerald-600 disabled:opacity-70 transition-all shadow-md shadow-emerald-500/20 flex items-center justify-center gap-2"
                 >
                   {isPaying ? "Processando..." : "Confirmar Pagamento"}
                 </button>

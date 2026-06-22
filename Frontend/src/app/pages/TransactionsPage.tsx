@@ -171,12 +171,12 @@ export function TransactionsPage() {
       <Sidebar />
       <div className="flex-1 flex flex-col overflow-hidden">
         <Header />
-        <main className="flex-1 overflow-y-auto p-6 md:p-8">
-          <div className="mb-8">
-            <h1 className="text-3xl font-bold tracking-tight text-foreground mb-1">
+        <main className="flex-1 overflow-y-auto p-4 sm:p-6 md:p-8">
+          <div className="mb-6 md:mb-8">
+            <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-foreground mb-1">
               Transações
             </h1>
-            <p className="text-muted-foreground font-medium">
+            <p className="text-sm sm:text-base text-muted-foreground font-medium">
               Gerencie suas receitas e despesas
             </p>
           </div>
@@ -187,10 +187,10 @@ export function TransactionsPage() {
             categories={categories}
           />
 
-          <div className="flex gap-4 mb-6">
+          <div className="flex gap-4 mb-5 md:mb-6">
             <button
               onClick={handleAddTransaction}
-              className="inline-flex items-center gap-2 bg-[#2B5BBA] text-white px-6 py-3.5 rounded-xl hover:opacity-90 transition-opacity font-medium shadow-sm"
+              className="w-full sm:w-auto justify-center inline-flex items-center gap-2 bg-[#2B5BBA] text-white px-5 sm:px-6 py-3 sm:py-3.5 rounded-xl hover:opacity-90 transition-opacity font-medium shadow-sm"
             >
               <Plus size={20} /> Nova Transação
             </button>

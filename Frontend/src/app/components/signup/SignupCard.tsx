@@ -82,12 +82,11 @@ export function SignupCard({
     : null;
 
   return (
-    <div className="w-full max-w-md bg-card text-card-foreground rounded-3xl shadow-xl p-8 sm:p-12 border border-border/50 transition-colors duration-300">
-      <div className="flex items-center gap-3 mb-8">
-        <div className="w-12 h-12 bg-[#2B5BBA] rounded-xl flex items-center justify-center shadow-md">
+    <div className="w-full max-w-md bg-card text-card-foreground rounded-2xl sm:rounded-3xl shadow-xl p-6 sm:p-8 md:p-10 border border-border/50 transition-colors duration-300">
+      <div className="flex items-center gap-3 mb-6 sm:mb-8">
+        <div className="w-10 h-10 sm:w-12 sm:h-12 bg-[#2B5BBA] rounded-xl flex items-center justify-center shadow-md shrink-0">
           <svg
-            width="24"
-            height="24"
+            className="w-5 h-5 sm:w-6 sm:h-6"
             viewBox="0 0 24 24"
             fill="none"
             xmlns="http://www.w3.org/2000/svg"
@@ -107,19 +106,26 @@ export function SignupCard({
             />
           </svg>
         </div>
-        <h1 className="text-2xl font-bold tracking-tight">PayGrid</h1>
+        <h1 className="text-xl sm:text-2xl font-bold tracking-tight">
+          PayGrid
+        </h1>
       </div>
 
-      <div className="mb-8">
-        <h2 className="text-2xl font-semibold mb-2">Crie sua conta</h2>
-        <p className="text-sm text-muted-foreground">
+      <div className="mb-6 sm:mb-8">
+        <h2 className="text-xl sm:text-2xl font-semibold mb-1.5 sm:mb-2">
+          Crie sua conta
+        </h2>
+        <p className="text-xs sm:text-sm text-muted-foreground">
           Comece a organizar suas finanças de forma inteligente
         </p>
       </div>
 
-      <form onSubmit={handleSubmit} className="space-y-5">
+      <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-5">
         <div>
-          <label htmlFor="fullName" className="block text-sm font-medium mb-2">
+          <label
+            htmlFor="fullName"
+            className="block text-xs sm:text-sm font-medium mb-1.5 sm:mb-2"
+          >
             Nome completo
           </label>
           <input
@@ -129,16 +135,21 @@ export function SignupCard({
             value={formData.fullName}
             onChange={(e) => handleInputChange("fullName", e.target.value)}
             placeholder="Digite seu nome completo"
-            className={`w-full px-4 py-3 bg-muted/50 border ${errors.fullName ? "border-red-500" : "border-transparent"} rounded-xl text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-[#2B5BBA] focus:bg-background transition-all`}
+            className={`w-full px-4 py-3 sm:py-3.5 bg-muted/50 border ${errors.fullName ? "border-red-500" : "border-transparent"} rounded-xl text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-[#2B5BBA] focus:bg-background transition-all text-sm sm:text-base`}
             required
           />
           {errors.fullName && (
-            <p className="text-xs text-red-500 mt-1">{errors.fullName}</p>
+            <p className="text-[10px] sm:text-xs text-red-500 mt-1">
+              {errors.fullName}
+            </p>
           )}
         </div>
 
         <div>
-          <label htmlFor="email" className="block text-sm font-medium mb-2">
+          <label
+            htmlFor="email"
+            className="block text-xs sm:text-sm font-medium mb-1.5 sm:mb-2"
+          >
             E-mail
           </label>
           <input
@@ -148,16 +159,21 @@ export function SignupCard({
             value={formData.email}
             onChange={(e) => handleInputChange("email", e.target.value)}
             placeholder="seu@email.com"
-            className={`w-full px-4 py-3 bg-muted/50 border ${errors.email ? "border-red-500" : "border-transparent"} rounded-xl text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-[#2B5BBA] focus:bg-background transition-all`}
+            className={`w-full px-4 py-3 sm:py-3.5 bg-muted/50 border ${errors.email ? "border-red-500" : "border-transparent"} rounded-xl text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-[#2B5BBA] focus:bg-background transition-all text-sm sm:text-base`}
             required
           />
           {errors.email && (
-            <p className="text-xs text-red-500 mt-1">{errors.email}</p>
+            <p className="text-[10px] sm:text-xs text-red-500 mt-1">
+              {errors.email}
+            </p>
           )}
         </div>
 
         <div>
-          <label htmlFor="password" className="block text-sm font-medium mb-2">
+          <label
+            htmlFor="password"
+            className="block text-xs sm:text-sm font-medium mb-1.5 sm:mb-2"
+          >
             Senha
           </label>
           <div className="relative">
@@ -168,20 +184,24 @@ export function SignupCard({
               value={formData.password}
               onChange={(e) => handleInputChange("password", e.target.value)}
               placeholder="Digite sua senha"
-              className={`w-full px-4 pr-12 py-3 bg-muted/50 border ${errors.password ? "border-red-500" : "border-transparent"} rounded-xl text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-[#2B5BBA] focus:bg-background transition-all`}
+              className={`w-full px-4 pr-12 py-3 sm:py-3.5 bg-muted/50 border ${errors.password ? "border-red-500" : "border-transparent"} rounded-xl text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-[#2B5BBA] focus:bg-background transition-all text-sm sm:text-base`}
               required
             />
             <button
               type="button"
               disabled={isLoading}
               onClick={() => setShowPassword(!showPassword)}
-              className="absolute right-4 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+              className="absolute right-4 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors p-1"
             >
-              {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+              {showPassword ? (
+                <EyeOff size={18} className="w-[18px] h-[18px]" />
+              ) : (
+                <Eye size={18} className="w-[18px] h-[18px]" />
+              )}
             </button>
           </div>
           <p
-            className={`text-xs mt-1 ${isPasswordValid === null ? "text-muted-foreground" : isPasswordValid ? "text-green-500" : "text-red-500"}`}
+            className={`text-[10px] sm:text-xs mt-1.5 ${isPasswordValid === null ? "text-muted-foreground" : isPasswordValid ? "text-green-500" : "text-red-500"}`}
           >
             Mínimo 8 caracteres, 1 número e 1 caractere especial
           </p>
@@ -190,7 +210,7 @@ export function SignupCard({
         <div>
           <label
             htmlFor="confirmPassword"
-            className="block text-sm font-medium mb-2"
+            className="block text-xs sm:text-sm font-medium mb-1.5 sm:mb-2"
           >
             Confirmar senha
           </label>
@@ -204,36 +224,40 @@ export function SignupCard({
                 handleInputChange("confirmPassword", e.target.value)
               }
               placeholder="Digite novamente sua senha"
-              className={`w-full px-4 pr-12 py-3 bg-muted/50 border ${errors.confirmPassword ? "border-red-500" : "border-transparent"} rounded-xl text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-[#2B5BBA] focus:bg-background transition-all`}
+              className={`w-full px-4 pr-12 py-3 sm:py-3.5 bg-muted/50 border ${errors.confirmPassword ? "border-red-500" : "border-transparent"} rounded-xl text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-[#2B5BBA] focus:bg-background transition-all text-sm sm:text-base`}
               required
             />
             <button
               type="button"
               disabled={isLoading}
               onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-              className="absolute right-4 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+              className="absolute right-4 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors p-1"
             >
-              {showConfirmPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+              {showConfirmPassword ? (
+                <EyeOff size={18} className="w-[18px] h-[18px]" />
+              ) : (
+                <Eye size={18} className="w-[18px] h-[18px]" />
+              )}
             </button>
           </div>
           {errors.confirmPassword && (
-            <p className="text-xs text-red-500 mt-1">
+            <p className="text-[10px] sm:text-xs text-red-500 mt-1">
               {errors.confirmPassword}
             </p>
           )}
         </div>
         <div
-          className={`flex items-center justify-between p-4 rounded-xl border transition-all duration-300 ${formData.isDemoAccount ? "bg-[#2B5BBA]/5 border-[#2B5BBA]/30" : "bg-muted/30 border-border/50 hover:border-[#2B5BBA]/30"}`}
+          className={`flex items-center justify-between p-3 sm:p-4 rounded-xl border transition-all duration-300 gap-2 ${formData.isDemoAccount ? "bg-[#2B5BBA]/5 border-[#2B5BBA]/30" : "bg-muted/30 border-border/50 hover:border-[#2B5BBA]/30"}`}
         >
-          <div className="flex flex-col">
-            <span className="text-sm font-semibold text-foreground">
+          <div className="flex flex-col min-w-0">
+            <span className="text-xs sm:text-sm font-semibold text-foreground truncate">
               Conta de Demonstração
             </span>
-            <span className="text-xs text-muted-foreground mt-0.5">
+            <span className="text-[10px] sm:text-xs text-muted-foreground mt-0.5 truncate">
               Preencher com dados para teste
             </span>
           </div>
-          <label className="relative inline-flex items-center cursor-pointer">
+          <label className="relative inline-flex items-center cursor-pointer shrink-0">
             <input
               type="checkbox"
               className="sr-only peer"
@@ -243,7 +267,7 @@ export function SignupCard({
               }
               disabled={isLoading}
             />
-            <div className="w-11 h-6 bg-muted-foreground/30 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#2B5BBA]"></div>
+            <div className="w-10 h-5 sm:w-11 sm:h-6 bg-muted-foreground/30 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-4 after:w-4 sm:after:h-5 sm:after:w-5 after:transition-all peer-checked:bg-[#2B5BBA]"></div>
           </label>
         </div>
 
@@ -260,9 +284,9 @@ export function SignupCard({
               onChange={(e) =>
                 handleInputChange("acceptedTerms", e.target.checked)
               }
-              className="w-4 h-4 text-[#2B5BBA] bg-muted border-muted-foreground/30 rounded focus:ring-[#2B5BBA] cursor-pointer mt-0.5"
+              className="w-4 h-4 text-[#2B5BBA] bg-muted border-muted-foreground/30 rounded focus:ring-[#2B5BBA] cursor-pointer mt-0.5 shrink-0"
             />
-            <span className="ml-2 text-sm text-muted-foreground group-hover:text-foreground transition-colors">
+            <span className="ml-2.5 text-xs sm:text-sm text-muted-foreground group-hover:text-foreground transition-colors leading-relaxed">
               Li e aceito os{" "}
               <button
                 type="button"
@@ -282,14 +306,16 @@ export function SignupCard({
             </span>
           </label>
           {errors.acceptedTerms && (
-            <p className="text-xs text-red-500 mt-1">{errors.acceptedTerms}</p>
+            <p className="text-[10px] sm:text-xs text-red-500 mt-1">
+              {errors.acceptedTerms}
+            </p>
           )}
         </div>
 
         <button
           type="submit"
           disabled={isLoading}
-          className="w-full bg-[#2B5BBA] text-white font-medium py-3.5 rounded-xl hover:opacity-90 transition-opacity focus:outline-none focus:ring-2 focus:ring-[#2B5BBA] focus:ring-offset-2 dark:focus:ring-offset-zinc-900 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
+          className="w-full bg-[#2B5BBA] text-white font-medium py-3.5 mt-2 rounded-xl hover:opacity-90 transition-opacity focus:outline-none focus:ring-2 focus:ring-[#2B5BBA] focus:ring-offset-2 dark:focus:ring-offset-zinc-900 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center text-sm sm:text-base shadow-md shadow-blue-500/20"
         >
           {isLoading ? (
             <span className="animate-pulse">Criando conta...</span>
@@ -298,15 +324,15 @@ export function SignupCard({
           )}
         </button>
 
-        <div className="text-center pt-4 border-t border-border/50">
-          <span className="text-sm text-muted-foreground">
+        <div className="text-center pt-5 mt-2 border-t border-border/50">
+          <span className="text-xs sm:text-sm text-muted-foreground">
             Já tem uma conta?{" "}
           </span>
           <button
             type="button"
             disabled={isLoading}
             onClick={onLogin}
-            className="text-sm font-medium text-[#2B5BBA] hover:text-[#1e4594] dark:hover:text-[#5588ff] transition-colors"
+            className="text-xs sm:text-sm font-bold text-[#2B5BBA] hover:text-[#1e4594] dark:hover:text-[#5588ff] transition-colors"
           >
             Entrar
           </button>

@@ -145,15 +145,15 @@ export function NewAccountModal({
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center p-4"
+      className="fixed inset-0 z-50 flex items-center justify-center p-0 sm:p-4"
       onWheel={(e) => e.stopPropagation()}
     >
       <div
         className="absolute inset-0 bg-black/60 backdrop-blur-sm transition-opacity"
         onClick={handleClose}
       />
-      <div className="relative bg-card text-card-foreground rounded-3xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto border border-border/50 animate-in fade-in zoom-in-95 duration-200">
-        <div className="sticky top-0 bg-card/80 backdrop-blur-md border-b border-border/50 px-8 py-5 flex items-center justify-between rounded-t-3xl z-10">
+      <div className="relative bg-card text-card-foreground sm:rounded-3xl shadow-2xl w-full max-w-2xl h-full sm:h-auto max-h-[100vh] sm:max-h-[90vh] overflow-y-auto border border-border/50 animate-in fade-in zoom-in-95 duration-200">
+        <div className="sticky top-0 bg-card/80 backdrop-blur-md border-b border-border/50 px-5 py-4 md:px-8 md:py-5 flex items-center justify-between sm:rounded-t-3xl z-10">
           <h2 className="text-xl font-bold tracking-tight">
             {accountToEdit ? "Editar Conta" : "Nova Conta"}
           </h2>
@@ -165,49 +165,52 @@ export function NewAccountModal({
           </button>
         </div>
 
-        <form onSubmit={handleSubmit} className="p-8 space-y-6">
+        <form
+          onSubmit={handleSubmit}
+          className="p-5 md:p-8 space-y-5 md:space-y-6"
+        >
           <div>
             <label className="block text-sm font-medium text-foreground mb-3">
               Tipo de Conta
             </label>
-            <div className="grid grid-cols-3 gap-4">
+            <div className="grid grid-cols-3 gap-2 sm:gap-4">
               <button
                 type="button"
                 onClick={() => setType("checking")}
-                className={`flex flex-col items-center justify-center gap-2 py-4 rounded-xl font-bold transition-all ${
+                className={`flex flex-col items-center justify-center gap-1.5 sm:gap-2 py-3 sm:py-4 rounded-xl font-bold text-xs sm:text-sm transition-all ${
                   type === "checking"
                     ? "bg-[#2B5BBA] text-white shadow-lg shadow-blue-500/20 scale-[1.02]"
                     : "bg-muted text-muted-foreground hover:bg-muted/80 hover:text-foreground"
                 }`}
               >
-                <Building size={24} /> Corrente
+                <Building size={20} className="sm:w-6 sm:h-6" /> Corrente
               </button>
               <button
                 type="button"
                 onClick={() => setType("savings")}
-                className={`flex flex-col items-center justify-center gap-2 py-4 rounded-xl font-bold transition-all ${
+                className={`flex flex-col items-center justify-center gap-1.5 sm:gap-2 py-3 sm:py-4 rounded-xl font-bold text-xs sm:text-sm transition-all ${
                   type === "savings"
                     ? "bg-emerald-500 text-white shadow-lg shadow-emerald-500/20 scale-[1.02]"
                     : "bg-muted text-muted-foreground hover:bg-muted/80 hover:text-foreground"
                 }`}
               >
-                <Sprout size={24} /> Poupança
+                <Sprout size={20} className="sm:w-6 sm:h-6" /> Poupança
               </button>
               <button
                 type="button"
                 onClick={() => setType("wallet")}
-                className={`flex flex-col items-center justify-center gap-2 py-4 rounded-xl font-bold transition-all ${
+                className={`flex flex-col items-center justify-center gap-1.5 sm:gap-2 py-3 sm:py-4 rounded-xl font-bold text-xs sm:text-sm transition-all ${
                   type === "wallet"
                     ? "bg-purple-500 text-white shadow-lg shadow-purple-500/20 scale-[1.02]"
                     : "bg-muted text-muted-foreground hover:bg-muted/80 hover:text-foreground"
                 }`}
               >
-                <Wallet size={24} /> Carteira
+                <Wallet size={20} className="sm:w-6 sm:h-6" /> Carteira
               </button>
             </div>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-5 md:gap-6">
             <div>
               <label className="block text-sm font-medium text-foreground mb-2">
                 Nome da Conta
@@ -217,7 +220,7 @@ export function NewAccountModal({
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 placeholder="Ex: Itaú Principal"
-                className="w-full px-4 py-3.5 bg-muted/50 border border-transparent rounded-xl text-foreground focus:outline-none focus:ring-2 focus:ring-[#2B5BBA] focus:bg-background transition-all"
+                className="w-full px-4 py-3 sm:py-3.5 bg-muted/50 border border-transparent rounded-xl text-foreground focus:outline-none focus:ring-2 focus:ring-[#2B5BBA] focus:bg-background transition-all"
                 required
               />
             </div>
@@ -234,7 +237,7 @@ export function NewAccountModal({
                   value={balanceStr}
                   onChange={handleBalanceChange}
                   placeholder="0,00"
-                  className="w-full pl-12 pr-4 py-3.5 bg-muted/50 border border-transparent rounded-xl focus:outline-none focus:ring-2 focus:ring-[#2B5BBA] focus:bg-background transition-all font-semibold text-lg text-foreground placeholder:text-muted-foreground/70"
+                  className="w-full pl-12 pr-4 py-3 sm:py-3.5 bg-muted/50 border border-transparent rounded-xl focus:outline-none focus:ring-2 focus:ring-[#2B5BBA] focus:bg-background transition-all font-semibold text-lg text-foreground placeholder:text-muted-foreground/70"
                   required
                 />
               </div>
@@ -242,7 +245,7 @@ export function NewAccountModal({
           </div>
 
           {type !== "wallet" && (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 p-5 bg-muted/30 rounded-2xl border border-border/50">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-5 md:gap-6 p-4 sm:p-5 bg-muted/30 rounded-2xl border border-border/50">
               <div>
                 <label className="block text-sm font-medium text-foreground mb-2">
                   Agência
@@ -274,7 +277,7 @@ export function NewAccountModal({
             </div>
           )}
 
-          <div className="flex gap-4 pt-6 border-t border-border/50 mt-8">
+          <div className="flex flex-col-reverse sm:flex-row gap-3 sm:gap-4 pt-5 sm:pt-6 border-t border-border/50 mt-6 sm:mt-8">
             <button
               type="button"
               onClick={handleClose}

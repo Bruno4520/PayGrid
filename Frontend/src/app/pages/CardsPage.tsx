@@ -221,20 +221,20 @@ export function CardsPage() {
       <Sidebar />
       <div className="flex-1 flex flex-col overflow-hidden">
         <Header />
-        <main className="flex-1 overflow-y-auto p-6 md:p-8">
-          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-8 gap-4">
+        <main className="flex-1 overflow-y-auto p-4 sm:p-6 md:p-8">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-6 md:mb-8 gap-4">
             <div>
-              <h1 className="text-3xl font-bold tracking-tight text-foreground mb-1">
+              <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-foreground mb-1">
                 Meus Cartões
               </h1>
-              <p className="text-muted-foreground font-medium">
+              <p className="text-sm sm:text-base text-muted-foreground font-medium">
                 Gerencie os seus limites e faturas
               </p>
             </div>
             <button
               onClick={handleAddCardClick}
               disabled={loading}
-              className="inline-flex items-center gap-2 bg-[#2B5BBA] text-white px-6 py-3.5 rounded-xl hover:opacity-90 font-medium transition-opacity shadow-sm disabled:opacity-50"
+              className="w-full sm:w-auto justify-center inline-flex items-center gap-2 bg-[#2B5BBA] text-white px-5 sm:px-6 py-3 sm:py-3.5 rounded-xl hover:opacity-90 font-medium transition-opacity shadow-sm disabled:opacity-50"
             >
               <Plus size={20} /> Novo Cartão
             </button>
@@ -247,28 +247,28 @@ export function CardsPage() {
               </p>
             </div>
           ) : cards.length === 0 ? (
-            <div className="flex flex-col items-center justify-center bg-card rounded-3xl border border-border/50 p-12 text-center">
+            <div className="flex flex-col items-center justify-center bg-card rounded-3xl border border-border/50 p-6 sm:p-12 text-center">
               <div className="w-16 h-16 bg-muted rounded-full flex items-center justify-center mb-4">
                 <CreditCard size={32} className="text-muted-foreground" />
               </div>
               <h2 className="text-xl font-bold mb-2">
                 Nenhum cartão cadastrado
               </h2>
-              <p className="text-muted-foreground mb-6 max-w-md">
+              <p className="text-sm sm:text-base text-muted-foreground mb-6 max-w-md">
                 Adicione o seu primeiro cartão de crédito para começar a
                 acompanhar as suas faturas e limites.
               </p>
               <button
                 onClick={handleAddCardClick}
-                className="bg-[#2B5BBA] text-white px-6 py-3 rounded-xl font-medium"
+                className="w-full sm:w-auto justify-center bg-[#2B5BBA] text-white px-6 py-3 rounded-xl font-medium"
               >
                 Adicionar Cartão
               </button>
             </div>
           ) : (
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 md:gap-8">
               <div className="lg:col-span-4 space-y-4">
-                <h2 className="text-lg font-bold text-foreground mb-4">
+                <h2 className="text-lg font-bold text-foreground mb-2 sm:mb-4">
                   Selecione o Cartão
                 </h2>
                 {cards.map((card, index) => (
@@ -297,15 +297,15 @@ export function CardsPage() {
               <div className="lg:col-span-8 space-y-6">
                 {selectedCard && (
                   <>
-                    <div className="flex items-center justify-between">
+                    <div className="flex items-center justify-between mt-6 lg:mt-0">
                       <h2 className="text-xl font-bold text-foreground">
                         Detalhes do Cartão
                       </h2>
-                      <div className="flex items-center gap-2">
+                      <div className="flex items-center gap-1 sm:gap-2">
                         <button
                           onClick={() => handleEditCard(selectedCard)}
                           disabled={deletingCardId !== null}
-                          className="p-2 text-muted-foreground hover:text-[#2B5BBA] hover:bg-blue-500/10 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                          className="p-1.5 sm:p-2 text-muted-foreground hover:text-[#2B5BBA] hover:bg-blue-500/10 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                           title="Editar Cartão"
                         >
                           <Edit2 size={18} />
@@ -313,7 +313,7 @@ export function CardsPage() {
                         <button
                           onClick={() => handleDeleteCard(selectedCard.id)}
                           disabled={deletingCardId !== null}
-                          className="p-2 text-muted-foreground hover:text-red-600 hover:bg-red-500/10 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                          className="p-1.5 sm:p-2 text-muted-foreground hover:text-red-600 hover:bg-red-500/10 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                           title="Excluir Cartão"
                         >
                           {deletingCardId === selectedCard.id ? (

@@ -1,5 +1,5 @@
-import { useState, useEffect } from "react";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { useState, useEffect, useMemo } from "react";
+import { ChevronLeft, ChevronRight, Search } from "lucide-react";
 import { toast } from "sonner";
 import { isAxiosError } from "axios";
 import { Sidebar } from "../components/dashboard/Sidebar";
@@ -57,6 +57,11 @@ export function BudgetsPage() {
   const [modalInitialData, setModalInitialData] =
     useState<CategoryInitialData | null>(null);
 
+  const [searchTerm, setSearchTerm] = useState("");
+  const [activeFilter, setActiveFilter] = useState<
+    "all" | "with-budget" | "exceeded"
+  >("all");
+
   const fetchBudgets = async () => {
     try {
       setIsLoading(true);
@@ -89,6 +94,26 @@ export function BudgetsPage() {
   }, 0);
 
   const available = totalPlanned - totalSpent;
+  const filteredBudgets = useMemo(() => {
+    return budgetsData.filter((item) => {
+      if (
+        searchTerm &&
+        !item.categoria.nome.toLowerCase().includes(searchTerm.toLowerCase())
+      ) {
+        return false;
+      }
+
+      if (activeFilter === "with-budget") {
+        if (!item.orcamento || item.orcamento.valorPlanejado <= 0) return false;
+      }
+      if (activeFilter === "exceeded") {
+        if (!item.orcamento || item.orcamento.valorPlanejado <= 0) return false;
+        if (item.gastoAtual <= item.orcamento.valorPlanejado) return false;
+      }
+
+      return true;
+    });
+  }, [budgetsData, searchTerm, activeFilter]);
 
   const handlePrevMonth = () => {
     setCurrentDate((prev) => {
@@ -212,26 +237,26 @@ export function BudgetsPage() {
       <div className="flex-1 flex flex-col overflow-hidden">
         <Header />
 
-        <main className="flex-1 overflow-y-auto p-6 md:p-8">
-          <div className="flex flex-col xl:flex-row items-start xl:items-center justify-between mb-8 gap-4">
+        <main className="flex-1 overflow-y-auto p-4 sm:p-6 md:p-8">
+          <div className="flex flex-col xl:flex-row items-start xl:items-center justify-between mb-6 md:mb-8 gap-4">
             <div>
-              <h1 className="text-3xl font-bold tracking-tight text-foreground mb-1">
+              <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-foreground mb-1">
                 Orçamentos
               </h1>
-              <p className="text-muted-foreground font-medium">
+              <p className="text-sm sm:text-base text-muted-foreground font-medium">
                 Controle de gastos: defina e acompanhe os seus limites mensais
               </p>
             </div>
 
-            <div className="flex flex-wrap items-center gap-4">
-              <div className="flex items-center bg-card border border-border/50 rounded-xl p-1 shadow-sm">
+            <div className="flex flex-col sm:flex-row items-center gap-3 sm:gap-4 w-full xl:w-auto">
+              <div className="flex items-center justify-between bg-card border border-border/50 rounded-xl p-1 shadow-sm w-full sm:w-auto">
                 <button
                   onClick={handlePrevMonth}
                   className="p-2 hover:bg-muted rounded-lg transition-colors text-muted-foreground hover:text-foreground"
                 >
                   <ChevronLeft size={20} />
                 </button>
-                <span className="min-w-[140px] text-center font-bold text-foreground tracking-wide">
+                <span className="min-w-[140px] text-center font-bold text-foreground tracking-wide text-sm sm:text-base">
                   {MONTH_NAMES[currentDate.mes - 1]} {currentDate.ano}
                 </span>
                 <button
@@ -244,30 +269,81 @@ export function BudgetsPage() {
 
               <button
                 onClick={handleNewCategory}
-                className="inline-flex items-center gap-2 bg-[#2B5BBA] text-white px-5 py-2.5 rounded-xl hover:opacity-90 font-bold transition-opacity shadow-sm"
+                className="w-full sm:w-auto justify-center inline-flex items-center gap-2 bg-[#2B5BBA] text-white px-5 py-3 sm:py-2.5 rounded-xl hover:opacity-90 font-bold transition-opacity shadow-sm"
               >
                 Nova Categoria
               </button>
             </div>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6 mb-8 md:mb-10">
             <BudgetSummaryCard type="planned" value={totalPlanned} />
             <BudgetSummaryCard type="spent" value={totalSpent} />
             <BudgetSummaryCard type="available" value={available} />
           </div>
 
-          <h2 className="text-xl font-bold text-foreground mb-6">
-            As Suas Categorias e Limites
-          </h2>
+          <div className="flex flex-col xl:flex-row items-start xl:items-center justify-between gap-4 mb-4 sm:mb-6">
+            <h2 className="text-lg sm:text-xl font-bold text-foreground shrink-0">
+              As Suas Categorias e Limites
+            </h2>
+
+            <div className="flex flex-col sm:flex-row items-center gap-3 w-full xl:w-auto">
+              <div className="relative w-full sm:w-64">
+                <Search
+                  className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground"
+                  size={16}
+                />
+                <input
+                  type="text"
+                  placeholder="Procurar categoria..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="w-full pl-9 pr-4 py-2 bg-card border border-border/50 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#2B5BBA] transition-all shadow-sm"
+                />
+              </div>
+
+              <div className="flex items-center gap-2 w-full sm:w-auto overflow-x-auto hide-scrollbar pb-1 sm:pb-0">
+                <button
+                  onClick={() => setActiveFilter("all")}
+                  className={`px-3.5 py-2 rounded-xl text-sm font-bold whitespace-nowrap transition-colors shadow-sm ${
+                    activeFilter === "all"
+                      ? "bg-[#2B5BBA] text-white"
+                      : "bg-card border border-border/50 text-muted-foreground hover:text-foreground"
+                  }`}
+                >
+                  Todas
+                </button>
+                <button
+                  onClick={() => setActiveFilter("with-budget")}
+                  className={`px-3.5 py-2 rounded-xl text-sm font-bold whitespace-nowrap transition-colors shadow-sm ${
+                    activeFilter === "with-budget"
+                      ? "bg-emerald-500 text-white"
+                      : "bg-card border border-border/50 text-muted-foreground hover:text-foreground"
+                  }`}
+                >
+                  Com Orçamento
+                </button>
+                <button
+                  onClick={() => setActiveFilter("exceeded")}
+                  className={`px-3.5 py-2 rounded-xl text-sm font-bold whitespace-nowrap transition-colors shadow-sm ${
+                    activeFilter === "exceeded"
+                      ? "bg-red-500 text-white"
+                      : "bg-card border border-border/50 text-muted-foreground hover:text-foreground"
+                  }`}
+                >
+                  Excedidos
+                </button>
+              </div>
+            </div>
+          </div>
 
           {isLoading ? (
             <div className="text-center py-12 text-muted-foreground animate-pulse font-medium">
               A carregar orçamentos...
             </div>
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 pb-8">
-              {budgetsData.map((item) => (
+            <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4 sm:gap-6 pb-8">
+              {filteredBudgets.map((item) => (
                 <BudgetCategoryCard
                   key={item.categoria.id}
                   categoryId={String(item.categoria.id)}
@@ -284,6 +360,24 @@ export function BudgetsPage() {
                   onDeleteCategory={handleDeleteCategory}
                 />
               ))}
+
+              {filteredBudgets.length === 0 && budgetsData.length > 0 && (
+                <div className="col-span-full text-center py-12 bg-card border border-border/50 rounded-3xl">
+                  <p className="text-muted-foreground font-medium mb-2">
+                    Nenhuma categoria encontrada para este filtro.
+                  </p>
+                  <button
+                    onClick={() => {
+                      setSearchTerm("");
+                      setActiveFilter("all");
+                    }}
+                    className="text-[#2B5BBA] font-bold hover:underline"
+                  >
+                    Limpar filtros
+                  </button>
+                </div>
+              )}
+
               {budgetsData.length === 0 && (
                 <div className="col-span-full text-center py-12 bg-card border border-border/50 rounded-3xl">
                   <p className="text-muted-foreground font-medium mb-4">

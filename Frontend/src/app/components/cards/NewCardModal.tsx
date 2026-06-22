@@ -105,9 +105,12 @@ export function NewCardModal({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
-      <div className="relative bg-card text-card-foreground rounded-3xl shadow-2xl w-full max-w-2xl border border-border/50 overflow-hidden animate-in fade-in zoom-in-95 duration-200">
-        <div className="p-6 border-b border-border/50 flex justify-between items-center">
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center p-0 sm:p-4 bg-black/60 backdrop-blur-sm"
+      onWheel={(e) => e.stopPropagation()}
+    >
+      <div className="relative bg-card text-card-foreground sm:rounded-3xl shadow-2xl w-full max-w-2xl h-full sm:h-auto max-h-[100vh] sm:max-h-[90vh] border border-border/50 overflow-y-auto animate-in fade-in zoom-in-95 duration-200">
+        <div className="sticky top-0 bg-card/80 backdrop-blur-md border-b border-border/50 px-5 py-4 md:px-8 md:py-5 flex justify-between items-center sm:rounded-t-3xl z-10">
           <h2 className="text-xl font-bold">
             {cardToEdit ? "Editar Cartão" : "Novo Cartão de Crédito"}
           </h2>
@@ -119,7 +122,10 @@ export function NewCardModal({
           </button>
         </div>
 
-        <form onSubmit={handleSubmit} className="p-8 space-y-6">
+        <form
+          onSubmit={handleSubmit}
+          className="p-5 md:p-8 space-y-5 md:space-y-6"
+        >
           <div>
             <label className="block text-sm font-medium mb-2">
               Nome do Cartão (ou Banco)
@@ -129,12 +135,12 @@ export function NewCardModal({
               value={name}
               onChange={(e) => setName(e.target.value)}
               placeholder="Ex: Nubank Ultravioleta"
-              className="w-full px-4 py-3 bg-muted/50 border border-transparent rounded-xl focus:ring-2 focus:ring-[#2B5BBA] outline-none transition-all"
+              className="w-full px-4 py-3 sm:py-3.5 bg-muted/50 border border-transparent rounded-xl focus:ring-2 focus:ring-[#2B5BBA] outline-none transition-all"
               required
             />
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 p-5 bg-muted/30 rounded-2xl border border-border/50">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-5 md:gap-6 p-4 sm:p-5 bg-muted/30 rounded-2xl border border-border/50">
             <div>
               <label className="block text-sm font-medium mb-2">
                 Limite Total
@@ -148,7 +154,7 @@ export function NewCardModal({
                   value={limitStr}
                   onChange={handleLimitChange}
                   placeholder="0,00"
-                  className="w-full pl-12 pr-4 py-3 bg-background border border-border rounded-xl focus:ring-2 focus:ring-[#2B5BBA] outline-none transition-all font-bold text-lg"
+                  className="w-full pl-12 pr-4 py-3 sm:py-3.5 bg-background border border-border rounded-xl focus:ring-2 focus:ring-[#2B5BBA] outline-none transition-all font-bold text-lg"
                   required
                 />
               </div>
@@ -167,14 +173,14 @@ export function NewCardModal({
                   value={lastDigits}
                   onChange={handleLastDigitsChange}
                   placeholder="1234"
-                  className="w-full pl-16 pr-4 py-3 bg-background border border-border rounded-xl focus:ring-2 focus:ring-[#2B5BBA] outline-none transition-all font-mono tracking-widest"
+                  className="w-full pl-16 pr-4 py-3 sm:py-3.5 bg-background border border-border rounded-xl focus:ring-2 focus:ring-[#2B5BBA] outline-none transition-all font-mono tracking-widest"
                   required
                 />
               </div>
             </div>
           </div>
 
-          <div className="grid grid-cols-2 gap-6">
+          <div className="grid grid-cols-2 gap-4 sm:gap-6">
             <div>
               <label className="block text-sm font-medium mb-2">
                 Dia do Fechamento
@@ -182,7 +188,7 @@ export function NewCardModal({
               <select
                 value={closingDay}
                 onChange={(e) => setClosingDay(Number(e.target.value))}
-                className="w-full px-4 py-3 bg-muted/50 border border-transparent rounded-xl outline-none focus:ring-2 focus:ring-[#2B5BBA]"
+                className="w-full px-4 py-3 sm:py-3.5 bg-muted/50 border border-transparent rounded-xl outline-none focus:ring-2 focus:ring-[#2B5BBA]"
               >
                 {[...Array(31)].map((_, i) => (
                   <option key={i + 1} value={i + 1}>
@@ -198,7 +204,7 @@ export function NewCardModal({
               <select
                 value={dueDay}
                 onChange={(e) => setDueDay(Number(e.target.value))}
-                className="w-full px-4 py-3 bg-muted/50 border border-transparent rounded-xl outline-none focus:ring-2 focus:ring-[#2B5BBA]"
+                className="w-full px-4 py-3 sm:py-3.5 bg-muted/50 border border-transparent rounded-xl outline-none focus:ring-2 focus:ring-[#2B5BBA]"
               >
                 {[...Array(31)].map((_, i) => (
                   <option key={i + 1} value={i + 1}>
@@ -209,7 +215,7 @@ export function NewCardModal({
             </div>
           </div>
 
-          <div className="flex gap-4 pt-4 mt-2 border-t border-border/50">
+          <div className="flex flex-col-reverse sm:flex-row gap-3 sm:gap-4 pt-5 sm:pt-6 mt-6 sm:mt-8 border-t border-border/50">
             <button
               type="button"
               onClick={handleClose}

@@ -121,18 +121,18 @@ export function DashboardPage() {
       <Sidebar />
       <div className="flex-1 flex flex-col overflow-hidden">
         <Header />
-        <main className="flex-1 overflow-y-auto p-6 md:p-8">
-          <div className="mb-8">
-            <h1 className="text-3xl font-bold tracking-tight text-foreground mb-1">
+        <main className="flex-1 overflow-y-auto p-4 sm:p-6 md:p-8">
+          <div className="mb-6 md:mb-8">
+            <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-foreground mb-1">
               {greeting}, {user?.nome?.split(" ")[0] || "Usuário"}!
             </h1>
-            <p className="text-muted-foreground font-medium">
+            <p className="text-sm sm:text-base text-muted-foreground font-medium">
               Aqui está o resumo das suas finanças de hoje
             </p>
           </div>
 
           {data.totalTransacoes === 0 && (
-            <div className="mb-8">
+            <div className="mb-6 md:mb-8">
               <WelcomeBanner
                 userName={user?.nome?.split(" ")[0] || "Usuário"}
                 hasTransactions={data.totalTransacoes > 0}
@@ -141,7 +141,7 @@ export function DashboardPage() {
             </div>
           )}
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 mb-6 md:mb-8">
             <SummaryCard
               title="Saldo Total"
               value={formatCurrency(data.saldoTotal)}
