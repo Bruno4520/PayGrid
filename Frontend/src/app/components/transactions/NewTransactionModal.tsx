@@ -410,8 +410,8 @@ export function NewTransactionModal({
                     Atenção: possível gasto com apostas identificado.
                   </p>
                   <p className="mt-1 text-sm leading-relaxed">
-                    Revise a descrição e a categoria dessa despesa antes de
-                    salvar a transação no seu planejamento financeiro.
+                    Evite gastos com apostas. Revise se essa despesa é realmente
+                    necessária antes de salvar.
                   </p>
                 </div>
               </div>
