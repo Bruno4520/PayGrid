@@ -90,8 +90,14 @@ export function NewTransactionModal({
 
   const formasPagamentoReceita = ["dinheiro", "pix"];
   const formasPagamentoDespesa = ["dinheiro", "pix", "cartao"];
+  const categoriaSelecionada = categorias.find(
+    (cat) => cat.id.toString() === categoriaId,
+  );
+
   const exibirAlertaAposta =
-    type === "despesa" && descricaoIndicaAposta(descricao);
+    type === "despesa" &&
+    (descricaoIndicaAposta(descricao) ||
+      descricaoIndicaAposta(categoriaSelecionada?.nome || ""));
 
   useEffect(() => {
     if (isOpen) {
@@ -404,8 +410,8 @@ export function NewTransactionModal({
                     Atenção: possível gasto com apostas identificado.
                   </p>
                   <p className="mt-1 text-sm leading-relaxed">
-                    Revise se essa despesa está alinhada com seu planejamento
-                    financeiro antes de salvar a transação.
+                    Revise a descrição e a categoria dessa despesa antes de
+                    salvar a transação no seu planejamento financeiro.
                   </p>
                 </div>
               </div>
