@@ -32,12 +32,14 @@ export function TermsCard() {
   };
 
   return (
-    <div className="bg-card rounded-3xl p-6 shadow-sm border border-border/50 transition-colors duration-300 h-full flex flex-col">
+    <div className="bg-card rounded-3xl p-5 md:p-6 shadow-sm border border-border/50 transition-colors duration-300 h-full flex flex-col">
       <div className="flex items-center gap-3 mb-4">
-        <div className="w-12 h-12 bg-[#2B5BBA]/10 rounded-xl flex items-center justify-center">
-          <BookOpen size={24} className="text-[#2B5BBA] dark:text-[#5588ff]" />
+        <div className="w-10 h-10 sm:w-12 sm:h-12 bg-[#2B5BBA]/10 rounded-xl flex items-center justify-center shrink-0">
+          <BookOpen className="text-[#2B5BBA] dark:text-[#5588ff] w-5 h-5 sm:w-6 sm:h-6" />
         </div>
-        <h3 className="text-xl font-bold text-foreground">Entenda os Termos</h3>
+        <h3 className="text-lg sm:text-xl font-bold text-foreground">
+          Entenda os Termos
+        </h3>
       </div>
 
       <div className="space-y-1 flex-1">
@@ -51,10 +53,10 @@ export function TermsCard() {
             >
               <button
                 onClick={() => toggleTerm(index)}
-                className="w-full py-4 flex items-center justify-between text-left group focus:outline-none"
+                className="w-full py-3.5 sm:py-4 flex items-center justify-between text-left group focus:outline-none"
               >
                 <h4
-                  className={`text-sm font-bold transition-colors ${
+                  className={`text-xs sm:text-sm font-bold transition-colors ${
                     isOpen
                       ? "text-[#2B5BBA] dark:text-[#5588ff]"
                       : "text-foreground group-hover:text-[#2B5BBA]"
@@ -63,8 +65,7 @@ export function TermsCard() {
                   {term.title}
                 </h4>
                 <ChevronDown
-                  size={18}
-                  className={`text-muted-foreground transition-transform duration-300 shrink-0 ml-4 ${
+                  className={`text-muted-foreground transition-transform duration-300 shrink-0 ml-3 w-4 h-4 sm:w-[18px] sm:h-[18px] ${
                     isOpen ? "rotate-180 text-[#2B5BBA]" : ""
                   }`}
                 />
@@ -77,7 +78,7 @@ export function TermsCard() {
                 }`}
               >
                 <div className="overflow-hidden">
-                  <p className="text-sm font-medium text-muted-foreground leading-relaxed pb-4">
+                  <p className="text-xs sm:text-sm font-medium text-muted-foreground leading-relaxed pb-3 sm:pb-4">
                     {term.description}
                   </p>
                 </div>

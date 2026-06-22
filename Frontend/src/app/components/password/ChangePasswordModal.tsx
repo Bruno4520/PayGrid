@@ -79,7 +79,7 @@ export function ChangePasswordModal({
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center p-4"
+      className="fixed inset-0 z-50 flex items-center justify-center p-0 sm:p-4"
       onWheel={(e) => e.stopPropagation()}
     >
       <div
@@ -87,8 +87,8 @@ export function ChangePasswordModal({
         onClick={handleClose}
       />
 
-      <div className="relative bg-card text-card-foreground rounded-3xl shadow-2xl w-full max-w-md overflow-hidden border border-border/50 animate-in fade-in zoom-in-95 duration-200">
-        <div className="bg-muted/30 border-b border-border/50 px-8 py-6 flex items-center justify-between">
+      <div className="relative bg-card text-card-foreground sm:rounded-3xl shadow-2xl w-full max-w-md h-full sm:h-auto max-h-[100vh] overflow-y-auto border border-border/50 animate-in fade-in zoom-in-95 duration-200">
+        <div className="bg-muted/30 border-b border-border/50 px-6 sm:px-8 py-5 sm:py-6 flex items-center justify-between sticky top-0 z-10 backdrop-blur-md">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 bg-[#2B5BBA]/10 rounded-xl flex items-center justify-center">
               <Lock size={20} className="text-[#2B5BBA] dark:text-[#5588ff]" />
@@ -110,7 +110,7 @@ export function ChangePasswordModal({
           </button>
         </div>
 
-        <form onSubmit={handleSubmit} className="p-8 space-y-5">
+        <form onSubmit={handleSubmit} className="p-6 sm:p-8 space-y-5">
           {errorMsg && (
             <div className="bg-red-500/10 border border-red-500/20 text-red-600 dark:text-red-400 p-3 rounded-xl text-sm font-bold mb-4">
               {errorMsg}
@@ -197,7 +197,7 @@ export function ChangePasswordModal({
               )}
           </div>
 
-          <div className="flex gap-4 pt-4 mt-2">
+          <div className="flex flex-col-reverse sm:flex-row gap-3 sm:gap-4 pt-4 mt-2">
             <button
               type="button"
               onClick={handleClose}

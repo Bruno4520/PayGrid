@@ -35,10 +35,10 @@ export function TransactionFilters({
   };
 
   return (
-    <div className="bg-card rounded-2xl p-6 shadow-sm border border-border/50 mb-6 transition-colors duration-300">
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
+    <div className="bg-card rounded-2xl p-4 sm:p-5 md:p-6 shadow-sm border border-border/50 mb-5 md:mb-6 transition-colors duration-300">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3 md:gap-4">
         <div>
-          <label className="block text-sm font-medium text-foreground mb-2">
+          <label className="block text-sm font-medium text-foreground mb-1.5 md:mb-2">
             Período
           </label>
           <select
@@ -55,7 +55,7 @@ export function TransactionFilters({
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-foreground mb-2">
+          <label className="block text-sm font-medium text-foreground mb-1.5 md:mb-2">
             Conta / Cartão
           </label>
           <select
@@ -73,7 +73,7 @@ export function TransactionFilters({
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-foreground mb-2">
+          <label className="block text-sm font-medium text-foreground mb-1.5 md:mb-2">
             Categoria
           </label>
           <select
@@ -91,7 +91,7 @@ export function TransactionFilters({
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-foreground mb-2">
+          <label className="block text-sm font-medium text-foreground mb-1.5 md:mb-2">
             Tipo
           </label>
           <select
@@ -106,7 +106,7 @@ export function TransactionFilters({
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-foreground mb-2">
+          <label className="block text-sm font-medium text-foreground mb-1.5 md:mb-2">
             Buscar
           </label>
           <div className="relative">

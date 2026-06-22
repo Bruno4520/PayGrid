@@ -26,13 +26,13 @@ export function ExpensesByCategory({ data = [] }: ExpensesByCategoryProps) {
     }).format(val);
 
   return (
-    <div className="bg-card text-card-foreground rounded-3xl p-6 shadow-sm border border-border/50 transition-colors duration-300">
-      <h3 className="text-lg font-bold tracking-tight mb-6">
+    <div className="bg-card text-card-foreground rounded-3xl p-5 md:p-6 shadow-sm border border-border/50 transition-colors duration-300">
+      <h3 className="text-lg font-bold tracking-tight mb-5 md:mb-6">
         Despesas do Mês por Categoria
       </h3>
 
       {data.length === 0 ? (
-        <div className="h-[300px] flex items-center justify-center text-muted-foreground font-medium">
+        <div className="h-[300px] flex items-center justify-center text-muted-foreground font-medium text-center px-4">
           Nenhuma despesa registada este mês.
         </div>
       ) : (

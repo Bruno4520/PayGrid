@@ -59,10 +59,7 @@ const colorStyles: Record<string, { bg: string; text: string }> = {
     bg: "bg-purple-500/10",
     text: "text-purple-600 dark:text-purple-400",
   },
-  "bg-red-500": {
-    bg: "bg-red-500/10",
-    text: "text-red-600 dark:text-red-400",
-  },
+  "bg-red-500": { bg: "bg-red-500/10", text: "text-red-600 dark:text-red-400" },
   "bg-orange-500": {
     bg: "bg-orange-500/10",
     text: "text-orange-600 dark:text-orange-400",
@@ -119,30 +116,33 @@ export function BudgetCategoryCard({
   };
 
   return (
-    <div className="bg-card rounded-3xl p-6 shadow-sm border border-border/50 hover:shadow-md transition-all duration-300 group flex flex-col h-full">
-      <div className="flex items-center justify-between mb-6">
-        <div className="flex items-center gap-4">
+    <div className="bg-card rounded-3xl p-5 md:p-6 shadow-sm border border-border/50 hover:shadow-md transition-all duration-300 group flex flex-col h-full">
+      <div className="flex items-center justify-between mb-5 md:mb-6">
+        <div className="flex items-center gap-3 sm:gap-4 min-w-0">
           <div
-            className={`w-12 h-12 rounded-2xl flex items-center justify-center ${style.bg}`}
+            className={`w-10 h-10 sm:w-12 sm:h-12 rounded-2xl flex items-center justify-center shrink-0 ${style.bg}`}
           >
-            <Icon className={style.text} size={24} />
+            <Icon size={20} className={`${style.text} sm:w-6 sm:h-6`} />
           </div>
-          <div>
-            <h3 className="font-bold text-foreground text-lg tracking-tight">
+          <div className="min-w-0">
+            <h3
+              className="font-bold text-foreground text-base sm:text-lg tracking-tight truncate"
+              title={category}
+            >
               {category}
             </h3>
             {isSystemCategory && (
-              <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground bg-muted px-2 py-0.5 rounded-full">
+              <span className="inline-block mt-0.5 text-[9px] sm:text-[10px] font-bold uppercase tracking-wider text-muted-foreground bg-muted px-2 py-0.5 rounded-full">
                 Sistema
               </span>
             )}
           </div>
         </div>
 
-        <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+        <div className="flex items-center gap-1 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity shrink-0 ml-2">
           <button
             onClick={() => onEditCategory(categoryId)}
-            className="p-2 text-muted-foreground hover:text-[#2B5BBA] hover:bg-blue-500/10 rounded-xl transition-colors"
+            className="p-1.5 sm:p-2 text-muted-foreground hover:text-[#2B5BBA] hover:bg-blue-500/10 rounded-xl transition-colors"
             title="Editar Categoria / Orçamento"
           >
             <Edit2 size={16} />
@@ -150,7 +150,7 @@ export function BudgetCategoryCard({
           {!isSystemCategory && (
             <button
               onClick={() => onDeleteCategory(categoryId)}
-              className="p-2 text-muted-foreground hover:text-red-600 hover:bg-red-500/10 rounded-xl transition-colors"
+              className="p-1.5 sm:p-2 text-muted-foreground hover:text-red-600 hover:bg-red-500/10 rounded-xl transition-colors"
               title="Excluir Categoria"
             >
               <Trash2 size={16} />
@@ -163,29 +163,29 @@ export function BudgetCategoryCard({
 
       {hasBudget ? (
         <div className="space-y-4">
-          <div className="flex justify-between items-end">
-            <div>
-              <span className="text-sm font-medium text-muted-foreground block mb-1">
+          <div className="flex justify-between items-end gap-2">
+            <div className="min-w-0">
+              <span className="text-xs sm:text-sm font-medium text-muted-foreground block mb-1">
                 Gasto Atual
               </span>
               <span
-                className={`text-2xl font-bold tracking-tight ${spentTextColor} flex items-center gap-2`}
+                className={`text-xl sm:text-2xl font-bold tracking-tight truncate flex items-center gap-1.5 ${spentTextColor}`}
+                title={formatCurrency(spent)}
               >
                 {formatCurrency(spent)}
                 {isWarning && !isExceeded && (
                   <AlertTriangle
-                    size={18}
-                    className="text-amber-500"
-                    aria-label="Atenção: Perto do limite!"
+                    size={16}
+                    className="text-amber-500 shrink-0"
                   />
                 )}
               </span>
             </div>
-            <div className="text-right">
-              <span className="text-sm font-medium text-muted-foreground block mb-1">
+            <div className="text-right shrink-0">
+              <span className="text-xs sm:text-sm font-medium text-muted-foreground block mb-1">
                 Limite
               </span>
-              <span className="font-bold text-foreground">
+              <span className="text-sm sm:text-base font-bold text-foreground">
                 {formatCurrency(planned)}
               </span>
             </div>
@@ -198,7 +198,7 @@ export function BudgetCategoryCard({
                 style={{ width: `${Math.min(percentage, 100)}%` }}
               />
             </div>
-            <p className="text-[11px] font-bold text-muted-foreground text-right uppercase tracking-tighter">
+            <p className="text-[10px] sm:text-[11px] font-bold text-muted-foreground text-right uppercase tracking-tighter">
               {isExceeded
                 ? "Limite Excedido"
                 : `${Math.round(percentage)}% utilizado`}
@@ -206,8 +206,8 @@ export function BudgetCategoryCard({
           </div>
         </div>
       ) : (
-        <div className="flex flex-col items-center justify-center py-2 mt-4">
-          <p className="text-sm text-muted-foreground text-center mb-4 leading-relaxed">
+        <div className="flex flex-col items-center justify-center py-2 mt-2 sm:mt-4">
+          <p className="text-xs sm:text-sm text-muted-foreground text-center mb-4 leading-relaxed">
             Você ainda não definiu um limite de gastos para esta categoria no
             mês atual.
           </p>
@@ -215,7 +215,7 @@ export function BudgetCategoryCard({
             onClick={onSetBudget}
             className="w-full py-2.5 flex items-center justify-center gap-2 rounded-xl bg-muted text-foreground text-sm font-bold hover:bg-[#2B5BBA] hover:text-white transition-all"
           >
-            <Plus size={18} /> Definir Orçamento
+            <Plus size={18} className="sm:w-5 sm:h-5" /> Definir Orçamento
           </button>
         </div>
       )}

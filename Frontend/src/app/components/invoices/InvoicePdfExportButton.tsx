@@ -599,10 +599,10 @@ export function InvoicePdfExportButton({
   return (
     <button
       onClick={handleExport}
-      className="inline-flex items-center gap-2 bg-card text-foreground px-6 py-3.5 rounded-xl border border-border/50 hover:bg-muted font-medium transition-colors shadow-sm"
+      className="w-full sm:w-auto justify-center inline-flex items-center gap-2 bg-card text-foreground px-5 sm:px-6 py-3 sm:py-3.5 rounded-xl border border-border/50 hover:bg-muted font-medium transition-colors shadow-sm text-sm sm:text-base"
     >
       <Download size={18} />
-      Exportar para o mês selecionado
+      Exportar PDF da fatura
     </button>
   );
 }

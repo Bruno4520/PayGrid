@@ -98,18 +98,20 @@ export function RecentPurchases({
   };
 
   return (
-    <div className="bg-card text-card-foreground rounded-3xl p-6 shadow-sm border border-border/50 transition-colors duration-300">
-      <div className="flex items-center justify-between mb-6">
-        <h3 className="text-xl font-bold tracking-tight">Últimas Compras</h3>
+    <div className="bg-card text-card-foreground rounded-3xl p-5 md:p-6 shadow-sm border border-border/50 transition-colors duration-300">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-5 md:mb-6 gap-4">
+        <h3 className="text-lg md:text-xl font-bold tracking-tight">
+          Últimas Compras
+        </h3>
         <button
           onClick={() => onNewPurchase(cardId)}
-          className="inline-flex items-center gap-1.5 bg-[#2B5BBA]/10 text-[#2B5BBA] dark:text-[#5588ff] px-3 py-1.5 rounded-lg hover:bg-[#2B5BBA]/20 transition-colors font-medium text-sm"
+          className="w-full sm:w-auto justify-center inline-flex items-center gap-1.5 bg-[#2B5BBA]/10 text-[#2B5BBA] dark:text-[#5588ff] px-4 py-2 sm:px-3 sm:py-1.5 rounded-xl sm:rounded-lg hover:bg-[#2B5BBA]/20 transition-colors font-bold sm:font-medium text-sm"
         >
-          <Plus size={16} /> Nova Compra
+          <Plus size={18} className="sm:w-4 sm:h-4" /> Nova Compra
         </button>
       </div>
 
-      <div className="space-y-2">
+      <div className="space-y-3 sm:space-y-2">
         {formattedPurchases.map((purchase) => {
           const Icon = iconMap[purchase.icon] || iconMap.other;
           const colorStyle =
@@ -119,60 +121,65 @@ export function RecentPurchases({
           return (
             <div
               key={purchase.id}
-              className={`flex items-center justify-between p-3 rounded-2xl hover:bg-muted/50 transition-colors group relative ${isDeleting ? "opacity-50 pointer-events-none" : ""}`}
+              className={`flex flex-col sm:flex-row sm:items-center justify-between p-3.5 sm:p-3 rounded-2xl hover:bg-muted/50 transition-colors group ${isDeleting ? "opacity-50 pointer-events-none" : ""}`}
             >
-              <div className="flex items-center gap-4 flex-1">
+              <div className="flex items-center gap-3 sm:gap-4 min-w-0 mb-3 sm:mb-0">
                 <div
-                  className={`w-12 h-12 rounded-xl flex items-center justify-center ${colorStyle}`}
+                  className={`w-10 h-10 sm:w-12 sm:h-12 shrink-0 rounded-xl flex items-center justify-center ${colorStyle}`}
                 >
-                  <Icon size={20} />
+                  <Icon size={20} className="sm:w-5 sm:h-5 w-[18px] h-[18px]" />
                 </div>
-                <div className="flex-1">
-                  <p className="text-sm font-semibold text-foreground mb-0.5">
+                <div className="min-w-0 flex-1">
+                  <p className="text-sm font-semibold text-foreground mb-0.5 truncate">
                     {purchase.merchant}
                     {purchase.parcelas > 1 && (
-                      <span className="ml-2 text-xs font-bold text-[#2B5BBA]">
-                        ({purchase.parcelas}x)
+                      <span className="ml-1.5 text-[10px] sm:text-xs font-bold bg-[#2B5BBA]/10 text-[#2B5BBA] px-1.5 py-0.5 rounded-md">
+                        {purchase.parcelas}x
                       </span>
                     )}
                   </p>
-                  <p className="text-xs font-medium text-muted-foreground">
+                  <p className="text-xs font-medium text-muted-foreground truncate">
                     {purchase.date}
                   </p>
                 </div>
               </div>
 
-              <div className="text-right group-hover:opacity-0 transition-opacity absolute right-4">
-                <p
-                  className={`text-sm font-bold tracking-tight ${purchase.type === "RECEITA" ? "text-emerald-600 dark:text-emerald-400" : "text-red-600 dark:text-red-400"}`}
-                >
-                  {purchase.type === "RECEITA" ? "+" : "-"}{" "}
-                  {formatCurrency(purchase.amount)}
-                </p>
-                <p className="text-xs font-medium text-muted-foreground mt-0.5">
-                  {purchase.category}
-                </p>
-              </div>
+              <div className="flex items-center justify-between sm:justify-end gap-4 sm:gap-6 w-full sm:w-auto border-t sm:border-0 border-border/50 pt-2 sm:pt-0">
+                <div className="text-left sm:text-right">
+                  <p
+                    className={`text-sm sm:text-base font-bold tracking-tight ${purchase.type === "RECEITA" ? "text-emerald-600 dark:text-emerald-400" : "text-red-600 dark:text-red-400"}`}
+                  >
+                    {purchase.type === "RECEITA" ? "+" : "-"}{" "}
+                    {formatCurrency(purchase.amount)}
+                  </p>
+                  <p className="text-[10px] sm:text-xs font-medium text-muted-foreground mt-0.5 truncate max-w-[100px] sm:max-w-none">
+                    {purchase.category}
+                  </p>
+                </div>
 
-              <div className="flex items-center justify-end gap-1 opacity-0 group-hover:opacity-100 transition-opacity absolute right-4">
-                <button
-                  onClick={() => onEditPurchase(purchase.rawTransaction)}
-                  disabled={isDeleting || deletingPurchaseId !== null}
-                  className="p-2 text-muted-foreground hover:text-[#2B5BBA] hover:bg-blue-500/10 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                  <Edit2 size={18} />
-                </button>
-                <button
-                  onClick={() => onDeletePurchase(purchase.id)}
-                  disabled={isDeleting || deletingPurchaseId !== null}
-                  className="p-2 text-muted-foreground hover:text-red-600 hover:bg-red-500/10 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                  {isDeleting ? (
-                    <Loader2 size={18} className="animate-spin text-red-600" />
-                  ) : (
-                    <Trash2 size={18} />
-                  )}
-                </button>
+                <div className="flex items-center gap-1 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity shrink-0">
+                  <button
+                    onClick={() => onEditPurchase(purchase.rawTransaction)}
+                    disabled={isDeleting || deletingPurchaseId !== null}
+                    className="p-1.5 sm:p-2 text-muted-foreground hover:text-[#2B5BBA] hover:bg-blue-500/10 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    <Edit2 size={18} className="w-[18px] h-[18px]" />
+                  </button>
+                  <button
+                    onClick={() => onDeletePurchase(purchase.id)}
+                    disabled={isDeleting || deletingPurchaseId !== null}
+                    className="p-1.5 sm:p-2 text-muted-foreground hover:text-red-600 hover:bg-red-500/10 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    {isDeleting ? (
+                      <Loader2
+                        size={18}
+                        className="animate-spin text-red-600 w-[18px] h-[18px]"
+                      />
+                    ) : (
+                      <Trash2 size={18} className="w-[18px] h-[18px]" />
+                    )}
+                  </button>
+                </div>
               </div>
             </div>
           );

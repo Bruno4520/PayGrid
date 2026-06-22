@@ -43,7 +43,7 @@ export function LoginPage() {
 
   return (
     <main className="flex min-h-screen bg-background">
-      <section className="flex items-center justify-center w-full lg:w-1/2 p-6 sm:p-12">
+      <section className="flex items-center justify-center w-full lg:w-1/2 p-4 sm:p-8 md:p-12">
         <LoginCard
           onLogin={handleLogin}
           onForgotPassword={() => navigate("/recuperar-senha")}

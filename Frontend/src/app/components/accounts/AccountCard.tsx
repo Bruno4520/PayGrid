@@ -79,17 +79,17 @@ export function AccountCard({
 
   return (
     <div
-      className={`${config.bgColor} rounded-3xl p-6 shadow-sm border transition-all duration-300 hover:scale-[1.02] hover:shadow-md relative group ${isDeleting ? "opacity-50" : ""}`}
+      className={`${config.bgColor} rounded-3xl p-5 md:p-6 shadow-sm border transition-all duration-300 hover:scale-[1.02] hover:shadow-md relative group ${isDeleting ? "opacity-50" : ""}`}
     >
-      <div className="flex items-start justify-between mb-6">
+      <div className="flex items-start justify-between mb-5 md:mb-6">
         <div
-          className={`w-12 h-12 ${config.iconBg} rounded-xl flex items-center justify-center backdrop-blur-sm`}
+          className={`w-10 h-10 md:w-12 md:h-12 ${config.iconBg} rounded-xl flex items-center justify-center backdrop-blur-sm shrink-0`}
         >
-          <Icon size={24} />
+          <Icon size={20} className="md:w-6 md:h-6" />
         </div>
 
-        <div className="flex items-center gap-2">
-          <div className="flex items-center gap-1 opacity-60 hover:opacity-100 transition-opacity">
+        <div className="flex items-center gap-1.5 md:gap-2">
+          <div className="flex items-center gap-1 opacity-100 sm:opacity-60 sm:hover:opacity-100 transition-opacity">
             <button
               onClick={(e) => {
                 e.stopPropagation();
@@ -117,7 +117,7 @@ export function AccountCard({
               )}
             </button>
           </div>
-          <span className="px-3 py-1 rounded-full text-xs font-bold tracking-wide bg-white/20 text-white backdrop-blur-sm ml-2">
+          <span className="px-2 py-0.5 md:px-3 md:py-1 rounded-full text-[10px] md:text-xs font-bold tracking-wide bg-white/20 text-white backdrop-blur-sm ml-1 md:ml-2">
             {badge}
           </span>
         </div>
@@ -125,19 +125,19 @@ export function AccountCard({
 
       <div className="min-w-0">
         <p
-          className={`text-sm font-medium mb-1 truncate ${config.subText}`}
+          className={`text-xs md:text-sm font-medium mb-1 truncate ${config.subText}`}
           title={name}
         >
           {name}
         </p>
         <p
-          className={`text-3xl font-bold tracking-tight mb-2 truncate ${config.textColor}`}
+          className={`text-2xl md:text-3xl font-bold tracking-tight mb-1.5 md:mb-2 truncate ${config.textColor}`}
           title={formatCurrency(balance)}
         >
           {formatCurrency(balance)}
         </p>
         <p
-          className={`text-xs font-medium truncate ${config.subText}`}
+          className={`text-[10px] md:text-xs font-medium truncate ${config.subText}`}
           title={details}
         >
           {details}

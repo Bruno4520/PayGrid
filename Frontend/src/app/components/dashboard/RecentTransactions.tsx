@@ -34,8 +34,8 @@ export function RecentTransactions({
     }).format(amount);
 
   return (
-    <div className="bg-card text-card-foreground rounded-3xl p-6 shadow-sm border border-border/50 transition-colors duration-300 h-full flex flex-col">
-      <div className="flex items-center justify-between mb-6">
+    <div className="bg-card text-card-foreground rounded-3xl p-5 md:p-6 shadow-sm border border-border/50 transition-colors duration-300 h-full flex flex-col">
+      <div className="flex items-center justify-between mb-5 md:mb-6">
         <h3 className="text-lg font-bold tracking-tight">
           Transações Recentes
         </h3>
@@ -47,15 +47,15 @@ export function RecentTransactions({
         </button>
       </div>
 
-      <div className="flex-1 flex flex-col gap-4">
+      <div className="flex-1 flex flex-col gap-3 sm:gap-4">
         {transactions.map((t) => (
           <div
             key={t.id}
             className="flex items-center justify-between p-3 rounded-2xl hover:bg-muted/50 transition-colors"
           >
-            <div className="flex items-center gap-4 min-w-0">
+            <div className="flex items-center gap-3 sm:gap-4 min-w-0">
               <div
-                className={`w-12 h-12 rounded-xl shrink-0 flex items-center justify-center ${
+                className={`w-10 h-10 sm:w-12 sm:h-12 rounded-xl shrink-0 flex items-center justify-center ${
                   t.tipo === "RECEITA"
                     ? "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400"
                     : "bg-red-500/10 text-red-600 dark:text-red-400"
@@ -88,7 +88,7 @@ export function RecentTransactions({
               </div>
             </div>
             <span
-              className={`text-sm font-bold shrink-0 ml-4 ${
+              className={`text-sm font-bold shrink-0 ml-3 sm:ml-4 ${
                 t.tipo === "RECEITA"
                   ? "text-emerald-600 dark:text-emerald-400"
                   : "text-red-600 dark:text-red-400"

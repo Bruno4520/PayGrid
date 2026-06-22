@@ -1,5 +1,13 @@
-import { Edit2, Trash2, FileText, X, Loader2 } from "lucide-react";
-import { useState } from "react";
+import {
+  Edit2,
+  Trash2,
+  FileText,
+  X,
+  Loader2,
+  ChevronLeft,
+  ChevronRight,
+} from "lucide-react";
+import { useState, useEffect } from "react";
 
 export interface Transaction {
   id: number;
@@ -35,6 +43,20 @@ export function TransactionTable({
 }: TransactionTableProps) {
   const [selectedObservation, setSelectedObservation] = useState<string | null>(
     null,
+  );
+
+  const [currentPage, setCurrentPage] = useState(1);
+  const ITEMS_PER_PAGE = 10;
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [transactions]);
+
+  const totalPages = Math.ceil(transactions.length / ITEMS_PER_PAGE) || 1;
+  const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
+  const paginatedTransactions = transactions.slice(
+    startIndex,
+    startIndex + ITEMS_PER_PAGE,
   );
 
   const formatCurrency = (amount: number) => {
@@ -88,31 +110,31 @@ export function TransactionTable({
           <table className="w-full text-left border-collapse">
             <thead className="bg-muted/50 border-b border-border">
               <tr>
-                <th className="px-6 py-4 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+                <th className="px-4 py-3 sm:px-6 sm:py-4 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
                   Data
                 </th>
-                <th className="px-6 py-4 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+                <th className="px-4 py-3 sm:px-6 sm:py-4 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
                   Descrição
                 </th>
-                <th className="px-6 py-4 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+                <th className="px-4 py-3 sm:px-6 sm:py-4 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
                   Categoria
                 </th>
-                <th className="px-6 py-4 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+                <th className="px-4 py-3 sm:px-6 sm:py-4 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
                   Conta/Cartão
                 </th>
-                <th className="px-6 py-4 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+                <th className="px-4 py-3 sm:px-6 sm:py-4 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
                   Forma Pgto
                 </th>
-                <th className="px-6 py-4 text-right text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+                <th className="px-4 py-3 sm:px-6 sm:py-4 text-right text-xs font-semibold text-muted-foreground uppercase tracking-wider">
                   Valor
                 </th>
-                <th className="px-6 py-4 text-center text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+                <th className="px-4 py-3 sm:px-6 sm:py-4 text-center text-xs font-semibold text-muted-foreground uppercase tracking-wider">
                   Ações
                 </th>
               </tr>
             </thead>
             <tbody className="divide-y divide-border/50">
-              {transactions.map((transaction) => {
+              {paginatedTransactions.map((transaction) => {
                 const isDeleting = deletingId === transaction.id;
                 const rowOpacity = isDeleting ? "opacity-50" : "";
 
@@ -121,17 +143,17 @@ export function TransactionTable({
                     key={transaction.id}
                     className={`hover:bg-muted/30 transition-colors group ${rowOpacity}`}
                   >
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-foreground">
+                    <td className="px-4 py-3 sm:px-6 sm:py-4 whitespace-nowrap text-sm text-foreground">
                       {formatDate(transaction.data)}
                     </td>
                     <td
-                      className="px-6 py-4 text-sm font-medium text-foreground max-w-[150px] sm:max-w-[200px] md:max-w-[250px] truncate"
+                      className="px-4 py-3 sm:px-6 sm:py-4 text-sm font-medium text-foreground max-w-[150px] sm:max-w-[200px] md:max-w-[250px] truncate"
                       title={transaction.descricao}
                     >
                       {transaction.descricao}
                     </td>
                     <td
-                      className="px-6 py-4 text-sm text-muted-foreground max-w-[110px] sm:max-w-[150px] truncate"
+                      className="px-4 py-3 sm:px-6 sm:py-4 text-sm text-muted-foreground max-w-[110px] sm:max-w-[150px] truncate"
                       title={
                         transaction.categoria?.nome === "PAGAMENTO DE FATURA"
                           ? "Pagamento de Cartão"
@@ -143,12 +165,12 @@ export function TransactionTable({
                         : transaction.categoria?.nome || "-"}
                     </td>
                     <td
-                      className="px-6 py-4 text-sm text-muted-foreground max-w-[120px] sm:max-w-[180px] truncate"
+                      className="px-4 py-3 sm:px-6 sm:py-4 text-sm text-muted-foreground max-w-[120px] sm:max-w-[180px] truncate"
                       title={getAccountName(transaction)}
                     >
                       {getAccountName(transaction)}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-muted-foreground">
+                    <td className="px-4 py-3 sm:px-6 sm:py-4 whitespace-nowrap text-sm text-muted-foreground">
                       <span className="capitalize">
                         {transaction.formaPagamento.toLowerCase()}
                       </span>
@@ -160,7 +182,7 @@ export function TransactionTable({
                           </span>
                         )}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-right font-bold tracking-tight">
+                    <td className="px-4 py-3 sm:px-6 sm:py-4 whitespace-nowrap text-sm text-right font-bold tracking-tight">
                       <span
                         className={
                           transaction.tipo === "RECEITA"
@@ -172,7 +194,7 @@ export function TransactionTable({
                         {formatCurrency(transaction.valor)}
                       </span>
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-center">
+                    <td className="px-4 py-3 sm:px-6 sm:py-4 whitespace-nowrap text-center">
                       <div className="flex items-center justify-center gap-1 opacity-60 md:opacity-15 md:group-hover:opacity-100 transition-opacity duration-200">
                         {transaction.observacoes && (
                           <button
@@ -217,6 +239,49 @@ export function TransactionTable({
             </tbody>
           </table>
         </div>
+
+        {totalPages > 1 && (
+          <div className="px-4 py-3 sm:px-6 sm:py-4 border-t border-border/50 bg-muted/20 flex flex-col sm:flex-row items-center justify-between gap-4">
+            <p className="text-sm text-muted-foreground text-center sm:text-left">
+              A mostrar{" "}
+              <span className="font-bold text-foreground">
+                {startIndex + 1}
+              </span>{" "}
+              a{" "}
+              <span className="font-bold text-foreground">
+                {Math.min(startIndex + ITEMS_PER_PAGE, transactions.length)}
+              </span>{" "}
+              de{" "}
+              <span className="font-bold text-foreground">
+                {transactions.length}
+              </span>{" "}
+              resultados
+            </p>
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+                disabled={currentPage === 1}
+                className="flex items-center gap-1 px-3 py-1.5 sm:px-4 sm:py-2 text-sm font-medium rounded-lg border border-border/50 hover:bg-muted text-foreground disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+              >
+                <ChevronLeft size={16} />
+              </button>
+
+              <span className="text-sm font-medium px-4">
+                Página {currentPage} de {totalPages}
+              </span>
+
+              <button
+                onClick={() =>
+                  setCurrentPage((p) => Math.min(totalPages, p + 1))
+                }
+                disabled={currentPage === totalPages}
+                className="flex items-center gap-1 px-3 py-1.5 sm:px-4 sm:py-2 text-sm font-medium rounded-lg border border-border/50 hover:bg-muted text-foreground disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+              >
+                <ChevronRight size={16} />
+              </button>
+            </div>
+          </div>
+        )}
       </div>
 
       {selectedObservation && (

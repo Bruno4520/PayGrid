@@ -1,9 +1,9 @@
 export function Footer() {
   return (
     <footer className="bg-card border-t border-border mt-auto transition-colors duration-300 py-8">
-      <div className="px-8">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          <div>
+      <div className="px-6 md:px-8">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 text-center md:text-left">
+          <div className="flex flex-col items-center md:items-start">
             <div className="flex items-center gap-3 mb-4">
               <div className="w-10 h-10 bg-[#2B5BBA] rounded-xl flex items-center justify-center shadow-md">
                 <svg
@@ -32,7 +32,7 @@ export function Footer() {
                 PayGrid
               </h3>
             </div>
-            <p className="text-sm text-muted-foreground leading-relaxed">
+            <p className="text-sm text-muted-foreground leading-relaxed max-w-sm">
               Plataforma completa de gestão de despesas e planejamento
               financeiro inteligente.
             </p>

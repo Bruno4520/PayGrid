@@ -5,7 +5,6 @@ import { isAxiosError } from "axios";
 import { api } from "../../services/api";
 import { ThemeToggle } from "../components/ui/theme-toggle";
 
-
 const PASSWORD_REQUIREMENTS_MESSAGE =
   "A senha deve ter no mínimo 8 caracteres, 1 número e 1 caractere especial.";
 
@@ -84,49 +83,51 @@ export function ResetPasswordPage() {
       <div className="absolute top-[-20%] left-[-10%] w-[50%] h-[50%] bg-[#2B5BBA]/20 blur-[120px] rounded-full pointer-events-none" />
       <div className="absolute bottom-[-20%] right-[-10%] w-[50%] h-[50%] bg-purple-500/10 blur-[120px] rounded-full pointer-events-none" />
 
-      <div className="w-full max-w-md bg-card text-card-foreground rounded-3xl p-8 shadow-2xl shadow-black/5 border border-border/50 relative z-10">
-        <div className="flex justify-center mb-8">
-          <div className="w-16 h-16 bg-[#2B5BBA]/10 rounded-2xl flex items-center justify-center">
-            <Lock size={32} className="text-[#2B5BBA] dark:text-[#5588ff]" />
+      <div className="w-full max-w-md bg-card text-card-foreground rounded-2xl sm:rounded-3xl p-6 sm:p-8 md:p-10 shadow-2xl shadow-black/5 border border-border/50 relative z-10">
+        <div className="flex justify-center mb-6 sm:mb-8">
+          <div className="w-14 h-14 sm:w-16 sm:h-16 bg-[#2B5BBA]/10 rounded-xl sm:rounded-2xl flex items-center justify-center">
+            <Lock className="text-[#2B5BBA] dark:text-[#5588ff] w-6 h-6 sm:w-8 sm:h-8" />
           </div>
         </div>
 
-        <div className="text-center mb-8">
-          <h2 className="text-2xl font-bold tracking-tight mb-2">
+        <div className="text-center mb-6 sm:mb-8">
+          <h2 className="text-xl sm:text-2xl font-bold tracking-tight mb-1 sm:mb-2">
             Redefinir Senha
           </h2>
-          <p className="text-muted-foreground text-sm font-medium">
+          <p className="text-muted-foreground text-xs sm:text-sm font-medium">
             Crie uma nova senha forte e segura para a sua conta.
           </p>
         </div>
 
         {error && (
-          <div className="p-4 bg-red-500/10 border border-red-500/20 text-red-600 dark:text-red-400 rounded-xl text-sm font-medium mb-6 text-center">
+          <div className="p-3 sm:p-4 bg-red-500/10 border border-red-500/20 text-red-600 dark:text-red-400 rounded-xl text-xs sm:text-sm font-medium mb-5 sm:mb-6 text-center">
             {error}
           </div>
         )}
 
         {success ? (
-          <div className="text-center py-6">
-            <div className="w-16 h-16 bg-emerald-500/10 rounded-full flex items-center justify-center mx-auto mb-4">
-              <ShieldCheck size={32} className="text-emerald-500" />
+          <div className="text-center py-4 sm:py-6">
+            <div className="w-14 h-14 sm:w-16 sm:h-16 bg-emerald-500/10 rounded-full flex items-center justify-center mx-auto mb-3 sm:mb-4">
+              <ShieldCheck className="text-emerald-500 w-6 h-6 sm:w-8 sm:h-8" />
             </div>
-            <h3 className="text-xl font-bold mb-2">Senha Alterada!</h3>
-            <p className="text-muted-foreground text-sm mb-6">
+            <h3 className="text-lg sm:text-xl font-bold mb-1.5 sm:mb-2">
+              Senha Alterada!
+            </h3>
+            <p className="text-muted-foreground text-xs sm:text-sm mb-5 sm:mb-6">
               Sua senha foi redefinida com sucesso. Você será redirecionado para
               o login.
             </p>
             <Link
               to="/"
-              className="inline-flex items-center gap-2 font-bold text-[#2B5BBA] hover:underline"
+              className="inline-flex items-center gap-2 font-bold text-[#2B5BBA] hover:underline text-sm sm:text-base"
             >
-              Fazer login agora <ArrowRight size={16} />
+              Fazer login agora <ArrowRight size={16} className="w-4 h-4" />
             </Link>
           </div>
         ) : (
-          <form onSubmit={handleSubmit} className="space-y-5">
+          <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-5">
             <div>
-              <label className="block text-sm font-medium text-foreground mb-2">
+              <label className="block text-xs sm:text-sm font-medium text-foreground mb-1.5 sm:mb-2">
                 Nova Senha
               </label>
               <div className="relative">
@@ -135,7 +136,7 @@ export function ResetPasswordPage() {
                   value={newPassword}
                   onChange={(e) => setNewPassword(e.target.value)}
                   placeholder="Digite sua nova senha"
-                  className="w-full pl-4 pr-12 py-3.5 bg-muted/50 border border-transparent rounded-xl text-foreground focus:outline-none focus:ring-2 focus:ring-[#2B5BBA] transition-all font-medium"
+                  className="w-full pl-4 pr-12 py-3 sm:py-3.5 bg-muted/50 border border-transparent rounded-xl text-foreground focus:outline-none focus:ring-2 focus:ring-[#2B5BBA] transition-all font-medium text-sm sm:text-base"
                   required
                   disabled={isLoading || !token}
                   minLength={8}
@@ -146,7 +147,11 @@ export function ResetPasswordPage() {
                   disabled={isLoading || !token}
                   className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground p-1 disabled:opacity-50"
                 >
-                  {showNew ? <EyeOff size={18} /> : <Eye size={18} />}
+                  {showNew ? (
+                    <EyeOff size={18} className="w-[18px] h-[18px]" />
+                  ) : (
+                    <Eye size={18} className="w-[18px] h-[18px]" />
+                  )}
                 </button>
               </div>
             </div>
@@ -154,7 +159,7 @@ export function ResetPasswordPage() {
             <div>
               <p
                 className={
-                  "text-xs mt-2 mb-3 font-medium " +
+                  "text-[10px] sm:text-xs mt-1.5 sm:mt-2 mb-2.5 sm:mb-3 font-medium " +
                   (passwordValidationState === null
                     ? "text-muted-foreground"
                     : passwordValidationState
@@ -165,7 +170,7 @@ export function ResetPasswordPage() {
                 Mínimo 8 caracteres, 1 número e 1 caractere especial
               </p>
 
-              <label className="block text-sm font-medium text-foreground mb-2">
+              <label className="block text-xs sm:text-sm font-medium text-foreground mb-1.5 sm:mb-2">
                 Confirmar Nova Senha
               </label>
               <div className="relative">
@@ -174,7 +179,7 @@ export function ResetPasswordPage() {
                   value={confirmPassword}
                   onChange={(e) => setConfirmPassword(e.target.value)}
                   placeholder="Repita a nova senha"
-                  className="w-full pl-4 pr-12 py-3.5 bg-muted/50 border border-transparent rounded-xl text-foreground focus:outline-none focus:ring-2 focus:ring-[#2B5BBA] transition-all font-medium"
+                  className="w-full pl-4 pr-12 py-3 sm:py-3.5 bg-muted/50 border border-transparent rounded-xl text-foreground focus:outline-none focus:ring-2 focus:ring-[#2B5BBA] transition-all font-medium text-sm sm:text-base"
                   required
                   disabled={isLoading || !token}
                 />
@@ -184,22 +189,27 @@ export function ResetPasswordPage() {
                   disabled={isLoading || !token}
                   className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground p-1 disabled:opacity-50"
                 >
-                  {showConfirm ? <EyeOff size={18} /> : <Eye size={18} />}
+                  {showConfirm ? (
+                    <EyeOff size={18} className="w-[18px] h-[18px]" />
+                  ) : (
+                    <Eye size={18} className="w-[18px] h-[18px]" />
+                  )}
                 </button>
               </div>
 
               {newPassword &&
                 confirmPassword &&
                 newPassword !== confirmPassword && (
-                  <p className="text-xs text-red-500 font-medium mt-2">
+                  <p className="text-[10px] sm:text-xs text-red-500 font-medium mt-1.5 sm:mt-2">
                     As senhas não coincidem.
                   </p>
                 )}
               {newPassword &&
                 confirmPassword &&
                 newPassword === confirmPassword && (
-                  <p className="text-xs text-emerald-500 font-medium mt-2 flex items-center gap-1">
-                    <ShieldCheck size={14} /> Senhas coincidem
+                  <p className="text-[10px] sm:text-xs text-emerald-500 font-medium mt-1.5 sm:mt-2 flex items-center gap-1">
+                    <ShieldCheck size={14} className="w-3.5 h-3.5" /> Senhas
+                    coincidem
                   </p>
                 )}
             </div>
@@ -214,7 +224,7 @@ export function ResetPasswordPage() {
                 !isStrongPassword(newPassword) ||
                 newPassword !== confirmPassword
               }
-              className="w-full py-4 mt-4 rounded-xl font-bold text-white bg-[#2B5BBA] hover:bg-[#1e4594] disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-lg shadow-blue-500/20"
+              className="w-full py-3.5 sm:py-4 mt-2 sm:mt-4 rounded-xl font-bold text-white bg-[#2B5BBA] hover:bg-[#1e4594] disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-lg shadow-blue-500/20 text-sm sm:text-base"
             >
               {isLoading ? "Salvando..." : "Redefinir Senha"}
             </button>

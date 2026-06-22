@@ -162,34 +162,34 @@ export function SimulatorPage() {
         }).format(val);
 
       return (
-        <div className="bg-card/95 backdrop-blur-sm text-card-foreground border border-border/50 p-4 rounded-2xl shadow-xl min-w-[240px]">
-          <p className="font-bold text-base mb-3 pb-2 border-b border-border/50">
+        <div className="bg-card/95 backdrop-blur-sm text-card-foreground border border-border/50 p-3 sm:p-4 rounded-2xl shadow-xl min-w-[200px] sm:min-w-[240px]">
+          <p className="font-bold text-sm sm:text-base mb-2 sm:mb-3 pb-2 border-b border-border/50">
             {label}
           </p>
-          <div className="space-y-3">
-            <div className="flex items-center justify-between gap-6">
-              <span className="text-sm font-medium text-muted-foreground flex items-center gap-2">
-                <span className="w-3 h-3 rounded-full bg-[#10B981]" /> Saldo
-                Total
+          <div className="space-y-2.5 sm:space-y-3">
+            <div className="flex items-center justify-between gap-4 sm:gap-6">
+              <span className="text-xs sm:text-sm font-medium text-muted-foreground flex items-center gap-1.5 sm:gap-2">
+                <span className="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full bg-[#10B981]" />{" "}
+                Saldo Total
               </span>
-              <span className="text-sm font-bold text-foreground">
+              <span className="text-xs sm:text-sm font-bold text-foreground">
                 {formatCurrency(total)}
               </span>
             </div>
-            <div className="flex items-center justify-between gap-6">
-              <span className="text-sm font-medium text-muted-foreground flex items-center gap-2">
-                <span className="w-3 h-3 rounded-full bg-[#2B5BBA]" /> Dinheiro
-                Investido
+            <div className="flex items-center justify-between gap-4 sm:gap-6">
+              <span className="text-xs sm:text-sm font-medium text-muted-foreground flex items-center gap-1.5 sm:gap-2">
+                <span className="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full bg-[#2B5BBA]" />{" "}
+                Dinheiro Investido
               </span>
-              <span className="text-sm font-bold text-foreground">
+              <span className="text-xs sm:text-sm font-bold text-foreground">
                 {formatCurrency(investido)}
               </span>
             </div>
-            <div className="flex items-center justify-between gap-6 pt-3 border-t border-border/50">
-              <span className="text-sm font-bold text-emerald-600 dark:text-emerald-400">
+            <div className="flex items-center justify-between gap-4 sm:gap-6 pt-2 sm:pt-3 border-t border-border/50">
+              <span className="text-xs sm:text-sm font-bold text-emerald-600 dark:text-emerald-400">
                 Juros Ganhos
               </span>
-              <span className="text-sm font-bold text-emerald-600 dark:text-emerald-400">
+              <span className="text-xs sm:text-sm font-bold text-emerald-600 dark:text-emerald-400">
                 +{formatCurrency(juros)}
               </span>
             </div>
@@ -206,22 +206,22 @@ export function SimulatorPage() {
       <div className="flex-1 flex flex-col overflow-hidden">
         <Header />
 
-        <main className="flex-1 overflow-y-auto p-6 md:p-8">
-          <div className="mb-6">
-            <h1 className="text-3xl font-bold tracking-tight text-foreground mb-1">
+        <main className="flex-1 overflow-y-auto p-4 sm:p-6 md:p-8">
+          <div className="mb-5 md:mb-6">
+            <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-foreground mb-1">
               Simulador de Investimentos
             </h1>
-            <p className="text-muted-foreground font-medium">
+            <p className="text-sm sm:text-base text-muted-foreground font-medium">
               Projete os seus investimentos e visualize o efeito dos juros
               compostos
             </p>
           </div>
 
-          <div className="mb-6">
+          <div className="mb-5 md:mb-6">
             <SimulationAlert />
           </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6 mb-6 md:mb-8">
             <div className="lg:col-span-2 h-full">
               <ParametersCard
                 initialValue={initialValue}
@@ -242,7 +242,7 @@ export function SimulatorPage() {
                 isSimulating={isSimulating}
               />
             </div>
-            <div className="space-y-6 h-full flex flex-col justify-between">
+            <div className="space-y-4 sm:space-y-6 h-full flex flex-col justify-between">
               <QuickTipsCard />
               <ReferenceRatesCard />
             </div>
@@ -251,19 +251,22 @@ export function SimulatorPage() {
           <div
             className={`transition-all duration-700 ${showResults ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10 hidden"}`}
           >
-            <div className="mb-6">
+            <div className="mb-5 md:mb-6">
               <ResultsCard {...results} showResults={showResults} />
             </div>
 
-            <div className="bg-card rounded-3xl p-6 shadow-sm border border-border/50 mb-8">
-              <h3 className="text-xl font-bold text-foreground mb-2">
+            <div className="bg-card rounded-2xl sm:rounded-3xl p-4 sm:p-6 shadow-sm border border-border/50 mb-6 md:mb-8">
+              <h3 className="text-lg sm:text-xl font-bold text-foreground mb-1 sm:mb-2">
                 Evolução do Patrimônio
               </h3>
-              <p className="text-sm font-medium text-muted-foreground mb-8">
+              <p className="text-xs sm:text-sm font-medium text-muted-foreground mb-6 sm:mb-8">
                 Acompanhe o crescimento do seu dinheiro ao longo dos meses
               </p>
 
-              <ResponsiveContainer width="100%" height={380}>
+              <ResponsiveContainer
+                width="100%"
+                height={window.innerWidth < 640 ? 280 : 380}
+              >
                 <AreaChart
                   data={chartData}
                   margin={{ top: 10, right: 10, left: 0, bottom: 0 }}
@@ -293,13 +296,19 @@ export function SimulatorPage() {
                     dataKey="mesLabel"
                     tickLine={false}
                     axisLine={false}
-                    tick={{ fontSize: 12, fill: "#9CA3AF" }}
+                    tick={{
+                      fontSize: window.innerWidth < 640 ? 10 : 12,
+                      fill: "#9CA3AF",
+                    }}
                     dy={10}
                   />
                   <YAxis
                     tickLine={false}
                     axisLine={false}
-                    tick={{ fontSize: 12, fill: "#9CA3AF" }}
+                    tick={{
+                      fontSize: window.innerWidth < 640 ? 10 : 12,
+                      fill: "#9CA3AF",
+                    }}
                     tickFormatter={(val) => `R$ ${(val / 1000).toFixed(0)}k`}
                     dx={-10}
                   />
@@ -309,7 +318,7 @@ export function SimulatorPage() {
                     dataKey="total"
                     name="Saldo Total"
                     stroke="#10B981"
-                    strokeWidth={4}
+                    strokeWidth={window.innerWidth < 640 ? 3 : 4}
                     fillOpacity={1}
                     fill="url(#colorTotal)"
                   />
@@ -318,7 +327,7 @@ export function SimulatorPage() {
                     dataKey="investido"
                     name="Total Investido"
                     stroke="#2B5BBA"
-                    strokeWidth={4}
+                    strokeWidth={window.innerWidth < 640 ? 3 : 4}
                     fillOpacity={1}
                     fill="url(#colorInvestido)"
                   />
@@ -327,7 +336,7 @@ export function SimulatorPage() {
             </div>
           </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-stretch">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6 items-stretch pb-6 md:pb-0">
             <div className="h-full">
               <TaxTableCard periodoMeses={parseInt(period) || 0} />
             </div>
